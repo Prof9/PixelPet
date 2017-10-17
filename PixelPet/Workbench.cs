@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -13,10 +14,12 @@ namespace PixelPet {
 		public List<Color> Palette { get; }
 		public Bitmap Bitmap { get; private set; }
 		public Graphics Graphics { get; private set; }
+		public MemoryStream Stream { get; private set; }
 
 		public Workbench() {
 			this.Palette = new List<Color>();
 			ClearBitmap(8, 8);
+			this.Stream = new MemoryStream();
 		}
 
 		public void ClearBitmap(int width, int height) {
