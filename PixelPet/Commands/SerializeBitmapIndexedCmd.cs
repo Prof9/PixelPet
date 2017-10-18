@@ -14,10 +14,10 @@ namespace PixelPet.Commands {
 		public override void Run(Workbench workbench, Cli cli) {
 			BitmapData bmpData = workbench.Bitmap.LockBits(
 				new Rectangle(0, 0, workbench.Bitmap.Width, workbench.Bitmap.Height),
-				ImageLockMode.ReadOnly,
+				ImageLockMode.ReadWrite,
 				workbench.Bitmap.PixelFormat
 			);
-			byte[] buffer = new byte[bmpData.Stride * workbench.Bitmap.Height];
+			byte[] buffer = new byte[bmpData.Stride * bmpData.Height];
 			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
 			workbench.Bitmap.UnlockBits(bmpData);
 
@@ -34,18 +34,18 @@ namespace PixelPet.Commands {
 			bool foundUnmatchedColor = false;
 			bool foundOutOfBounds = false;
 
-			int tw = (workbench.Bitmap.Width + (sw - 1)) / sw;
-			int th = (workbench.Bitmap.Height + (sh - 1)) / sh;
-			int tx, ty, x, y, px, py, ptr, argb, c;
-			for (ty = 0; ty < th; ty++) {
-				for (tx = 0; tx < tw; tx++) {
-					for (y = 0; y < sh; y++) {
-						for (x = 0; x < sw; x++) {
-							py = ty * sh + y;
-							px = tx * sw + x;
-							ptr = py * bmpData.Stride + px * 4;
+			int tw = (bmpData.Width + (sw - 1)) / sw;
+			int th = (bmpData.Height + (sh - 1)) / sh;
+			int argb, c;
+			for (int tj = 0; tj < th; tj++) {
+				for (int ti = 0; ti < tw; ti++) {
+					for (int ty = 0; ty < sh; ty++) {
+						for (int tx = 0; tx < sw; tx++) {
+							int py = tj * sh + ty;
+							int px = ti * sw + tx;
+							int ptr = py * bmpData.Stride + px * 4;
 
-							if (px < 0 || py < 0 || px >= workbench.Bitmap.Width || py >= workbench.Bitmap.Height) {
+							if (px < 0 || py < 0 || px >= bmpData.Width || py >= bmpData.Height) {
 								c = 0;
 								if (!foundOutOfBounds) {
 									cli.Log("WARNING: Tried to read out of bounds pixel in bitmap at (" + px + ", " + py + ").");

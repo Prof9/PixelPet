@@ -13,7 +13,7 @@ namespace PixelPet.Commands {
 			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
-			string path = this.Parameters[0].Values[0].GetValue();
+			string path = this.FindUnnamedParameter(0).Values[0].GetValue();
 			cli.Log("Exporting bytes to " + Path.GetFileName(path) + "...");
 
 			using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)) {
