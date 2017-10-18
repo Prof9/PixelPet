@@ -169,10 +169,14 @@ namespace PixelPet {
 
 		private bool ReadParameter(IEnumerator<string> args) {
 			// Find parameter to read.
-			Parameter par = FindParameter(args.Current);
+			Parameter par = FindParameterToPrepare(args.Current);
 			if (par == null) {
 				// Did not find a suitable parameter.
 				return false;
+			}
+
+			if (par.IsLoaded) {
+				throw new ArgumentException("Parameter " + par.PrimaryName + " already defined.");
 			}
 
 			par.IsPresent = true;
@@ -192,9 +196,18 @@ namespace PixelPet {
 			return true;
 		}
 
-		private Parameter FindParameter(string str) {
+		private Parameter FindParameterToPrepare(string str) {
+			Parameter par = FindNamedParameter(str);
+			if (par == null) {
+				// Find first unloaded unnamed parameter.
+				par = FindUnnamedParameter(0, true);
+			}
+			return par;
+		}
+
+		protected Parameter FindNamedParameter(string str) {
 			Parameter par = null;
-			if (str.StartsWith("--")) {
+			if (str?.StartsWith("--") ?? false) {
 				// Find based on long name.
 				par = this.Parameters.FirstOrDefault(
 					p => str.Equals(p.LongName, StringComparison.InvariantCultureIgnoreCase)
@@ -202,7 +215,7 @@ namespace PixelPet {
 				if (par == null) {
 					throw new ArgumentException("Unrecognized parameter \"" + str + "\".");
 				}
-			} else if (str.StartsWith("-")) {
+			} else if (str?.StartsWith("-") ?? false) {
 				// Find based on short name.
 				par = this.Parameters.FirstOrDefault(
 					p => str.Equals(p.ShortName, StringComparison.InvariantCultureIgnoreCase)
@@ -210,13 +223,16 @@ namespace PixelPet {
 				if (par == null) {
 					throw new ArgumentException("Unrecognized parameter \"" + str + "\".");
 				}
-			} else {
-				// Find first unloaded unnamed parameter.
-				par = this.Parameters.FirstOrDefault(
-					p => !p.IsNamed && !p.IsLoaded
-				);
 			}
 			return par;
+		}
+
+		protected Parameter FindUnnamedParameter(int skip) {
+			return FindUnnamedParameter(skip, false);
+		}
+
+		private Parameter FindUnnamedParameter(int skip, bool unloaded) {
+			return this.Parameters.Where(p => !p.IsNamed && (!unloaded || !p.IsLoaded)).Skip(skip).FirstOrDefault();
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace PixelPet.Commands {
 			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
-			string path = this.Parameters[0].Values[0].GetValue();
+			string path = this.FindUnnamedParameter(0).Values[0].GetValue();
 			cli.Log("Exporting bitmap " + Path.GetFileName(path) + "...");
 
 			workbench.Bitmap.Save(path);
