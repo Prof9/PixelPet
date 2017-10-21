@@ -12,6 +12,8 @@ namespace PixelPet.Commands {
 			: base("Adjust-Depth") { }
 
 		public override void Run(Workbench workbench, Cli cli) {
+			cli.Log("Adjusting color depth...");
+
 			// Generate lookup table.
 			byte[] lut = new byte[32];
 			for (int i = 0; i < 32; i++) {

@@ -19,6 +19,8 @@ namespace PixelPet.Commands {
 			: base("Generate-Tilemap") { }
 
 		public override void Run(Workbench workbench, Cli cli) {
+			cli.Log("Generating tilemap...");
+
 			Tilemap tm = new Tilemap(workbench.Bitmap, 8, 8);
 			tm.Reduce(true);
 
