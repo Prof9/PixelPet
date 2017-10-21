@@ -17,6 +17,7 @@ namespace PixelPet {
 			new RenderPaletteCmd(),
 			new AdjustDepthCmd(),
 			new SerializeBitmapIndexedCmd(),
+			new GenerateTilemapCmd(),
 		};
 
 		public Workbench Workbench { get; }
