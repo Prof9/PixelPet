@@ -23,16 +23,20 @@ namespace PixelPet {
 		}
 
 		public void ClearBitmap(int width, int height) {
+			SetBitmap(new Bitmap(width, height, PixelFormat.Format32bppArgb));
+			this.Graphics.Clear(Color.Transparent);
+			this.Graphics.Flush();
+		}
+
+		public void SetBitmap(Bitmap bmp) {
 			if (this.Graphics != null) {
 				this.Graphics.Dispose();
 			}
 			if (this.Bitmap != null) {
 				this.Bitmap.Dispose();
 			}
-			this.Bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+			this.Bitmap = bmp;
 			this.Graphics = Graphics.FromImage(this.Bitmap);
-			this.Graphics.Clear(Color.Transparent);
-			this.Graphics.Flush();
 		}
 	}
 }

@@ -57,6 +57,39 @@ namespace PixelPet {
 			bmp.UnlockBits(this.BitmapData);
 		}
 
+		public Bitmap GetTileset() {
+			int tileCount = this.TileEntries.Max(te => te.TileNumber) + 1;
+			int horizontalTileCount = 1;
+
+			Bitmap bmp = new Bitmap(this.TileWidth, tileCount * this.TileHeight, PixelFormat.Format32bppArgb);
+			BitmapData bmpData = bmp.LockBits(
+				new Rectangle(0, 0, bmp.Width, bmp.Height),
+				ImageLockMode.WriteOnly,
+				PixelFormat.Format32bppArgb
+			);
+			int[] buffer = new int[(bmpData.Stride * bmp.Height) / 4];
+
+			foreach (Entry entry in this.TileEntries) {
+				int t = entry.TileNumber;
+				int ti = t % horizontalTileCount;
+				int tj = t / horizontalTileCount;
+
+				for (int ty = 0; ty < this.TileHeight; ty++) {
+					for (int tx = 0; tx < this.TileWidth; tx++) {
+						int px = ti * this.TileWidth  + tx;
+						int py = tj * this.TileHeight + ty;
+						int ptr = (py * bmpData.Stride + px * 4) / 4;
+
+						buffer[ptr] = this.GetPixel(entry.InternalTileNumber, tx, ty);
+					}
+				}
+			}
+
+			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
+			bmp.UnlockBits(bmpData);
+			return bmp;
+		}
+
 		public void Reduce(bool flip) {
 			Dictionary<int, List<Entry>> dict = new Dictionary<int, List<Entry>>();
 			int rTileNum = 0;
