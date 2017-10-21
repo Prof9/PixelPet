@@ -12,6 +12,8 @@ namespace PixelPet.Commands {
 			: base("Serialize-Bitmap-Indexed") { }
 
 		public override void Run(Workbench workbench, Cli cli) {
+			cli.Log("Serializing bitmap...");
+
 			BitmapData bmpData = workbench.Bitmap.LockBits(
 				new Rectangle(0, 0, workbench.Bitmap.Width, workbench.Bitmap.Height),
 				ImageLockMode.ReadWrite,
