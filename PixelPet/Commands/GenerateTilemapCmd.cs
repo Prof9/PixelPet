@@ -16,9 +16,17 @@ namespace PixelPet.Commands {
 		}
 
 		public GenerateTilemapCmd()
-			: base("Generate-Tilemap") { }
+			: base("Generate-Tilemap", new Parameter[] {
+				new Parameter("palette",    "p", false, new ParameterValue("index",          "0")),
+				new Parameter("base-tile",  "b", false, new ParameterValue("index",          "0")),
+				new Parameter("first-tile", "f", false, new ParameterValue("tilemap-entry", "-1")),
+			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
+			int palette   = FindNamedParameter("--palette"   ).Values[0].ToInt32();
+			int baseTile  = FindNamedParameter("--base-tile" ).Values[0].ToInt32();
+			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
+
 			cli.Log("Generating tilemap...");
 
 			Tilemap tm = new Tilemap(workbench.Bitmap, 8, 8);
@@ -30,9 +38,15 @@ namespace PixelPet.Commands {
 
 			foreach (Tilemap.Entry entry in tm.TileEntries) {
 				int scrn = 0;
-				scrn |= entry.TileNumber & 0x1FF;
-				scrn |= entry.FlipHorizontal ? 1 << 10 : 0;
-				scrn |= entry.FlipVertical   ? 1 << 11 : 0;
+				if (firstTile >= 0 && entry.TileNumber == 0) {
+					scrn = firstTile;
+				} else {
+					scrn |= (entry.TileNumber + baseTile) & 0x1FF;
+					scrn |= entry.FlipHorizontal ? 1 << 10 : 0;
+					scrn |= entry.FlipVertical ? 1 << 11 : 0;
+					scrn |= palette << 12;
+				}
+
 				workbench.Stream.WriteByte((byte)(scrn >> 0));
 				workbench.Stream.WriteByte((byte)(scrn >> 8));
 			}
