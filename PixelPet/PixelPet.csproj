@@ -51,6 +51,7 @@
     <Compile Include="Commands\ImportBitmapCmd.cs" />
     <Compile Include="Commands\RenderPaletteCmd.cs" />
     <Compile Include="Commands\SerializeBitmapIndexedCmd.cs" />
+    <Compile Include="NumberParser.cs" />
     <Compile Include="Tilemap.cs" />
     <Compile Include="Workbench.cs" />
     <Compile Include="Program.cs" />

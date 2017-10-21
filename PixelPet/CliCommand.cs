@@ -42,6 +42,16 @@ namespace PixelPet {
 				this.DefaultValue = defaultValue;
 				this.CurrentValue = null;
 			}
+
+			public int ToInt32() {
+				if (NumberParser.TryParseInt32(this.GetValue(), out int r)) {
+					return r;
+				} else if (this.HasDefaultValue && NumberParser.TryParseInt32(this.DefaultValue, out r)) {
+					return r;
+				} else {
+					return 0;
+				}
+			}
 		}
 
 		protected class Parameter {
@@ -210,7 +220,7 @@ namespace PixelPet {
 			if (str?.StartsWith("--") ?? false) {
 				// Find based on long name.
 				par = this.Parameters.FirstOrDefault(
-					p => str.Equals(p.LongName, StringComparison.InvariantCultureIgnoreCase)
+					p => str.Substring(2).Equals(p.LongName, StringComparison.InvariantCultureIgnoreCase)
 				);
 				if (par == null) {
 					throw new ArgumentException("Unrecognized parameter \"" + str + "\".");
@@ -218,7 +228,7 @@ namespace PixelPet {
 			} else if (str?.StartsWith("-") ?? false) {
 				// Find based on short name.
 				par = this.Parameters.FirstOrDefault(
-					p => str.Equals(p.ShortName, StringComparison.InvariantCultureIgnoreCase)
+					p => str.Substring(1).Equals(p.ShortName, StringComparison.InvariantCultureIgnoreCase)
 				);
 				if (par == null) {
 					throw new ArgumentException("Unrecognized parameter \"" + str + "\".");
