@@ -22,6 +22,8 @@ namespace PixelPet.Commands {
 			Tilemap tm = new Tilemap(workbench.Bitmap, 8, 8);
 			tm.Reduce(true);
 
+			workbench.SetBitmap(tm.GetTileset());
+
 			workbench.Stream.SetLength(0);
 
 			foreach (Tilemap.Entry entry in tm.TileEntries) {
