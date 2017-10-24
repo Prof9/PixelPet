@@ -17,19 +17,23 @@ namespace PixelPet.Commands {
 
 		public GenerateTilemapCmd()
 			: base("Generate-Tilemap", new Parameter[] {
-				new Parameter("palette",    "p", false, new ParameterValue("index",          "0")),
-				new Parameter("base-tile",  "b", false, new ParameterValue("index",          "0")),
-				new Parameter("first-tile", "f", false, new ParameterValue("tilemap-entry", "-1")),
+				new Parameter("palette",    "p", false,	new ParameterValue("index",          "0")),
+				new Parameter("base-tile",  "b", false,	new ParameterValue("index",          "0")),
+				new Parameter("first-tile", "f", false,	new ParameterValue("tilemap-entry", "-1")),
+				new Parameter("tile-size",  "t", false,	new ParameterValue("width",          "8"),
+														new ParameterValue("height",         "8")),
 			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
-			int palette   = FindNamedParameter("--palette"   ).Values[0].ToInt32();
-			int baseTile  = FindNamedParameter("--base-tile" ).Values[0].ToInt32();
-			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
+			int palette    = FindNamedParameter("--palette"   ).Values[0].ToInt32();
+			int baseTile   = FindNamedParameter("--base-tile" ).Values[0].ToInt32();
+			int firstTile  = FindNamedParameter("--first-tile").Values[0].ToInt32();
+			int tileWidth  = FindNamedParameter("--tile-size" ).Values[0].ToInt32();
+			int tileHeight = FindNamedParameter("--tile-size" ).Values[1].ToInt32();
 
 			cli.Log("Generating tilemap...");
 
-			Tilemap tm = new Tilemap(workbench.Bitmap, 8, 8);
+			Tilemap tm = new Tilemap(workbench.Bitmap, tileWidth, tileHeight);
 			tm.Reduce(true);
 
 			workbench.SetBitmap(tm.GetTileset());
