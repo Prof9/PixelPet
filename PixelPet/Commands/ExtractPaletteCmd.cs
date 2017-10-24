@@ -25,15 +25,12 @@ namespace PixelPet.Commands {
 			List<uint> colors = new List<uint>();
 			bool transparent = false;
 			int x, y, ptr;
-			int rgb, a;
 			for (y = 0; y < workbench.Bitmap.Height; y++) {
 				for (x = 0; x < workbench.Bitmap.Width; x++) {
 					ptr = y * bmpData.Stride + x * 4;
 					uint rgba = BitConverter.ToUInt32(buffer, ptr);
-					rgb = (int)(rgba & 0xFFFFFF);
-					a = (int)(rgba >> 24);
 
-					if (a == 0) {
+					if ((rgba >> 24) == 0) {
 						// Add only one transparent color, as the first color.
 						if (!transparent) {
 							colors.Insert(0, rgba);

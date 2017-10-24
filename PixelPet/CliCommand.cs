@@ -215,9 +215,11 @@ namespace PixelPet {
 			return par;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1309:UseOrdinalStringComparison", MessageId = "System.String.StartsWith(System.String,System.StringComparison)")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1309:UseOrdinalStringComparison", MessageId = "System.String.Equals(System.String,System.StringComparison)")]
 		protected Parameter FindNamedParameter(string str) {
 			Parameter par = null;
-			if (str?.StartsWith("--") ?? false) {
+			if (str?.StartsWith("--", StringComparison.InvariantCultureIgnoreCase) ?? false) {
 				// Find based on long name.
 				par = this.Parameters.FirstOrDefault(
 					p => str.Substring(2).Equals(p.LongName, StringComparison.InvariantCultureIgnoreCase)
@@ -225,7 +227,7 @@ namespace PixelPet {
 				if (par == null) {
 					throw new ArgumentException("Unrecognized parameter \"" + str + "\".");
 				}
-			} else if (str?.StartsWith("-") ?? false) {
+			} else if (str?.StartsWith("-", StringComparison.InvariantCultureIgnoreCase) ?? false) {
 				// Find based on short name.
 				par = this.Parameters.FirstOrDefault(
 					p => str.Substring(1).Equals(p.ShortName, StringComparison.InvariantCultureIgnoreCase)

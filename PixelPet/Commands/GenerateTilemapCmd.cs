@@ -8,13 +8,6 @@ using System.Text;
 
 namespace PixelPet.Commands {
 	internal class GenerateTilemapCmd : CliCommand {
-		protected struct TilemapEntry {
-			int TileNum { get; set; }
-			int Palette { get; set; }
-			bool HFlip { get; set; }
-			bool VFlip { get; set; }
-		}
-
 		public GenerateTilemapCmd()
 			: base("Generate-Tilemap", new Parameter[] {
 				new Parameter("palette",    "p", false,	new ParameterValue("index",          "0")),
@@ -36,7 +29,7 @@ namespace PixelPet.Commands {
 			Tilemap tm = new Tilemap(workbench.Bitmap, tileWidth, tileHeight);
 			tm.Reduce(true);
 
-			workbench.SetBitmap(tm.GetTileset());
+			workbench.SetBitmap(tm.CreateTileset());
 
 			workbench.Stream.SetLength(0);
 

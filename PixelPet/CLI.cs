@@ -34,6 +34,9 @@ namespace PixelPet {
 
 
 		public int Run(IEnumerator<string> args) {
+			if (args == null)
+				throw new ArgumentNullException(nameof(args));
+
 #if !DEBUG
 			try {
 #endif
@@ -59,6 +62,7 @@ namespace PixelPet {
 			return 0;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1309:UseOrdinalStringComparison", MessageId = "System.String.Equals(System.String,System.StringComparison)")]
 		private bool DoCommand(IEnumerator<string> args) {
 			string cmdName = args.Current;
 

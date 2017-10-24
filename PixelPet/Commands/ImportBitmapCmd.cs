@@ -19,12 +19,12 @@ namespace PixelPet.Commands {
 			cli.Log("Importing bitmap " + Path.GetFileName(path) + "...");
 
 			// Load bitmap.
-			Bitmap bmp = new Bitmap(path);
-
-			// Import bitmap to workbench.
-			workbench.ClearBitmap(bmp.Width, bmp.Height);
-			workbench.Graphics.CompositingMode = CompositingMode.SourceCopy;
-			workbench.Graphics.DrawImageUnscaled(bmp, 0, 0);
+			using (Bitmap bmp = new Bitmap(path)) {
+				// Import bitmap to workbench.
+				workbench.ClearBitmap(bmp.Width, bmp.Height);
+				workbench.Graphics.CompositingMode = CompositingMode.SourceCopy;
+				workbench.Graphics.DrawImageUnscaled(bmp, 0, 0);
+			}
 		}
 	}
 }
