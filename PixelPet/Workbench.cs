@@ -11,7 +11,7 @@ namespace PixelPet {
 	/// PixelPet workbench instance.
 	/// </summary>
 	public class Workbench {
-		public List<Color> Palette { get; }
+		public IList<Color> Palette { get; }
 		public Bitmap Bitmap { get; private set; }
 		public Graphics Graphics { get; private set; }
 		public MemoryStream Stream { get; private set; }
@@ -23,7 +23,15 @@ namespace PixelPet {
 		}
 
 		public void ClearBitmap(int width, int height) {
-			SetBitmap(new Bitmap(width, height, PixelFormat.Format32bppArgb));
+			Bitmap bmp = null;
+			try {
+				bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+			} finally {
+				if (bmp != null) {
+					bmp.Dispose();
+				}
+			}
+			SetBitmap(bmp);
 			this.Graphics.Clear(Color.Transparent);
 			this.Graphics.Flush();
 		}

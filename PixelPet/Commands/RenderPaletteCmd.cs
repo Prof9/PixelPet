@@ -27,7 +27,9 @@ namespace PixelPet.Commands {
 			for (int i = 0; i < count; i++) {
 				int x = i % width;
 				int y = i / width;
-				workbench.Graphics.FillRectangle(new SolidBrush(workbench.Palette[i]), x * size, y * size, size, size);
+				using (SolidBrush brush = new SolidBrush(workbench.Palette[i])) {
+					workbench.Graphics.FillRectangle(brush, x * size, y * size, size, size);
+				}
 			}
 			workbench.Graphics.Flush();
 			

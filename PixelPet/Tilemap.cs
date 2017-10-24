@@ -10,10 +10,10 @@ using System.Text;
 namespace PixelPet {
 	public class Tilemap {
 		public struct Entry {
-			public int TileNumber;
-			public int InternalTileNumber;
-			public bool FlipHorizontal;
-			public bool FlipVertical;
+			public int TileNumber { get; set; }
+			public int InternalTileNumber { get; set; }
+			public bool FlipHorizontal { get; set; }
+			public bool FlipVertical { get; set; }
 
 			public Entry(int iTileNum) {
 				this.TileNumber = iTileNum;
@@ -21,13 +21,40 @@ namespace PixelPet {
 				this.FlipHorizontal = false;
 				this.FlipVertical = false;
 			}
+
+			public override int GetHashCode() {
+				// Pretty crappy hash
+				uint hash = (uint)(this.TileNumber * this.InternalTileNumber);
+				if (this.FlipHorizontal) {
+					hash ^= 0x55555555;
+				}
+				if (this.FlipVertical) {
+					hash ^= 0xAAAAAAAA;
+				}
+				return (int)hash;
+			}
+			public override bool Equals(object obj) {
+				return base.Equals(obj);
+			}
+			public bool Equals(Entry entry) {
+				return this.TileNumber == entry.TileNumber &&
+					this.InternalTileNumber == entry.InternalTileNumber &&
+					this.FlipHorizontal == entry.FlipHorizontal &&
+					this.FlipVertical == entry.FlipVertical;
+			}
+			public static bool operator ==(Entry a, Entry b) {
+				return a.Equals(b);
+			}
+			public static bool operator !=(Entry a, Entry b) {
+				return !a.Equals(b);
+			}
 		}
 
-		public List<Entry> TileEntries { get; private set; }
+		public IList<Entry> TileEntries { get; private set; }
 		public int TileCount => this.TileEntries.Count;
 
 		protected BitmapData BitmapData { get; private set; }
-		protected int[] Buffer { get; private set; }
+		protected IList<int> Buffer { get; private set; }
 
 		public int TileWidth { get; private set; }
 		public int TileHeight { get; private set; }
@@ -36,6 +63,9 @@ namespace PixelPet {
 		protected int InternalTileCount => this.InternalHorizontalTileCount * this.InternalVerticalTileCount;
 
 		public Tilemap(Bitmap bmp, int tileWidth, int tileHeight) {
+			if (bmp == null)
+				throw new ArgumentNullException(nameof(bmp));
+
 			this.TileWidth = tileWidth;
 			this.TileHeight = tileHeight;
 
@@ -52,42 +82,55 @@ namespace PixelPet {
 				ImageLockMode.ReadOnly,
 				bmp.PixelFormat
 			);
-			this.Buffer = new int[(this.BitmapData.Stride * this.BitmapData.Height) / 4];
-			Marshal.Copy(this.BitmapData.Scan0, this.Buffer, 0, this.Buffer.Length);
+			int[] buffer = new int[(this.BitmapData.Stride * this.BitmapData.Height) / 4];
+			Marshal.Copy(this.BitmapData.Scan0, buffer, 0, buffer.Length);
 			bmp.UnlockBits(this.BitmapData);
+
+			this.Buffer = buffer;
 		}
 
-		public Bitmap GetTileset() {
+		public Bitmap CreateTileset() {
 			int tileCount = this.TileEntries.Max(te => te.TileNumber) + 1;
 			int horizontalTileCount = 1;
 
-			Bitmap bmp = new Bitmap(this.TileWidth, tileCount * this.TileHeight, PixelFormat.Format32bppArgb);
-			BitmapData bmpData = bmp.LockBits(
-				new Rectangle(0, 0, bmp.Width, bmp.Height),
-				ImageLockMode.WriteOnly,
-				PixelFormat.Format32bppArgb
-			);
-			int[] buffer = new int[(bmpData.Stride * bmp.Height) / 4];
+			Bitmap result = null;
+			Bitmap bmp = null;
+			try {
+				bmp = new Bitmap(this.TileWidth, tileCount * this.TileHeight, PixelFormat.Format32bppArgb);
+				BitmapData bmpData = bmp.LockBits(
+					new Rectangle(0, 0, bmp.Width, bmp.Height),
+					ImageLockMode.WriteOnly,
+					PixelFormat.Format32bppArgb
+				);
+				int[] buffer = new int[(bmpData.Stride * bmp.Height) / 4];
 
-			foreach (Entry entry in this.TileEntries) {
-				int t = entry.TileNumber;
-				int ti = t % horizontalTileCount;
-				int tj = t / horizontalTileCount;
+				foreach (Entry entry in this.TileEntries) {
+					int t = entry.TileNumber;
+					int ti = t % horizontalTileCount;
+					int tj = t / horizontalTileCount;
 
-				for (int ty = 0; ty < this.TileHeight; ty++) {
-					for (int tx = 0; tx < this.TileWidth; tx++) {
-						int px = ti * this.TileWidth  + tx;
-						int py = tj * this.TileHeight + ty;
-						int ptr = (py * bmpData.Stride + px * 4) / 4;
+					for (int ty = 0; ty < this.TileHeight; ty++) {
+						for (int tx = 0; tx < this.TileWidth; tx++) {
+							int px = ti * this.TileWidth + tx;
+							int py = tj * this.TileHeight + ty;
+							int ptr = (py * bmpData.Stride + px * 4) / 4;
 
-						buffer[ptr] = this.GetPixel(entry.InternalTileNumber, tx, ty);
+							buffer[ptr] = this.GetPixel(entry.InternalTileNumber, tx, ty);
+						}
 					}
 				}
-			}
 
-			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-			bmp.UnlockBits(bmpData);
-			return bmp;
+				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
+				bmp.UnlockBits(bmpData);
+
+				result = bmp;
+				bmp = null;
+				return result;
+			} finally {
+				if (bmp != null) {
+					bmp.Dispose();
+				}
+			}
 		}
 
 		public void Reduce(bool flip) {

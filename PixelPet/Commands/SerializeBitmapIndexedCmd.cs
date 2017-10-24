@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -40,7 +41,7 @@ namespace PixelPet.Commands {
 						if (c < 0) {
 							c = 0;
 							if (!foundUnmatchedColor) {
-								cli.Log("WARNING: Found unmatched color 0x" + argb.ToString("X8") + " in tile " + tile.TileNumber + " at (" + tx+ ", " + ty + ").");
+								cli.Log("WARNING: Found unmatched color 0x" + argb.ToString("X8", CultureInfo.CurrentCulture) + " in tile " + tile.TileNumber + " at (" + tx+ ", " + ty + ").");
 								foundUnmatchedColor = true;
 							}
 						}
@@ -56,24 +57,24 @@ namespace PixelPet.Commands {
 					}
 				}
 			}
-		}
 
-		private int FindPaletteIndex(IList<Color> palette, int argb) {
-			// Set to totally transparent color, if it exists.
-			int a = argb >> 24;
-			if (a == 0 && palette[0].A == 0) {
-				return 0;
-			}
-
-			// Find matching color.
-			for (int i = 0; i < palette.Count; i++) {
-				if (palette[i].ToArgb() == argb) {
-					return i;
+			int FindPaletteIndex(IList<Color> palette, int argb) {
+				// Set to totally transparent color, if it exists.
+				int a = argb >> 24;
+				if (a == 0 && palette[0].A == 0) {
+					return 0;
 				}
-			}
 
-			// No matching color found.
-			return -1;
+				// Find matching color.
+				for (int i = 0; i < palette.Count; i++) {
+					if (palette[i].ToArgb() == argb) {
+						return i;
+					}
+				}
+
+				// No matching color found.
+				return -1;
+			}
 		}
 	}
 }
