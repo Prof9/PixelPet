@@ -26,12 +26,12 @@ namespace PixelPet {
 			Bitmap bmp = null;
 			try {
 				bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+				SetBitmap(bmp);
 			} finally {
 				if (bmp != null) {
 					bmp.Dispose();
 				}
 			}
-			SetBitmap(bmp);
 			this.Graphics.Clear(Color.Transparent);
 			this.Graphics.Flush();
 		}
