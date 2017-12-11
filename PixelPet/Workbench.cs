@@ -23,15 +23,9 @@ namespace PixelPet {
 		}
 
 		public void ClearBitmap(int width, int height) {
-			Bitmap bmp = null;
-			try {
-				bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-				SetBitmap(bmp);
-			} finally {
-				if (bmp != null) {
-					bmp.Dispose();
-				}
-			}
+			this.Bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+			this.Graphics = Graphics.FromImage(this.Bitmap);
+
 			this.Graphics.Clear(Color.Transparent);
 			this.Graphics.Flush();
 		}
