@@ -38,7 +38,7 @@ namespace PixelPet.Commands {
 				if (firstTile >= 0 && entry.TileNumber == 0) {
 					scrn = firstTile;
 				} else {
-					scrn |= (entry.TileNumber + baseTile) & 0x1FF;
+					scrn |= (entry.TileNumber + baseTile) & 0x3FF;
 					scrn |= entry.FlipHorizontal ? 1 << 10 : 0;
 					scrn |= entry.FlipVertical ? 1 << 11 : 0;
 					scrn |= palette << 12;
