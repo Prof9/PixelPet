@@ -23,7 +23,7 @@ namespace PixelPet.Commands {
 				// Import bitmap to workbench.
 				workbench.ClearBitmap(bmp.Width, bmp.Height);
 				workbench.Graphics.CompositingMode = CompositingMode.SourceCopy;
-				workbench.Graphics.DrawImageUnscaled(bmp, 0, 0);
+				workbench.Graphics.DrawImage(bmp, 0, 0, bmp.Width, bmp.Height);
 			}
 		}
 	}
