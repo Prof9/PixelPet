@@ -15,9 +15,11 @@ namespace PixelPet {
 			new ExportBytesCmd(),
 			new ExtractPaletteCmd(),
 			new RenderPaletteCmd(),
+			new RenderTilesetCmd(),
 			new AdjustDepthCmd(),
-			new SerializeBitmapIndexedCmd(),
 			new GenerateTilemapCmd(),
+			new SerializeTilesetIndexed(),
+			new SerializeTilemapCmd(),
 		};
 
 		public Workbench Workbench { get; }
@@ -28,8 +30,6 @@ namespace PixelPet {
 		/// <param name="workbench">The workbench to act on.</param>
 		public Cli(Workbench workbench) {
 			this.Workbench = workbench;
-
-			this.Log("PixelPet v0.1-alpha by Prof. 9");
 		}
 
 
@@ -76,6 +76,7 @@ namespace PixelPet {
 			return !cmd.ReachedEnd;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
 		public void Log(string str) {
 			Console.WriteLine(str);
 		}

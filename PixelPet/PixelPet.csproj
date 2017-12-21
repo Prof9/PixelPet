@@ -51,9 +51,15 @@
     <Compile Include="Commands\GenerateTilemapCmd.cs" />
     <Compile Include="Commands\ImportBitmapCmd.cs" />
     <Compile Include="Commands\RenderPaletteCmd.cs" />
-    <Compile Include="Commands\SerializeBitmapIndexedCmd.cs" />
+    <Compile Include="Commands\RenderTilesetCmd.cs" />
+    <Compile Include="Commands\SerializeTilesetIndexedCmd.cs" />
+    <Compile Include="Commands\SerializeTilemapCmd.cs" />
     <Compile Include="NumberParser.cs" />
+    <Compile Include="Tile.cs" />
+    <Compile Include="TileEntry.cs" />
     <Compile Include="Tilemap.cs" />
+    <Compile Include="Tileset.cs" />
+    <Compile Include="TileCutter.cs" />
     <Compile Include="Workbench.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
