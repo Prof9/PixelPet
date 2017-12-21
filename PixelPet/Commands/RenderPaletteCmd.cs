@@ -8,10 +8,17 @@ using System.Text;
 namespace PixelPet.Commands {
 	internal class RenderPaletteCmd : CliCommand {
 		public RenderPaletteCmd()
-			: base("Render-Palette") { }
+			: base("Render-Palette", new Parameter[] {
+				new Parameter("max", "m", false, new ParameterValue("count", "0")),
+			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
+			int maxCount = FindNamedParameter("--max").Values[0].ToInt32();
+
 			int count = workbench.Palette.Count;
+			if (count > maxCount) {
+				count = maxCount;
+			}
 			if (count < 1) {
 				cli.Log("No palette to render...");
 			}

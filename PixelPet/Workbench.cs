@@ -15,11 +15,15 @@ namespace PixelPet {
 		public Bitmap Bitmap { get; private set; }
 		public Graphics Graphics { get; private set; }
 		public MemoryStream Stream { get; private set; }
+		public Tileset Tileset { get; set; }
+		public Tilemap Tilemap { get; set; }
 
 		public Workbench() {
 			this.Palette = new List<Color>();
 			ClearBitmap(8, 8);
 			this.Stream = new MemoryStream();
+			this.Tileset = new Tileset(8, 8);
+			this.Tilemap = new Tilemap();
 		}
 
 		public void ClearBitmap(int width, int height) {
