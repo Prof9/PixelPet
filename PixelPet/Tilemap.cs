@@ -23,7 +23,8 @@ namespace PixelPet {
 		/// </summary>
 		/// <param name="bmp">The bitmap.</param>
 		/// <param name="tileset">The tileset.</param>
-		public Tilemap(Bitmap bmp, Tileset tileset)
+		/// <param name="reduce">If true, reduces the tilemap; otherwise, does not reduce.</param>
+		public Tilemap(Bitmap bmp, Tileset tileset, bool reduce)
 			: this() {
 			if (bmp == null)
 				throw new ArgumentNullException(nameof(bmp));
@@ -32,13 +33,26 @@ namespace PixelPet {
 
 			TileCutter cutter = new TileCutter(tileset.TileWidth, tileset.TileWidth);
 			foreach (Tile tile in cutter.CutTiles(bmp)) {
-				TileEntry entry = tileset.FindOrAddTile(tile);
+				TileEntry entry;
+				if (reduce) {
+					entry = tileset.FindOrAddTile(tile);
+				} else {
+					entry = tileset.AddTile(tile);
+				}
 				this.TileEntries.Add(entry);
 			}
 		}
 
-		public Tilemap(Bitmap bmp, Tileset tileset, IList<Color> palettes, int palSize)
-			: this(bmp, tileset) {
+		/// <summary>
+		/// Creates a new tilemap from the specified bitmap and tileset and indexes it with the specified palettes.
+		/// </summary>
+		/// <param name="bmp">The bitmap to use.</param>
+		/// <param name="tileset">The tileset to use.</param>
+		/// <param name="palettes">The palettes to use.</param>
+		/// <param name="palSize">The size of each individual palette.</param>
+		/// <param name="reduce">If true, reduces the tilemap; otherwise, does not reduce.</param>
+		public Tilemap(Bitmap bmp, Tileset tileset, IList<Color> palettes, int palSize, bool reduce)
+			: this(bmp, tileset, reduce) {
 			if (palettes == null)
 				throw new ArgumentNullException(nameof(palettes));
 			if (palSize < 1)
