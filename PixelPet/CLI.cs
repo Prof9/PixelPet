@@ -17,7 +17,10 @@ namespace PixelPet {
 			new RenderPaletteCmd(),
 			new RenderTilesetCmd(),
 			new AdjustDepthCmd(),
+			new PadPaletteCmd(),
+			new PadTilesetCmd(),
 			new GenerateTilemapCmd(),
+			new SerializePaletteCmd(),
 			new SerializeTilesetIndexed(),
 			new SerializeTilemapCmd(),
 		};

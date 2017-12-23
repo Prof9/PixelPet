@@ -17,10 +17,11 @@ namespace PixelPet {
 				}
 			}
 		}
-		private Dictionary<int, List<TilesetEntry>> TileDictionary { get; }
+		private Dictionary<int, List<TileEntry>> TileDictionary { get; }
 
 		public int TileWidth { get; private set; }
 		public int TileHeight { get; private set; }
+		public int TileCount => this._Tiles.Count;
 
 		/// <summary>
 		/// Creates a new tileset with the specified tile width and height.
@@ -37,7 +38,7 @@ namespace PixelPet {
 			this.TileHeight = tileHeight;
 
 			this._Tiles = new List<Tile>();
-			this.TileDictionary = new Dictionary<int, List<TilesetEntry>>();
+			this.TileDictionary = new Dictionary<int, List<TileEntry>>();
 		}
 
 		/// <summary>
@@ -57,34 +58,55 @@ namespace PixelPet {
 		/// </summary>
 		/// <param name="tile">The tile to find or add.</param>
 		/// <returns>The found or created tile entry for the tile.</returns>
-		public TilesetEntry FindOrAddTile(Tile tile) {
+		public TileEntry FindOrAddTile(Tile tile) {
 			if (tile == null)
 				throw new ArgumentNullException(nameof(tile));
 
 			// Check if tile already in dictionary.
-			TilesetEntry? entry = this.FindTile(tile);
+			TileEntry? entry = this.FindTile(tile);
 			if (entry != null) {
-				return (TilesetEntry)entry;
+				return (TileEntry)entry;
 			}
 
 			// Add tile to the tileset.
-			int tileNum = this._Tiles.Count;
+			return this.AddTile(tile);
+		}
+		/// <summary>
+		/// Adds the specified tile to the tileset, even if an equivalent tile is already in the tileset.
+		/// </summary>
+		/// <param name="tile">The tile to add.</param>
+		/// <returns>The created tile entry for the tile.</returns>
+		public TileEntry AddTile(Tile tile) {
+			int tileNum = this.TileCount;
+
 			this._Tiles.Add(tile);
 
-			entry = this.AddTile(tile, tileNum, false, false);
-			this.AddTile(tile, tileNum, true, false);
-			this.AddTile(tile, tileNum, false, true);
-			this.AddTile(tile, tileNum, true, true);
-			return (TilesetEntry)entry;
+			TileEntry entry = this.AddTileEntry(tile, tileNum, false, false);
+			this.AddTileEntry(tile, tileNum, true, false);
+			this.AddTileEntry(tile, tileNum, false, true);
+			this.AddTileEntry(tile, tileNum, true, true);
+
+			return entry;
 		}
-		private TilesetEntry AddTile(Tile tile, int tileNum, bool hflip, bool vflip) {
+		private TileEntry AddTileEntry(Tile tile, int tileNum, bool hflip, bool vflip) {
 			int hash = tile.GetHashCode(hflip, vflip);
 			if (!this.TileDictionary.ContainsKey(hash)) {
-				this.TileDictionary[hash] = new List<TilesetEntry>();
+				this.TileDictionary[hash] = new List<TileEntry>();
 			}
-			TilesetEntry entry = new TilesetEntry(tileNum, hflip, vflip);
+			TileEntry entry = new TileEntry(tileNum, hflip, vflip);
 			this.TileDictionary[hash].Add(entry);
 			return entry;
+		}
+		/// <summary>
+		/// Gets the tile with the specified tile number.
+		/// </summary>
+		/// <param name="tileNum">The tile number.</param>
+		/// <returns>The tile.</returns>
+		public Tile GetTile(int tileNum) {
+			if (tileNum < 0 || tileNum >= this._Tiles.Count)
+				throw new ArgumentOutOfRangeException(nameof(tileNum));
+
+			return this._Tiles[tileNum];
 		}
 
 		/// <summary>
@@ -149,10 +171,10 @@ namespace PixelPet {
 		/// </summary>
 		/// <param name="tile">The tile.</param>
 		/// <returns>The found tile entry, or null if no suitable tile entry was found.</returns>
-		private TilesetEntry? FindTile(Tile tile) {
+		private TileEntry? FindTile(Tile tile) {
 			int hash = tile.GetHashCode();
 			if (this.TileDictionary.ContainsKey(hash)) {
-				foreach (TilesetEntry candidate in this.TileDictionary[hash]) {
+				foreach (TileEntry candidate in this.TileDictionary[hash]) {
 					Tile candidateTile = this._Tiles[candidate.TileNumber];
 					if (tile.Equals(candidateTile, candidate.HFlip, candidate.VFlip)) {
 						return candidate;

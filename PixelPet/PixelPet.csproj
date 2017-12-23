@@ -50,8 +50,11 @@
     <Compile Include="Commands\ExtractPaletteCmd.cs" />
     <Compile Include="Commands\GenerateTilemapCmd.cs" />
     <Compile Include="Commands\ImportBitmapCmd.cs" />
+    <Compile Include="Commands\PadPaletteCmd.cs" />
+    <Compile Include="Commands\PadTilesetCmd.cs" />
     <Compile Include="Commands\RenderPaletteCmd.cs" />
     <Compile Include="Commands\RenderTilesetCmd.cs" />
+    <Compile Include="Commands\SerializePaletteCmd.cs" />
     <Compile Include="Commands\SerializeTilesetIndexedCmd.cs" />
     <Compile Include="Commands\SerializeTilemapCmd.cs" />
     <Compile Include="NumberParser.cs" />
