@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
@@ -11,6 +13,7 @@ namespace PixelPet {
 		}
 
 		private int[] BitmapBuffer { get; }
+		private short[] IndexBuffer { get; set; }
 		/// <summary>
 		/// Gets the width of the tile in pixels.
 		/// </summary>
@@ -27,6 +30,19 @@ namespace PixelPet {
 				return this.Width * this.Height;
 			}
 		}
+
+		/// <summary>
+		/// Gets the palette for this tile, if it has been indexed.
+		/// </summary>
+		public IEnumerable<Color> Palette { get; private set; }
+		/// <summary>
+		/// Gets a boolean that indicated whether this tile has been indexed.
+		/// </summary>
+		public bool IsIndexed { get; private set; }
+		/// <summary>
+		/// Gets a boolean that indicates whether this tile is known to be an empty tile.
+		/// </summary>
+		public bool IsEmptyTile { get; private set; }
 
 		/// <summary>
 		/// Gets the previously computed hash codes.
@@ -173,6 +189,130 @@ namespace PixelPet {
 				}
 				y += yStep;
 			}
+		}
+		/// <summary>
+		/// Enumerates the palette indices for the unflipped tile, if it has been indexed.
+		/// </summary>
+		/// <returns>The enumerated tile.</returns>
+		public IEnumerable<int> EnumerateTileIndexed() {
+			foreach (int idx in this.IndexBuffer) {
+				if (!this.IsIndexed) {
+					throw new InvalidOperationException("The tile is not indexed.");
+				}
+
+				yield return idx;
+			}
+		}
+
+		/// <summary>
+		/// Indexes this tile with the given palette.
+		/// </summary>
+		/// <param name="palette">The palette to use.</param>
+		/// <param name="palStart">The offset in the palette at which to start checking.</param>
+		/// <param name="palSize">The number of colors from the start of the palette to check.</param>
+		/// <returns>true if the palette was successfully indexed; otherwise, falce.</returns>
+		public bool IndexTile(IList<Color> palette, int palStart, int palSize) {
+			short[] indexBuffer = new short[this.PixelCount];
+
+			bool nonzero = false;
+
+			for (int i = 0; i < this.PixelCount; i++) {
+				// Try to match this pixel to the palette.
+				int argb = this.BitmapBuffer[i];
+				int idx = Tile.FindPaletteIndex(argb, palette, palStart, palSize);
+
+				if (idx < 0) {
+					// Tile does not match this palette.
+					return false;
+				}
+
+				if (idx != 0) {
+					nonzero = true;
+				}
+
+				indexBuffer[i] = (short)idx;
+			}
+
+			this.Palette = palette.Skip(palStart).Take(palSize);
+			this.IndexBuffer = indexBuffer;
+			this.IsIndexed = true;
+			this.IsEmptyTile = !nonzero;
+			return true;
+		}
+		/// <summary>
+		/// Indexes this tile with its own palette.
+		/// </summary>
+		public void IndexTile() {
+			IList<Color> palette = this.MakePalette();
+			this.IndexTile(palette, 0, palette.Count);
+		}
+		/// <summary>
+		/// Indexes this tile with any of the given palettes.
+		/// </summary>
+		/// <param name="palettes">The palettes to use.</param>
+		/// <param name="palSize">The number of colors per palette.</param>
+		/// <param name="palInitial">The index of the preferred palette, which will be matched first.</param>
+		/// <returns>The index of the first matched palette, or -1 if the tile could not be indexed with any palette.</returns>
+		public int IndexTileAny(IList<Color> palettes, int palSize, int palInitial) {
+			int palCount = (palettes.Count + palSize - 1) / palSize;
+
+			for (int i = 0; i < palCount; i++) {
+				int curPal = (palInitial + i) % palCount;
+
+				// Try to index this tile with the palette.
+				if (this.IndexTile(palettes, curPal * palSize, palSize)) {
+					if (this.IsEmptyTile) {
+						return 0;
+					} else {
+						return i;
+					}
+				}
+			}
+
+			return -1;
+		}
+		/// <summary>
+		/// Checks if this tile matches the specified palette.
+		/// </summary>
+		/// <param name="palette">The palette to match.</param>
+		/// <param name="palStart">The offset in the palette at which to start checking.</param>
+		/// <param name="palSize">The number of colors from the start of the palette to check.</param>
+		/// <returns>true if this tile matches the palette; otherwise, false.</returns>
+		public bool MatchesPalette(IList<Color> palette, int palStart, int palSize) {
+			// Check if all own colors are present in the specified palette.
+			return !this.MakePalette().Except(palette.Skip(palStart).Take(palSize)).Any();
+		}
+		/// <summary>
+		/// Generates a palette for this tile containing all its unique colors.
+		/// </summary>
+		/// <returns>The generated palette.</returns>
+		protected IList<Color> MakePalette() {
+			return this.BitmapBuffer.Distinct().Select(argb => Color.FromArgb(argb)).ToList();
+		}
+		/// <summary>
+		/// Finds the palette index for the specified color, using the specified palette.
+		/// </summary>
+		/// <param name="argb">The color to find.</param>
+		/// <param name="palette">The palette to use.</param>
+		/// <param name="palStart">The offset in the palette at which to start checking.</param>
+		/// <param name="palSize">The number of colors from the start of the palette to check.</param>
+		/// <returns>The pixel's palette index, or -1 if the color is not in the palette.</returns>
+		protected static int FindPaletteIndex(int argb, IList<Color> palette, int palStart, int palSize) {
+			// Set to totally transparent color, if it exists.
+			int a = argb >> 24;
+			if (a == 0) {
+				return 0;
+			}
+
+			// Find matching color.
+			for (int i = 0; i < palSize && (palStart + i) < palette.Count; i++) {
+				if (palette[palStart + i].ToArgb() == argb) {
+					return i;
+				}
+			}
+
+			// No matching color found.
+			return -1;
 		}
 
 		public override bool Equals(object obj) {

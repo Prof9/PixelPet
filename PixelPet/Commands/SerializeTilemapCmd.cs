@@ -17,9 +17,11 @@ namespace PixelPet.Commands {
 			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
 			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
 
+			cli.Log("Serializing tilemap...");
+
 			workbench.Stream.SetLength(0);
 
-			foreach (TilesetEntry entry in workbench.Tilemap.TileEntries) {
+			foreach (TileEntry entry in workbench.Tilemap.TileEntries) {
 				int scrn = 0;
 				if (firstTile >= 0 && entry.TileNumber == 0) {
 					scrn = firstTile;
@@ -27,7 +29,7 @@ namespace PixelPet.Commands {
 					scrn |= (entry.TileNumber + baseTile) & 0x3FF;
 					scrn |= entry.HFlip ? 1 << 10 : 0;
 					scrn |= entry.VFlip ? 1 << 11 : 0;
-					scrn |= palette << 12;
+					scrn |= (palette + entry.PaletteNumber) << 12;
 				}
 
 				workbench.Stream.WriteByte((byte)(scrn >> 0));
