@@ -45,6 +45,7 @@
     <Compile Include="Cli.cs" />
     <Compile Include="CliCommand.cs" />
     <Compile Include="Commands\AdjustDepthCmd.cs" />
+    <Compile Include="Commands\ClearTilesetCmd.cs" />
     <Compile Include="Commands\ExportBytesCmd.cs" />
     <Compile Include="Commands\ExportBitmapCmd.cs" />
     <Compile Include="Commands\ExtractPaletteCmd.cs" />
