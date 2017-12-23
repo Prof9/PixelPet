@@ -13,6 +13,7 @@ namespace PixelPet {
 			new ImportBitmapCmd(),
 			new ExportBitmapCmd(),
 			new ExportBytesCmd(),
+			new ClearTilesetCmd(),
 			new ExtractPaletteCmd(),
 			new RenderPaletteCmd(),
 			new RenderTilesetCmd(),
