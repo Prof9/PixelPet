@@ -21,6 +21,7 @@ namespace PixelPet {
 			new PadPaletteCmd(),
 			new PadTilesetCmd(),
 			new GenerateTilemapCmd(),
+			new DeserializePaletteCmd(),
 			new SerializePaletteCmd(),
 			new SerializeTilesetIndexed(),
 			new SerializeTilemapCmd(),
