@@ -10,7 +10,7 @@ namespace PixelPet.Commands {
 	internal class ExtractPaletteCmd : CliCommand {
 		public ExtractPaletteCmd() 
 			: base("Extract-Palette", new Parameter[] {
-				new Parameter("palette-size", "p", false, new ParameterValue("count", "16")),
+				new Parameter("palette-size", "ps", false, new ParameterValue("count", "16")),
 			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
