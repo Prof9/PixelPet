@@ -10,7 +10,10 @@ using System.Text;
 namespace PixelPet.Commands {
 	internal class SerializeTilesetIndexed : CliCommand {
 		public SerializeTilesetIndexed()
-			: base("Serialize-Tileset-Indexed") { }
+			: base("Serialize-Tileset-Indexed", new Parameter[] {
+				new Parameter("palette-size",   "ps",  false, new ParameterValue("count", "16")),
+				new Parameter("bits-per-pixel", "bpp", false, new ParameterValue("count", "4")),
+			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
 			cli.Log("Serializing tileset...");
@@ -19,8 +22,8 @@ namespace PixelPet.Commands {
 				cli.Log("WARNING: No palette loaded.");
 			}
 
-			int palSize = 16;
-			int bpp = 4;        // bits per pixel
+			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
+			int bpp     = FindNamedParameter("--bits-per-pixel").Values[0].ToInt32();
 
 			int ppb = 8 / bpp;  // pixels per byte
 			int pi = 0;         // pixel index in current byte
