@@ -18,6 +18,7 @@ namespace PixelPet {
 			new ExtractPaletteCmd(),
 			new RenderPaletteCmd(),
 			new RenderTilesetCmd(),
+			new RenderTilemapCmd(),
 			new AdjustDepthCmd(),
 			new PadPaletteCmd(),
 			new PadTilesetCmd(),
