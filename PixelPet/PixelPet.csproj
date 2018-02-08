@@ -58,6 +58,7 @@
     <Compile Include="Commands\PadPaletteCmd.cs" />
     <Compile Include="Commands\PadTilesetCmd.cs" />
     <Compile Include="Commands\RenderPaletteCmd.cs" />
+    <Compile Include="Commands\RenderTilemapCmd.cs" />
     <Compile Include="Commands\RenderTilesetCmd.cs" />
     <Compile Include="Commands\SerializePaletteCmd.cs" />
     <Compile Include="Commands\SerializeTilesetIndexedCmd.cs" />

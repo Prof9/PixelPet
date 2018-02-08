@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace PixelPet {
@@ -91,6 +93,70 @@ namespace PixelPet {
 				matchedPalettes[entry.TileNumber] = curPal;
 				lastPal = curPal;
 				this.TileEntries[i] = entry;
+			}
+		}
+
+		/// <summary>
+		/// Converts this tilemap to a bitmap using the specified tileset.
+		/// </summary>
+		/// <param name="tileset">The tileset to use.</param>
+		/// <param name="width">The width of the tilemap in number of tiles.</param>
+		/// <param name="height">The height of the tilemap in number of tiles.</param>
+		/// <returns>The created bitmap.</returns>
+		public Bitmap ToBitmap(Tileset tileset, int width, int height) {
+			if (tileset == null)
+				throw new ArgumentNullException(nameof(tileset));
+			if (width < 0)
+				throw new ArgumentOutOfRangeException(nameof(width));
+			if (height < 0)
+				throw new ArgumentOutOfRangeException(nameof(height));
+
+			Bitmap result = null;
+			Bitmap bmp = null;
+			try {
+				bmp = new Bitmap(tileset.TileWidth * width, tileset.TileHeight * height, PixelFormat.Format32bppArgb);
+				BitmapData bmpData = bmp.LockBits(
+					new Rectangle(0, 0, bmp.Width, bmp.Height),
+					ImageLockMode.WriteOnly,
+					PixelFormat.Format32bppArgb
+				);
+				int[] buffer = new int[(bmpData.Stride * bmp.Height) / 4];
+
+				// Draw all the tile entries in the tilemap.
+				for (int t = 0; t < this.TileEntries.Count; t++) {
+					TileEntry te = this.TileEntries[t];
+					int ti = t % width;
+					int tj = t / width;
+
+					// Stop if height exceeded.
+					if (tj >= height) {
+						break;
+					}
+
+					// Draw the tile for this tile entry.
+					Tile tile = tileset.GetTile(te.TileNumber);
+					int pi = 0;
+					foreach (int p in tile.EnumerateTile(te.HFlip, te.VFlip)) {
+						int px = pi % tileset.TileWidth + ti * tileset.TileWidth;
+						int py = pi / tileset.TileWidth + tj * tileset.TileHeight;
+						int ptr = (py * bmpData.Stride + px * 4) / 4;
+
+						buffer[ptr] = p;
+						pi++;
+					}
+				}
+
+				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
+				bmp.UnlockBits(bmpData);
+
+				// Finished bitmap without errors, finish up to prevent disposing.
+				result = bmp;
+				bmp = null;
+				return result;
+			} finally {
+				if (bmp != null) {
+					bmp.Dispose();
+				}
 			}
 		}
 	}
