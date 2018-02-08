@@ -17,7 +17,7 @@ namespace PixelPet.Commands {
 			int bpe = 2;		// bytes per tile entry
 
 			byte[] buffer = new byte[bpe];
-			while (workbench.Stream.Read(buffer, 0, 2) != bpe) {
+			while (workbench.Stream.Read(buffer, 0, 2) == bpe) {
 				int scrn = buffer[0] | (buffer[1] << 8);
 
 				TileEntry te = new TileEntry() {
