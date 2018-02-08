@@ -9,14 +9,14 @@ namespace PixelPet.Commands {
 	internal class RenderPaletteCmd : CliCommand {
 		public RenderPaletteCmd()
 			: base("Render-Palette", new Parameter[] {
-				new Parameter("max", "m", false, new ParameterValue("count", "0")),
+				new Parameter("max", "m", false, new ParameterValue("count", "-1")),
 			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
 			int maxCount = FindNamedParameter("--max").Values[0].ToInt32();
 
 			int count = workbench.Palette.Count;
-			if (count > maxCount) {
+			if (maxCount >= 0 && count > maxCount) {
 				count = maxCount;
 			}
 			if (count < 1) {
