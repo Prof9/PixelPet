@@ -7,14 +7,14 @@ namespace PixelPet.Commands {
 	internal class SerializeTilemapCmd : CliCommand {
 		public SerializeTilemapCmd()
 			: base("Serialize-Tilemap", new Parameter[] {
-				new Parameter("palette",    "p", false, new ParameterValue("index",          "0")),
-				new Parameter("base-tile",  "b", false, new ParameterValue("index",          "0")),
-				new Parameter("first-tile", "f", false, new ParameterValue("tilemap-entry", "-1")),
+				new Parameter("palette",    "p",  false, new ParameterValue("index",          "0")),
+				new Parameter("base-tile",  "bt", false, new ParameterValue("index",          "0")),
+				new Parameter("first-tile", "ft", false, new ParameterValue("tilemap-entry", "-1")),
 			}) { }
 
 		public override void Run(Workbench workbench, Cli cli) {
-			int palette = FindNamedParameter("--palette").Values[0].ToInt32();
-			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
+			int palette   = FindNamedParameter("--palette").Values[0].ToInt32();
+			int baseTile  = FindNamedParameter("--base-tile").Values[0].ToInt32();
 			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
 
 			cli.Log("Serializing tilemap...");
