@@ -12,6 +12,7 @@ namespace PixelPet {
 		private static readonly IEnumerable<CliCommand> Commands = new CliCommand[] {
 			new ImportBitmapCmd(),
 			new ExportBitmapCmd(),
+			new ImportBytesCmd(),
 			new ExportBytesCmd(),
 			new ClearTilesetCmd(),
 			new ExtractPaletteCmd(),

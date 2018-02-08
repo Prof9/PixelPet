@@ -52,6 +52,7 @@
     <Compile Include="Commands\ExtractPaletteCmd.cs" />
     <Compile Include="Commands\GenerateTilemapCmd.cs" />
     <Compile Include="Commands\ImportBitmapCmd.cs" />
+    <Compile Include="Commands\ImportBytesCmd.cs" />
     <Compile Include="Commands\PadPaletteCmd.cs" />
     <Compile Include="Commands\PadTilesetCmd.cs" />
     <Compile Include="Commands\RenderPaletteCmd.cs" />
