@@ -26,6 +26,7 @@ namespace PixelPet {
 			new SerializePaletteCmd(),
 			new DeserializeTilesetIndexedCmd(),
 			new SerializeTilesetIndexed(),
+			new DeserializeTilemapCmd(),
 			new SerializeTilemapCmd(),
 		};
 
