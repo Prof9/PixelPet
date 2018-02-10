@@ -44,5 +44,50 @@ namespace PixelPet {
 			this.Bitmap = bmp;
 			this.Graphics = Graphics.FromImage(this.Bitmap);
 		}
+
+		public Bitmap GetCroppedBitmap(int x, int y, int width, int height, Cli cli) {
+			// Range checks to make sure at least a 1x1 bitmap is cropped.
+			if (x < 0) {
+				x = 0;
+				cli?.Log("WARNING: x-position outside of range; set to 0.");
+			} else if (x >= this.Bitmap.Width) {
+				x = this.Bitmap.Width - 1;
+				cli?.Log("WARNING: x-position outside of range; set to bitmap width - 1 (= " + x + ").");
+			}
+			if (y < 0) {
+				y = 0;
+				cli?.Log("WARNING: y-position outside of range; set to 0.");
+			} else if (y >= this.Bitmap.Height) {
+				y = this.Bitmap.Height - 1;
+				cli?.Log("WARNING: y-position outside of range; set to bitmap height - 1 (= " + y + ").");
+			}
+			if (width < 0) {
+				width = this.Bitmap.Width - x;
+			}
+			if (height < 0) {
+				height = this.Bitmap.Height - y;
+			}
+			if (width < 1) {
+				width = 1;
+				cli?.Log("WARNING: width outside of range; set to 1.");
+			} else if (x + width > this.Bitmap.Width) {
+				width = this.Bitmap.Width - x;
+				cli?.Log("WARNING: width outside of range; set to bitmap width - x (= " + width + ").");
+			}
+			if (height < 1) {
+				height = 1;
+				cli?.Log("WARNING: height outside of range; set to 1.");
+			} else if (y + height > this.Bitmap.Height) {
+				height = this.Bitmap.Height - y;
+				cli?.Log("WARNING: height outside of range; set to bitmap height - y (= " + height + ").");
+			}
+
+			Bitmap bmp = new Bitmap(width, height);
+			using (Graphics g = Graphics.FromImage(bmp)) {
+				g.DrawImage(this.Bitmap, 0, 0, new Rectangle(x, y, width, height), GraphicsUnit.Pixel);
+				g.Flush();
+			}
+			return bmp;
+		}
 	}
 }

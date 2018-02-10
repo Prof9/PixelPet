@@ -46,6 +46,7 @@
     <Compile Include="CliCommand.cs" />
     <Compile Include="Commands\AdjustDepthCmd.cs" />
     <Compile Include="Commands\ClearTilesetCmd.cs" />
+    <Compile Include="Commands\CropBitmapCmd.cs" />
     <Compile Include="Commands\DeduplicatePaletteCmd.cs" />
     <Compile Include="Commands\DeserializePaletteCmd.cs" />
     <Compile Include="Commands\DeserializeTilemapCmd.cs" />
