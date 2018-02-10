@@ -17,7 +17,7 @@ namespace PixelPet.Commands {
 		public override void Run(Workbench workbench, Cli cli) {
 			cli.Log("Generating tilemap...");
 
-			int palSize   = FindNamedParameter("--palette-size").Values[0].ToInt32();
+			int  palSize  = FindNamedParameter("--palette-size").Values[0].ToInt32();
 			bool noReduce = FindNamedParameter("--no-reduce").IsPresent;
 
 			workbench.Tilemap = new Tilemap(workbench.Bitmap, workbench.Tileset, workbench.Palette, palSize, !noReduce);

@@ -52,6 +52,7 @@ namespace PixelPet.Commands {
 					// Extract colors from byte.
 					for (pi = 0; pi < ppb; pi++) {
 						c = (b & pmask) + palStart;
+						b >>= bpp;
 
 						// Check if color in palette.
 						if (c < workbench.Palette.Count) {
