@@ -52,6 +52,15 @@ namespace PixelPet {
 					return 0;
 				}
 			}
+			public long ToInt64() {
+				if (NumberParser.TryParseInt64(this.GetValue(), out long r)) {
+					return r;
+				} else if (this.HasDefaultValue && NumberParser.TryParseInt64(this.DefaultValue, out r)) {
+					return r;
+				} else {
+					return 0;
+				}
+			}
 		}
 
 		protected class Parameter {
