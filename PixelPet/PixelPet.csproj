@@ -59,6 +59,7 @@
     <Compile Include="Commands\ImportBytesCmd.cs" />
     <Compile Include="Commands\PadPaletteCmd.cs" />
     <Compile Include="Commands\PadTilesetCmd.cs" />
+    <Compile Include="Commands\PleaseCmd.cs" />
     <Compile Include="Commands\RenderPaletteCmd.cs" />
     <Compile Include="Commands\RenderTilemapCmd.cs" />
     <Compile Include="Commands\RenderTilesetCmd.cs" />
