@@ -31,6 +31,7 @@ namespace PixelPet {
 			new SerializeTilesetIndexed(),
 			new DeserializeTilemapCmd(),
 			new SerializeTilemapCmd(),
+			new PleaseCmd(),
 		};
 
 		public Workbench Workbench { get; }
