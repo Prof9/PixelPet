@@ -66,7 +66,7 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="color">The color value to add.</param>
 		public void Add(int color) {
-			if (this.Colors.Count >= this.MaximumSize)
+			if (this.MaximumSize >= 0 && this.Colors.Count >= this.MaximumSize)
 				throw new InvalidOperationException("The maximum palette size has been reached.");
 
 			this.Colors.Add(color);
