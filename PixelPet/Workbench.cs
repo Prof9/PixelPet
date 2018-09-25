@@ -104,17 +104,13 @@ namespace PixelPet {
 					ImageLockMode.ReadOnly,
 					this.Bitmap.PixelFormat
 				);
-				int[] dstBuffer = new int[(dstData.Stride * height) / 4];
-				int[] srcBuffer = new int[(srcData.Stride * this.Bitmap.Height) / 4];
-				Marshal.Copy(srcData.Scan0, srcBuffer, 0, srcBuffer.Length);
+				int[] buffer = new int[width];
 
 				for (int j = 0; j < height; j++) {
-					for (int i = 0; i < width; i++) {
-						dstBuffer[(j * dstData.Stride + i * 4) / 4] = srcBuffer[((y + j) * srcData.Stride + (x + i) * 4) / 4];
-					}
+					Marshal.Copy(srcData.Scan0 + (y + j) * srcData.Stride, buffer, 0, width);
+					Marshal.Copy(buffer, 0, dstData.Scan0 + j * dstData.Stride, width);
 				}
 
-				Marshal.Copy(dstBuffer, 0, dstData.Scan0, dstBuffer.Length);
 				bmp.UnlockBits(dstData);
 				this.Bitmap.UnlockBits(srcData);
 
