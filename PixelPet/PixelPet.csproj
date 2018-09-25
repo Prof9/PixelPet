@@ -60,6 +60,7 @@
     <Compile Include="CLI\Commands\DeserializeTilemapCmd.cs" />
     <Compile Include="CLI\Commands\DeserializeTilesetCmd.cs" />
     <Compile Include="CLI\Commands\ExportBitmapCmd.cs" />
+    <Compile Include="CLI\Commands\ExtractPalettesCmd.cs" />
     <Compile Include="CLI\Commands\GenerateTilemapCmd.cs" />
     <Compile Include="CLI\Commands\ReadPalettesCmd.cs" />
     <Compile Include="CLI\Commands\ImportBitmapCmd.cs" />
