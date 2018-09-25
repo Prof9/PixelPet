@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace LibPixelPet {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	public class Tilemap : IEnumerable<TileEntry> {
+	public class Tilemap : IEnumerable<TileEntry>, ICloneable {
 		private List<TileEntry> TileEntries { get; }
 
 		/// <summary>
@@ -232,5 +232,12 @@ namespace LibPixelPet {
 				throw;
 			}
 		}
+
+		public Tilemap Clone() {
+			Tilemap clone = new Tilemap();
+			clone.TileEntries.AddRange(this.TileEntries);
+			return clone;
+		}
+		object ICloneable.Clone() => this.Clone();
 	}
 }

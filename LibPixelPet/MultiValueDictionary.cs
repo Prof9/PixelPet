@@ -46,13 +46,13 @@ namespace LibPixelPet {
 
 		private static ReadOnlyEmptyList EmptySet = new ReadOnlyEmptyList();
 
-		private Dictionary<TKey, List<TValue>> BaseDictionary { get; }
+		private Dictionary<TKey, IList<TValue>> BaseDictionary { get; }
 
 		/// <summary>
 		/// Creates a new empty multi-valued dictionary.
 		/// </summary>
 		public MultiValueDictionary() {
-			this.BaseDictionary = new Dictionary<TKey, List<TValue>>();
+			this.BaseDictionary = new Dictionary<TKey, IList<TValue>>();
 		}
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace LibPixelPet {
 		/// <returns>The values associated with the key, or an empty set if no values were found.</returns>
 		public IList<TValue> this[TKey key] {
 			get {
-				if (this.BaseDictionary.TryGetValue(key, out List<TValue> list)) {
+				if (this.BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
 					return list;
 				} else {
 					return MultiValueDictionary<TKey, TValue>.EmptySet;
@@ -78,7 +78,7 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="key">The key to add a value for.</param>
 		public void Add(in TKey key, in TValue value) {
-			if (this.BaseDictionary.TryGetValue(key, out List<TValue> list)) {
+			if (this.BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
 				list.Add(value);
 			} else {
 				this.BaseDictionary[key] = new List<TValue>() { value };
