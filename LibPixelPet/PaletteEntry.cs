@@ -26,7 +26,8 @@ namespace LibPixelPet {
 			&& this.Palette != null;
 
 		public override bool Equals(object obj)
-			=> obj is PaletteEntry pe && this.Equals(pe);
+			=> obj is PaletteEntry pe
+			&& this.Equals(pe);
 		public bool Equals(PaletteEntry other)
 			=> this.Number == other.Number
 			&& this.Palette == other.Palette;

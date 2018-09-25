@@ -8,6 +8,9 @@ namespace LibPixelPet {
 	public class PaletteSet : IEnumerable<PaletteEntry> {
 		private List<PaletteEntry> PaletteEntries { get; }
 
+		/// <summary>
+		/// Gets the amount of palettes in this palette set.
+		/// </summary>
 		public int Count => this.PaletteEntries.Count;
 
 		public PaletteSet() {

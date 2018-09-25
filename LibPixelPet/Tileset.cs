@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace LibPixelPet {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	public class Tileset : IEnumerable<Tile> {
+	public class Tileset : IEnumerable<Tile>, ICloneable {
 		private List<Tile> Tiles { get; }
 		private MultiValueDictionary<int, TileEntry> TileDictionary { get; }
 
@@ -238,5 +238,21 @@ namespace LibPixelPet {
 				throw;
 			}
 		}
+
+		public Tileset Clone() {
+			Tileset clone = new Tileset(this.TileWidth, this.TileHeight);
+			foreach (Tile tile in this.Tiles) {
+				clone.Tiles.Add(tile.Clone());
+			}
+			foreach (KeyValuePair<int, IList<TileEntry>> kvp in this.TileDictionary) {
+				foreach (TileEntry te in kvp.Value) {
+					clone.TileDictionary.Add(kvp.Key, te);
+				}
+			}
+			clone.ColorFormat = this.ColorFormat;
+			clone.IsIndexed = this.IsIndexed;
+			return clone;
+		}
+		object ICloneable.Clone() => this.Clone();
 	}
 }

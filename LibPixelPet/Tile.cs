@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace LibPixelPet {
-	public struct Tile {
+	public struct Tile : ICloneable {
 		private struct HashCodeTuple {
 			public bool IsSet { get; set; }
 			public int Value { get; set; }
@@ -215,6 +215,14 @@ namespace LibPixelPet {
 				this.GetHashCode(hFlip, vFlip) == other.GetHashCode() &&
 				this.EnumerateTile(hFlip, vFlip).SequenceEqual(other.EnumerateTile())
 			);
+
+		public Tile Clone() {
+			Tile clone = new Tile(this.Width, this.Height);
+			clone.SetAllPixels(this.Pixels);
+			clone.PaletteNumber = this.PaletteNumber;
+			return clone;
+		}
+		object ICloneable.Clone() => this.Clone();
 
 		public static bool operator ==(Tile tile1, Tile tile2)
 			=> tile1.Equals(tile2);

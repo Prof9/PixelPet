@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace LibPixelPet {
-	public struct TileEntry {
+	public struct TileEntry : IEquatable<TileEntry> {
 		/// <summary>
 		/// Gets or sets the number of the tile.
 		/// </summary>
@@ -45,7 +45,9 @@ namespace LibPixelPet {
 
 		public override bool Equals(object obj)
 			=> obj is TileEntry entry
-			&& this.TileNumber    == entry.TileNumber
+			&& this.Equals(entry);
+		public bool Equals(TileEntry entry)
+			=> this.TileNumber    == entry.TileNumber
 			&& this.HFlip         == entry.HFlip
 			&& this.VFlip         == entry.VFlip
 			&& this.PaletteNumber == entry.PaletteNumber;
