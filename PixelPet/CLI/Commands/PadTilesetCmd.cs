@@ -20,7 +20,7 @@ namespace PixelPet.CLI.Commands {
 			int th = workbench.Tileset.TileHeight;
 
 			int addedTiles = 0;
-			while (workbench.Tileset.Count % width != 0) {
+			while (workbench.Tileset.Count < width) {
 				workbench.Tileset.AddTile(new Tile(tw, th), false, false);
 				addedTiles++;
 			}
