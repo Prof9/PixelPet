@@ -6,14 +6,12 @@ namespace PixelPet.CLI.Commands {
 		public DeserializeTilesetCmd()
 			: base("Deserialize-Tileset",
 				new Parameter(true, new ParameterValue("tilemapFormat")),
-				new Parameter(true, new ParameterValue("colorFormat")),
 				new Parameter("tile-count", "tc", false, new ParameterValue("count", "" + int.MaxValue)),
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
 			) { }
 
 		public override void Run(Workbench workbench, ILogger logger) {
 			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
-			string colFmtName = FindUnnamedParameter(1).Values[0].ToString();
 			int tc = FindNamedParameter("--tile-count").Values[0].ToInt32();
 			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
 			
@@ -25,24 +23,20 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
 				return;
 			}
-			if (!(ColorFormat.GetFormat(colFmtName) is ColorFormat colFmt)) {
-				logger?.Log("Unknown color format \"" + colFmtName + "\".", LogLevel.Error);
-				return;
-			}
 
 			workbench.Stream.Position = Math.Min(offset, workbench.Stream.Length);
 
-			int bpp = colFmt.Bits;						// bits per pixel
+			int bpp = mapFmt.IndexFormat.Bits;		// bits per pixel
 			int tw = workbench.Tileset.TileWidth;	// tile width
 			int th = workbench.Tileset.TileHeight;	// tile height
 
 			int ppb = 8 / bpp;						// pixels per byte
-			int bpt = (tw * th) / ppb;              // bytes per tile
-			int pmask = colFmt.Mask;                   // mask per pixel
-			int b;                                  // current byte
+			int bpt = (tw * th) / ppb;				// bytes per tile
+			int pmask = mapFmt.IndexFormat.Mask;	// mask per pixel
+			int b;									// current byte
 			int bi;									// byte index in current tile
-			int pi;                                 // pixel index in current byte
-			int c;                                  // current pixel
+			int pi;									// pixel index in current byte
+			int c;									// current pixel
 
 			byte[] buffer = new byte[bpt];
 			int[] pixels = new int[tw * th];
