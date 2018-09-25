@@ -63,6 +63,8 @@ namespace PixelPet.CLI.Commands {
 					addedPalettes++;
 					pal = null;
 				}
+
+				ti++;
 			}
 			if (pal != null) {
 				if (palNum < 0) {
