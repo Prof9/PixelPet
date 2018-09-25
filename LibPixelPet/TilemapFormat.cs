@@ -2,8 +2,8 @@
 
 namespace LibPixelPet {
 	public struct TilemapFormat : IEquatable<TilemapFormat> {
-		public static readonly TilemapFormat GBA4BPP = new TilemapFormat(0, 10, 10, true, 11, true, 12, 4, true, ColorFormat.Grayscale4BPP);
-		public static readonly TilemapFormat GBA8BPP = new TilemapFormat(0, 10, 10, true, 11, true, 12, 4, true, ColorFormat.Grayscale4BPP);
+		public static readonly TilemapFormat GBA4BPP = new TilemapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale4BPP);
+		public static readonly TilemapFormat GBA8BPP = new TilemapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale8BPP);
 
 		/// <summary>
 		/// Gets a tilemap format with the specified name, or null if no such tilemap format exists.
@@ -12,11 +12,11 @@ namespace LibPixelPet {
 		/// <returns>The tilemap format matching the specified name.</returns>
 		public static TilemapFormat? GetFormat(in string formatName) {
 			switch (formatName?.ToUpperInvariant()) {
-			case "GBA4BPP":
-			case "NDS4BPP":
+			case "GBA-4BPP":
+			case "NDS-4BPP":
 				return TilemapFormat.GBA4BPP;
-			case "GBA8BPP":
-			case "NDS8BPP":
+			case "GBA-8BPP":
+			case "NDS-8BPP":
 				return TilemapFormat.GBA8BPP;
 			default:
 				return null;
@@ -102,11 +102,16 @@ namespace LibPixelPet {
 		/// </summary>
 		public bool CanReduceTileset => reduceAllowed;
 
-		private readonly ColorFormat indexFmt;
+		private readonly ColorFormat colorFmt;
 		/// <summary>
-		/// Gets the color format used for indexed tiles.
+		/// Gets the color format used for tiles.
 		/// </summary>
-		public ColorFormat IndexFormat => indexFmt;
+		public ColorFormat ColorFormat => colorFmt;
+
+		/// <summary>
+		/// Gets a boolean that indicates whether this tilemap format uses indexed colors.
+		/// </summary>
+		public bool IsIndexed { get; }
 
 		/// <summary>
 		/// Gets the mask for a tilemap entry.
@@ -139,7 +144,8 @@ namespace LibPixelPet {
 			in int hflipShift, in bool hflipAllowed,
 			in int vflipShift, in bool vflipAllowed,
 			in int palShift, in int palBits,
-			in bool reduceAllowed, in ColorFormat indexFmt
+			in bool reduceAllowed, in bool isIndexed,
+			in ColorFormat colorFmt
 		) {
 			this.  tnumBits    = (byte)(tnumBits > 0 ?  tnumBits  : 0);
 			this.   palBits    = (byte)( palBits > 0 ?   palBits  : 0);
@@ -150,7 +156,8 @@ namespace LibPixelPet {
 			this. hflipAllowed =  hflipAllowed;
 			this. vflipAllowed =  vflipAllowed;
 			this.reduceAllowed = reduceAllowed;
-			this. indexFmt     =  indexFmt;
+			this. colorFmt     =  colorFmt;
+			this.IsIndexed     = isIndexed;
 		}
 
 		public bool Equals(TilemapFormat other)
@@ -163,7 +170,7 @@ namespace LibPixelPet {
 			&& this. hflipAllowed == other. hflipAllowed
 			&& this. vflipAllowed == other. vflipAllowed
 			&& this.reduceAllowed == other.reduceAllowed
-			&& this. indexFmt     == other.indexFmt;
+			&& this. colorFmt     == other.colorFmt;
 
 		public override bool Equals(object obj)
 			=> obj is TilemapFormat tf ? this.Equals(tf) : false;
@@ -180,7 +187,7 @@ namespace LibPixelPet {
 				hash = hash * -1521134295 + this. hflipAllowed.GetHashCode();
 				hash = hash * -1521134295 + this. vflipAllowed.GetHashCode();
 				hash = hash * -1521134295 + this.reduceAllowed.GetHashCode();
-				hash = hash * -1521134295 + this. indexFmt    .GetHashCode();
+				hash = hash * -1521134295 + this. colorFmt    .GetHashCode();
 				return hash;
 			}
 		}

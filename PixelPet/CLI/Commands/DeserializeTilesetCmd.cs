@@ -26,17 +26,23 @@ namespace PixelPet.CLI.Commands {
 
 			workbench.Stream.Position = Math.Min(offset, workbench.Stream.Length);
 
-			int bpp = mapFmt.IndexFormat.Bits;		// bits per pixel
+			int bpp = mapFmt.ColorFormat.Bits;		// bits per pixel
 			int tw = workbench.Tileset.TileWidth;	// tile width
 			int th = workbench.Tileset.TileHeight;	// tile height
 
 			int ppb = 8 / bpp;						// pixels per byte
 			int bpt = (tw * th) / ppb;				// bytes per tile
-			int pmask = mapFmt.IndexFormat.Mask;	// mask per pixel
+			int pmask = mapFmt.ColorFormat.Mask;	// mask per pixel
 			int b;									// current byte
 			int bi;									// byte index in current tile
 			int pi;									// pixel index in current byte
 			int c;									// current pixel
+
+			bool usePal = mapFmt.IsIndexed && workbench.PaletteSet.Count > 0;
+			Palette pal = null;
+			if (mapFmt.IsIndexed && workbench.PaletteSet.Count > 0) {
+				pal = workbench.PaletteSet[0].Palette;
+			}
 
 			byte[] buffer = new byte[bpt];
 			int[] pixels = new int[tw * th];
@@ -52,6 +58,9 @@ namespace PixelPet.CLI.Commands {
 						c = (b & pmask);
 						b >>= bpp;
 
+						// Apply palette.
+						c = pal?[c] ?? c;
+
 						pixels[bi * ppb + pi] = c;
 					}
 				}
@@ -62,6 +71,8 @@ namespace PixelPet.CLI.Commands {
 				workbench.Tileset.AddTile(tile, mapFmt.CanFlipHorizontal, mapFmt.CanFlipVertical);
 				added++;
 			}
+
+			workbench.Tileset.ColorFormat = pal?.Format ?? mapFmt.ColorFormat;
 
 			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
 		}
