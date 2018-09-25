@@ -16,9 +16,15 @@ namespace PixelPet.CLI.Commands {
 				return;
 			}
 
+			if (workbench.PaletteSet.Count == 0) {
+				logger?.Log("No palettes to pad. Creating 1 palette based on current bitmap format.", LogLevel.Information);
+				Palette pal = new Palette(workbench.BitmapFormat, -1);
+				workbench.PaletteSet.Add(pal);
+			}
+
 			int addedColors = 0;
 			foreach (PaletteEntry pe in workbench.PaletteSet) {
-				while (pe.Palette.Count % width != 0) {
+				while (pe.Palette.Count < width) {
 					pe.Palette.Add(0);
 					addedColors++;
 				}
