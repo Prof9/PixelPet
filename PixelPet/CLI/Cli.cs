@@ -14,6 +14,7 @@ namespace PixelPet.CLI {
 			new ClearPalettesCmd(),
 			new ClearTilesetCmd(),
 			new ClearTilemapCmd(),
+			new ExtractPalettesCmd(),
 			new ReadPalettesCmd(),
 			new RenderPalettesCmd(),
 			new RenderTilesetCmd(),
