@@ -6,13 +6,11 @@ namespace PixelPet.CLI.Commands {
 	internal class ReadPalettesCmd : CliCommand {
 		public ReadPalettesCmd()
 			: base("Read-Palettes",
-				new Parameter("format", "f", false, new ParameterValue("name", nameof(ColorFormat.BGRA8888))),
 				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
 				new Parameter("palette-size", "ps", false, new ParameterValue("count", "" + int.MaxValue))
 			) { }
 
 		public override void Run(Workbench workbench, ILogger logger) {
-			string fmtName = FindNamedParameter("--format").Values[0].ToString();
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
 
@@ -22,10 +20,6 @@ namespace PixelPet.CLI.Commands {
 			}
 			if (palSize < 1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
-				return;
-			}
-			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
-				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
 				return;
 			}
 
@@ -46,11 +40,11 @@ namespace PixelPet.CLI.Commands {
 
 				// Create new palette if needed.
 				if (pal == null) {
-					pal = new Palette(fmt, palSize);
+					pal = new Palette(workbench.BitmapFormat, palSize);
 				}
 
 				// Add finished palette to palette set.
-				pal.Add(color, ColorFormat.BGRA8888);
+				pal.Add(color, workbench.BitmapFormat);
 				addedColors++;
 
 				// Add finished palette to palette set.
