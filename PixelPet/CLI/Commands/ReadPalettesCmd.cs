@@ -72,6 +72,7 @@ namespace PixelPet.CLI.Commands {
 				} else {
 					workbench.PaletteSet.Add(pal, palNum++);
 				}
+				addedPalettes++;
 			}
 
 			logger?.Log("Read " + addedPalettes + " palettes with " + addedColors + " colors total.");
