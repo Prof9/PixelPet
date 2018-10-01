@@ -107,7 +107,7 @@ namespace PixelPet {
 				int[] buffer = new int[width];
 
 				for (int j = 0; j < height; j++) {
-					Marshal.Copy(srcData.Scan0 + (y + j) * srcData.Stride, buffer, 0, width);
+					Marshal.Copy(srcData.Scan0 + j * srcData.Stride, buffer, 0, width);
 					Marshal.Copy(buffer, 0, dstData.Scan0 + j * dstData.Stride, width);
 				}
 
