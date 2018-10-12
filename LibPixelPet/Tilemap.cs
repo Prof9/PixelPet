@@ -127,7 +127,7 @@ namespace LibPixelPet {
 			}
 
 			// Update the color format of the tileset to the indexed format.
-			tileset.ColorFormat = format.IndexFormat;
+			tileset.ColorFormat = format.ColorFormat;
 			tileset.IsIndexed = true;
 		}
 
