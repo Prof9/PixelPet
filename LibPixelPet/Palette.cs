@@ -12,6 +12,11 @@ namespace LibPixelPet {
 		private List<int> Colors { get; }
 
 		/// <summary>
+		/// Gets a dictionary mapping colors to indices. This is used for faster lookup.
+		/// </summary>
+		private Dictionary<int, int> ColorIndexMap { get; }
+
+		/// <summary>
 		/// Gets the number of colors currently in the palette.
 		/// </summary>
 		public int Count => this.Colors.Count;
@@ -35,7 +40,17 @@ namespace LibPixelPet {
 			if (maxSize < -1)
 				throw new ArgumentOutOfRangeException(nameof(maxSize));
 
-			this.Colors = new List<int>();
+			// Default capacity 16, but no greater than 256.
+			int initialCapacity = maxSize;
+			if (initialCapacity < 0) {
+				initialCapacity = 16;
+			}
+			if (initialCapacity > 256) {
+				initialCapacity = 256;
+			}
+
+			this.Colors = new List<int>(initialCapacity);
+			this.ColorIndexMap = new Dictionary<int, int>(initialCapacity);
 			this.Format = format;
 			this.MaximumSize = maxSize;
 		}
@@ -51,6 +66,12 @@ namespace LibPixelPet {
 				if (index < 0 || index >= this.Count)
 					throw new ArgumentOutOfRangeException(nameof(index));
 
+				// Remove old mapping, add new one.
+				this.ColorIndexMap.Remove(this.Colors[index]);
+				if (!this.ColorIndexMap.ContainsKey(value)) {
+					this.ColorIndexMap[value] = index;
+				}
+
 				this.Colors[index] = value;
 			}
 		}
@@ -58,8 +79,10 @@ namespace LibPixelPet {
 		/// <summary>
 		/// Clears the palette.
 		/// </summary>
-		public void Clear()
-			=> this.Colors.Clear();
+		public void Clear() {
+			this.Colors.Clear();
+			this.ColorIndexMap.Clear();
+		}
 
 		/// <summary>
 		/// Adds the specified color to the palette.
@@ -70,6 +93,9 @@ namespace LibPixelPet {
 				throw new InvalidOperationException("The maximum palette size has been reached.");
 
 			this.Colors.Add(color);
+			if (!this.ColorIndexMap.ContainsKey(color)) {
+				this.ColorIndexMap[color] = this.Colors.Count - 1;
+			}
 		}
 
 		/// <summary>
@@ -99,12 +125,11 @@ namespace LibPixelPet {
 		/// <param name="color">The color value to find.</param>
 		/// <returns>The index of the color, or -1 if it was not found.</returns>
 		public int IndexOfColor(in int color) {
-			for (int i = 0; i < this.Count; i++) {
-				if (this[i] == color) {
-					return i;
-				}
+			if (this.ColorIndexMap.TryGetValue(color, out int index)) {
+				return index;
+			} else {
+				return -1;
 			}
-			return -1;
 		}
 
 		public IEnumerator<int> GetEnumerator() 

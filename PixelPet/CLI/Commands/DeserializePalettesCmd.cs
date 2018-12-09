@@ -7,7 +7,7 @@ namespace PixelPet.CLI.Commands {
 			: base("Deserialize-Palettes",
 				new Parameter(true, new ParameterValue("format")),
 				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
-				new Parameter("palette-size", "ps", false, new ParameterValue("count", "" + int.MaxValue)),
+				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
 				new Parameter("palette-count", "pc", false, new ParameterValue("count", "" + int.MaxValue)),
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
 			) { }
@@ -23,7 +23,7 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
 				return;
 			}
-			if (palSize < 1) {
+			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
 			}
@@ -61,7 +61,7 @@ namespace PixelPet.CLI.Commands {
 				addedColors++;
 
 				// Add finished palette to palette set.
-				if (pal.Count >= palSize) {
+				if (palSize != -1 && pal.Count >= palSize) {
 					if (palNum < 0) {
 						workbench.PaletteSet.Add(pal);
 					} else {
