@@ -98,14 +98,16 @@ namespace LibPixelPet {
 				throw new ArgumentNullException(nameof(format));
 
 			TileCutter cutter = new TileCutter(tileset.TileWidth, tileset.TileHeight);
+			Tile[] indexedTiles = new Tile[palettes.Count];
 			foreach (Tile tile in cutter.CutTiles(bmp)) {
 				// Generate indexed tiles for each palette.
-				List<Tile> indexedTiles = tile.GenerateIndexedTiles(palettes).ToList();
+				int indexedCount = tile.GenerateIndexedTiles(palettes, indexedTiles);
 
 				TileEntry? te = null;
 				if (reduce) {
 					// See if this tile can match an already indexed tile.
-					foreach (Tile indexedTile in indexedTiles) {
+					for (int i = 0; i < indexedCount; i++) {
+						Tile indexedTile = indexedTiles[i];
 						if (tileset.TryFindTileEntry(indexedTile, out TileEntry candidate)) {
 							// Create new tilemap entry with original tile number and flips, but new palette.
 							te = new TileEntry(candidate.TileNumber, candidate.HFlip, candidate.VFlip, indexedTile.PaletteNumber);
@@ -113,8 +115,8 @@ namespace LibPixelPet {
 						}
 					}
 				}
-				if (te == null && indexedTiles.Count > 0) {
-					Tile indexedTile = indexedTiles[0];
+				if (te == null && indexedCount > 0) {
+					Tile indexedTile = indexedTiles[0].Clone();
 					TileEntry newEntry = tileset.AddTile(indexedTile, format.CanFlipHorizontal, format.CanFlipVertical);
 					te = new TileEntry(newEntry.TileNumber, newEntry.HFlip, newEntry.VFlip, indexedTile.PaletteNumber);
 				}

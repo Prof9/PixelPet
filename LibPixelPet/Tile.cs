@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace LibPixelPet {
-	public struct Tile : ICloneable {
+	public class Tile : ICloneable {
 		private struct HashCodeTuple {
 			public bool IsSet { get; set; }
 			public int Value { get; set; }
@@ -175,20 +175,33 @@ namespace LibPixelPet {
 		/// Generates indexed versions of this tile for each of the palettes in the specified palette set.
 		/// </summary>
 		/// <param name="palettes">The palette set to use.</param>
-		/// <returns>The successfully indexed tiles, if any.</returns>
-		public IEnumerable<Tile> GenerateIndexedTiles(PaletteSet palettes) {
+		/// <param name="indexedTiles">The list where the resulting indexed tiles will be written to.</param>
+		/// <returns>The number of successfully indexed tiles.</returns>
+		public int GenerateIndexedTiles(PaletteSet palettes, IList<Tile> indexedTiles) {
 			if (palettes == null)
 				throw new ArgumentNullException(nameof(palettes));
+			if (indexedTiles.Count < palettes.Count)
+				throw new ArgumentException("Indexed tiles list is not large enough to hold all possible indexed tiles", nameof(indexedTiles));
 
-			Tile indexedTile = new Tile(this.Width, this.Height);
+			int count = 0;
+			Tile indexedTile = indexedTiles[0];
 			foreach (PaletteEntry pe in palettes) {
+				if (indexedTile == null) {
+					indexedTile = new Tile(this.Width, this.Height);
+				}
 				if (this.TryIndexTile(pe.Palette, ref indexedTile)) {
-					Tile resultTile = new Tile(this.Width, this.Height);
-					resultTile.SetAllPixels(indexedTile.Pixels);
-					resultTile.PaletteNumber = pe.Number;
-					yield return resultTile;
+					indexedTile.PaletteNumber = pe.Number;
+					indexedTiles[count] = indexedTile;
+
+					// Move to next tile
+					if (++count >= palettes.Count) {
+						break;
+					}
+					indexedTile = indexedTiles[count];
 				}
 			}
+
+			return count;
 		}
 
 		private bool TryIndexTile(Palette pal, ref Tile indexedTile) {
@@ -223,10 +236,5 @@ namespace LibPixelPet {
 			return clone;
 		}
 		object ICloneable.Clone() => this.Clone();
-
-		public static bool operator ==(Tile tile1, Tile tile2)
-			=> tile1.Equals(tile2);
-		public static bool operator !=(Tile tile1, Tile tile2)
-			=> !tile1.Equals(tile2);
 	}
 }
