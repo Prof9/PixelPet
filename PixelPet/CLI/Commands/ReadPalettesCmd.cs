@@ -7,7 +7,7 @@ namespace PixelPet.CLI.Commands {
 		public ReadPalettesCmd()
 			: base("Read-Palettes",
 				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
-				new Parameter("palette-size", "ps", false, new ParameterValue("count", "" + int.MaxValue))
+				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1"))
 			) { }
 
 		public override void Run(Workbench workbench, ILogger logger) {
@@ -18,7 +18,7 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
 				return;
 			}
-			if (palSize < 1) {
+			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
 			}
@@ -48,7 +48,7 @@ namespace PixelPet.CLI.Commands {
 				addedColors++;
 
 				// Add finished palette to palette set.
-				if (pal.Count >= palSize) {
+				if (palSize != -1 && pal.Count >= palSize) {
 					if (palNum < 0) {
 						workbench.PaletteSet.Add(pal);
 					} else {
