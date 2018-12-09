@@ -130,7 +130,7 @@ namespace LibPixelPet {
 			// Calculate hash.
 			int hash = -490236692;
 			unchecked {
-				foreach (int px in this.EnumerateTile(hFlip, vFlip)) {
+				foreach (int px in (hFlip || vFlip ? this.EnumerateTile(hFlip, vFlip) : this.Pixels)) {
 					hash = hash * -1521134295 + px;
 				}
 			}
@@ -226,7 +226,7 @@ namespace LibPixelPet {
 				this.Width == other.Width &&
 				this.Height == other.Height &&
 				this.GetHashCode(hFlip, vFlip) == other.GetHashCode() &&
-				this.EnumerateTile(hFlip, vFlip).SequenceEqual(other.EnumerateTile())
+				this.EnumerateTile(hFlip, vFlip).SequenceEqual(other.Pixels)
 			);
 
 		public Tile Clone() {
