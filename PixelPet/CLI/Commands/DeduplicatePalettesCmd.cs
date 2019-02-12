@@ -31,7 +31,7 @@ namespace PixelPet.CLI.Commands {
 			);
 			int n = seqFmt.MaxValue;
 
-			if (n > palette.Count) {
+			if (palette.Count > n) {
 				logger?.Log("Cannot deduplicate palette; palette size exceeds color space.", LogLevel.Error);
 				return 0;
 			}
