@@ -39,6 +39,7 @@ namespace PixelPet.CLI.Commands {
 						fs.CopyTo(workbench.Stream);
 					} else {
 						byte[] buffer = new byte[length];
+						fs.Position = offset;
 						int read = fs.Read(buffer, 0, buffer.Length);
 
 						if (read < length) {
