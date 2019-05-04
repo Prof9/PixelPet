@@ -192,7 +192,9 @@ namespace LibPixelPet {
 			ColorFormat bgra8888 = ColorFormat.BGRA8888;
 
 			Bitmap bmp = null;
+#if !DEBUG
 			try {
+#endif
 				bmp = new Bitmap(
 					this.TileWidth * hTileCount,
 					this.TileHeight * vTileCount,
@@ -211,6 +213,11 @@ namespace LibPixelPet {
 					int ti = t % hTileCount;
 					int tj = t / hTileCount;
 					Palette pal = palettes.FindPalette(tile.PaletteNumber);
+					if (pal == null && palettes.Count > 0) {
+						// Don't have the palette used to index this tile anymore.
+						// Just get any palette.
+						pal = palettes[0].Palette;
+					}
 
 					for (int ty = 0; ty < this.TileHeight; ty++) {
 						for (int tx = 0; tx < this.TileWidth; tx++) {
@@ -220,11 +227,11 @@ namespace LibPixelPet {
 
 							int c = tile[tx, ty];
 							if (pal != null && c < pal.Count) {
-								c = pal[c];
+								c = bgra8888.Convert(pal[c], pal.Format);
 							} else {
 								c = 0;
 							}
-							buffer[ptr] = bgra8888.Convert(c, pal.Format);
+							buffer[ptr] = c;
 						}
 					}
 				}
@@ -233,10 +240,12 @@ namespace LibPixelPet {
 				bmp.UnlockBits(bmpData);
 
 				return bmp;
+#if !DEBUG
 			} catch {
 				bmp?.Dispose();
 				throw;
 			}
+#endif
 		}
 
 		public Tileset Clone() {
