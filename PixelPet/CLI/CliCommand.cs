@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace PixelPet.CLI {
 	internal abstract class CliCommand {
+		/// <summary>
+		/// Gets or sets the CLI currently running this command.
+		/// </summary>
+		protected Cli CLI { get; private set; }
 		public string Name { get; }
 		protected IList<Parameter> Parameters { get; }
 		public bool ReachedEnd { get; private set; }
@@ -23,7 +27,11 @@ namespace PixelPet.CLI {
 			this.Parameters = parameters.ToList();
 		}
 
-		public abstract void Run(Workbench workbench, ILogger logger);
+		public void Run(Cli cli, Workbench workbench, ILogger logger) {
+			this.CLI = cli;
+			this.Run(workbench, logger);
+		}
+		protected abstract void Run(Workbench workbench, ILogger logger);
 
 		protected void ClearParameter() {
 			foreach (Parameter par in this.Parameters) {

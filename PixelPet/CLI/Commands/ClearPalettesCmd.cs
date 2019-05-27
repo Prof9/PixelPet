@@ -6,7 +6,7 @@ namespace PixelPet.CLI.Commands {
 		public ClearPalettesCmd()
 			: base("Clear-Palettes") { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			workbench.PaletteSet.Clear();
 
 			logger?.Log("Cleared palettes.");

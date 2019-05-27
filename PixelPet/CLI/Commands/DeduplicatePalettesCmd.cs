@@ -8,7 +8,7 @@ namespace PixelPet.CLI.Commands {
 		public DeduplicatePalettesCmd()
 			: base("Deduplicate-Palettes") { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			int seed = 0;
 
 			Random rng = new Random(seed);

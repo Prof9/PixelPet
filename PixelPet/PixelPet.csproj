@@ -70,6 +70,7 @@
     <Compile Include="CLI\Commands\RenderPalettesCmd.cs" />
     <Compile Include="CLI\Commands\RenderTilemapCmd.cs" />
     <Compile Include="CLI\Commands\RenderTilesetCmd.cs" />
+    <Compile Include="CLI\Commands\RunScriptCmd.cs" />
     <Compile Include="CLI\Commands\SerializePalettesCmd.cs" />
     <Compile Include="CLI\Commands\SerializeTilemapCmd.cs" />
     <Compile Include="CLI\Commands\SerializeTilesetCmd.cs" />

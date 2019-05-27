@@ -9,7 +9,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("first-tile", "ft", false, new ParameterValue("tilemap-entry", "-1"))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
 			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
 

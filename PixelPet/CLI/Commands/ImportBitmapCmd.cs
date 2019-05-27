@@ -12,7 +12,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter(true, new ParameterValue("path"))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			string path = FindUnnamedParameter(0).Values[0].ToString();
 
 			try {

@@ -7,7 +7,7 @@ namespace PixelPet.CLI.Commands {
 		public SerializePalettesCmd()
 			: base("Serialize-Palettes") { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			int width = workbench.PaletteSet.Max(pe => pe.Palette.Count);
 
 			workbench.Stream.SetLength(0);

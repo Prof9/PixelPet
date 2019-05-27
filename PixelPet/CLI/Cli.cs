@@ -7,6 +7,7 @@ using System.Linq;
 namespace PixelPet.CLI {
 	internal class Cli : ILogger {
 		protected static readonly IEnumerable<CliCommand> Commands = new ReadOnlyCollection<CliCommand>(new CliCommand[] {
+			new RunScriptCmd(),
 			new ImportBitmapCmd(),
 			new ExportBitmapCmd(),
 			new ImportBytesCmd(),
@@ -97,7 +98,8 @@ namespace PixelPet.CLI {
 
 			this.Log("Running command: " + cmd.ToString() + "...", LogLevel.VerboseInformation);
 
-			cmd.Run(this.Workbench, this);
+			// This is kinda dumb
+			cmd.Run(this, this.Workbench, this);
 			return !cmd.ReachedEnd;
 		}
 

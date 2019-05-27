@@ -9,7 +9,7 @@ namespace PixelPet.CLI.Commands {
 		public RenderPalettesCmd()
 			: base("Render-Palettes") { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			int tw = 8;
 			int th = 8;
 

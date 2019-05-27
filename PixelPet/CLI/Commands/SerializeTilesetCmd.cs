@@ -8,7 +8,7 @@ namespace PixelPet.CLI.Commands {
 				  new Parameter("color-offset", "o", false, new ParameterValue("value", "0"))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			long colorOffset = FindNamedParameter("--color-offset").Values[0].ToInt64();
 
 			ColorFormat fmt = workbench.Tileset.ColorFormat;
