@@ -4,11 +4,15 @@ using System;
 namespace PixelPet.CLI.Commands {
 	internal class SerializeTilesetCmd : CliCommand {
 		public SerializeTilesetCmd()
-			: base("Serialize-Tileset") { }
+			: base("Serialize-Tileset",
+				  new Parameter("color-offset", "o", false, new ParameterValue("value", "0"))
+			) { }
 
 		public override void Run(Workbench workbench, ILogger logger) {
+			long colorOffset = FindNamedParameter("--color-offset").Values[0].ToInt64();
+
 			ColorFormat fmt = workbench.Tileset.ColorFormat;
-			int bpp = fmt.Bits;		// bits per pixel
+			int bpp = fmt.Bits;     // bits per pixel
 			int ppb = 8 / bpp;      // pixels per byte
 
 			workbench.Stream.SetLength(0);
@@ -19,8 +23,9 @@ namespace PixelPet.CLI.Commands {
 				// current byte
 				int b = 0;
 				foreach (int c in tile.EnumerateTile()) {
+					long co = c + colorOffset;
 					// Add pixel to current byte.
-					b |= (c << (pi * bpp));
+					b |= (int)(co << (pi * bpp));
 					if (++pi >= ppb) {
 						// Write byte to stream if it's finished.
 						workbench.Stream.WriteByte((byte)b);
