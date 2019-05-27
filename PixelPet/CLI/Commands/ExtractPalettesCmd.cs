@@ -8,7 +8,7 @@ namespace PixelPet.CLI.Commands {
 	internal class ExtractPalettesCmd : CliCommand {
 		public ExtractPalettesCmd()
 			: base("Extract-Palettes",
-				  new Parameter("palette-size", "ps", false, new ParameterValue("count", "16")),
+				  new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
 				  new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
 				  new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
 				  new Parameter("width", "w", false, new ParameterValue("pixels", "-1")),
@@ -22,13 +22,12 @@ namespace PixelPet.CLI.Commands {
 			int w = FindNamedParameter("--width").Values[0].ToInt32();
 			int h = FindNamedParameter("--height").Values[0].ToInt32();
 
-			if (palSize < 1) {
+			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
 			}
 
 			TileCutter cutter = new TileCutter(8, 8);
-
 			int ti = 0;
 			int addedPalettes = 0;
 			int addedColors = 0;
@@ -38,8 +37,8 @@ namespace PixelPet.CLI.Commands {
 					// Get all the unique colors in the tile.
 					List<int> tileColors = tile.EnumerateTile().Distinct().ToList();
 
-					if (tileColors.Count > palSize) {
-						logger?.Log("Palette tile " + ti + " has more than " + palSize + " colors.", LogLevel.Error);
+					if (palSize != -1 && tileColors.Count > palSize) {
+						logger?.Log("Tile " + ti + " has " + tileColors.Count + " colors, which is more than the " + palSize + " colors allowed by the palette.", LogLevel.Error);
 						return;
 					}
 
@@ -52,7 +51,7 @@ namespace PixelPet.CLI.Commands {
 
 						// See if we can add to this palette.
 						int newSize = pal.Union(tileColors).Count();
-						if ((pal.MaximumSize >= 0 && newSize > pal.MaximumSize) || newSize > palSize) {
+						if ((pal.MaximumSize >= 0 && newSize > pal.MaximumSize)) {
 							// Cannot add to this palette.
 							continue;
 						}
