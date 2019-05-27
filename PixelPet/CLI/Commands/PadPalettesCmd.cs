@@ -9,7 +9,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("color", "c", false, new ParameterValue("value", "0"))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			int width = FindUnnamedParameter(0).Values[0].ToInt32();
 			int color = FindNamedParameter("--color").Values[0].ToInt32();
 

@@ -10,7 +10,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
 			int tc = FindNamedParameter("--tile-count").Values[0].ToInt32();
 			long offset = FindNamedParameter("--offset").Values[0].ToInt64();

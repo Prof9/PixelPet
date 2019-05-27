@@ -8,7 +8,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "8"), new ParameterValue("height", "8"))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			int tw = FindNamedParameter("--tile-size").Values[0].ToInt32();
 			int th = FindNamedParameter("--tile-size").Values[1].ToInt32();
 

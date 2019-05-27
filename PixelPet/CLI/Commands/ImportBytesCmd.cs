@@ -11,7 +11,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("length", "l", false, new ParameterValue("count", "" + long.MaxValue))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			string path = FindUnnamedParameter(0).Values[0].ToString();
 			long offset = this.FindNamedParameter("--offset").Values[0].ToInt64();
 			long length = this.FindNamedParameter("--length").Values[0].ToInt64();

@@ -14,7 +14,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("height", "h", false, new ParameterValue("pixels", "-1"))
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].Value;
 			bool noReduce = FindNamedParameter("--no-reduce").IsPresent;
 			int x = FindNamedParameter("--x").Values[0].ToInt32();

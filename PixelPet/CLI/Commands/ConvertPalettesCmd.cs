@@ -10,7 +10,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("sloppy", "s", false)
 			) { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].ToString();
 			bool sloppy = FindNamedParameter("--sloppy").IsPresent;
 

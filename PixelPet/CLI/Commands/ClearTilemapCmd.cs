@@ -6,7 +6,7 @@ namespace PixelPet.CLI.Commands {
 		public ClearTilemapCmd()
 			: base("Clear-Tilemap") { }
 
-		public override void Run(Workbench workbench, ILogger logger) {
+		protected override void Run(Workbench workbench, ILogger logger) {
 			workbench.Tilemap.Clear();
 
 			logger?.Log("Cleared tilemap.");
