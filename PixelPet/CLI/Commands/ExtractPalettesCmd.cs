@@ -8,6 +8,7 @@ namespace PixelPet.CLI.Commands {
 	internal class ExtractPalettesCmd : CliCommand {
 		public ExtractPalettesCmd()
 			: base("Extract-Palettes",
+				  new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
 				  new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
 				  new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
 				  new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
@@ -16,12 +17,17 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		public override void Run(Workbench workbench, ILogger logger) {
+			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
 			int x = FindNamedParameter("--x").Values[0].ToInt32();
 			int y = FindNamedParameter("--y").Values[0].ToInt32();
 			int w = FindNamedParameter("--width").Values[0].ToInt32();
 			int h = FindNamedParameter("--height").Values[0].ToInt32();
 
+			if (palNum < -1) {
+				logger?.Log("Invalid palette number.", LogLevel.Error);
+				return;
+			}
 			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
@@ -67,7 +73,11 @@ namespace PixelPet.CLI.Commands {
 					// Could not find a suitable palette, so have to make a new one.
 					if (bestPal < 0) {
 						pal = new Palette(workbench.BitmapFormat, palSize);
-						workbench.PaletteSet.Add(pal);
+						if (palNum >= 0) {
+							workbench.PaletteSet.Add(pal, palNum);
+						} else {
+							workbench.PaletteSet.Add(pal);
+						}
 
 						addedPalettes++;
 
