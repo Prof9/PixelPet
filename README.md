@@ -1,2 +1,2 @@
 # PixelPet
-A shockingly bare-bones image processing tool for ROM hacking.
+An image processing tool for retro games modding.

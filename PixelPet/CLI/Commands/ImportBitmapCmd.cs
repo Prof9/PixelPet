@@ -27,7 +27,7 @@ namespace PixelPet.CLI.Commands {
 			}
 			workbench.Graphics.Flush();
 
-			logger?.Log("Imported bitmap " + Path.GetFileName(path), LogLevel.Information);
+			logger?.Log("Imported bitmap " + Path.GetFileName(path) + ".", LogLevel.Information);
 		}
 	}
 }
