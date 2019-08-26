@@ -112,7 +112,7 @@ namespace LibPixelPet {
 		}
 
 		private Tile CutTile(in Bitmap bmp, in BitmapData bmpData, in int[] bmpBuffer, in int ti, in int tj) {
-			Tile tile = new Tile(this.TileWidth, this.TileHeight);
+			Tile tile = new Tile(this.TileWidth, this.TileHeight, ti * this.TileWidth, tj * this.TileHeight);
 			int[] pixels = new int[tile.Count];
 
 			int p = 0;
