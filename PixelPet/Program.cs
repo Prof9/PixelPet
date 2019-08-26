@@ -34,7 +34,11 @@ namespace PixelPet {
 				this.ErrorLevel = (int)cli.MaximumLogLevel;
 			}
 
-			Console.WriteLine("Done.");
+			if (this.ErrorLevel <= (int)LogLevel.Warning) {
+				Console.WriteLine("Done.");
+			} else {
+				Console.WriteLine("Aborted.");
+			}
 #if DEBUG
 			Console.ReadKey();
 #endif
