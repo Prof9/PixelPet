@@ -33,6 +33,15 @@ namespace LibPixelPet {
 		public int Count => this.Width * this.Height;
 
 		/// <summary>
+		/// Gets the x-position of the origin of the tile.
+		/// </summary>
+		public int OriginX { get; }
+		/// <summary>
+		/// Gets the y-position of the origin of the tile.
+		/// </summary>
+		public int OriginY { get; }
+
+		/// <summary>
 		/// Gets the previously computed hash codes.
 		/// </summary>
 		private readonly HashCodeTuple[] hashCodes;
@@ -43,7 +52,17 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="width">The width of the tile in pixels.</param>
 		/// <param name="height">The height of the tile in pixels.</param>
-		public Tile(in int width, in int height) {
+		public Tile(in int width, in int height)
+			: this(width, height, 0, 0) { }
+
+		/// <summary>
+		/// Creates a new tile with the specified width and height and origin position.
+		/// </summary>
+		/// <param name="width">The width of the tile in pixels.</param>
+		/// <param name="height">The height of the tile in pixels.</param>
+		/// <param name="x">The x-position of the origin of the tile.</param>
+		/// <param name="y">The y-position of the origin of the tile.</param>
+		public Tile(in int width, in int height, in int x, in int y) {
 			if (width < 1)
 				throw new ArgumentOutOfRangeException(nameof(width));
 			if (height < 1)
@@ -51,9 +70,11 @@ namespace LibPixelPet {
 
 			this.PaletteNumber = 0;
 
-			this.Width  = width;
-			this.Height = height;
-			this.Pixels = new int[width * height];
+			this.Width   = width;
+			this.Height  = height;
+			this.OriginX = x;
+			this.OriginY = y;
+			this.Pixels  = new int[width * height];
 
 			this.hashCodes = new HashCodeTuple[1 << 2];
 			this.hashCodesCleared = true;
@@ -184,12 +205,14 @@ namespace LibPixelPet {
 				throw new ArgumentException("Indexed tiles list is not large enough to hold all possible indexed tiles", nameof(indexedTiles));
 
 			int count = 0;
+			int maxFailPixel = -1;
 			Tile indexedTile = indexedTiles[0];
 			foreach (PaletteEntry pe in palettes) {
 				if (indexedTile == null) {
-					indexedTile = new Tile(this.Width, this.Height);
+					indexedTile = new Tile(this.Width, this.Height, this.OriginX, this.OriginY);
 				}
-				if (this.TryIndexTile(pe.Palette, ref indexedTile)) {
+				int failPixel = this.TryIndexTile(pe.Palette, ref indexedTile);
+				if (failPixel < 0) {
 					indexedTile.PaletteNumber = pe.Number;
 					indexedTiles[count] = indexedTile;
 
@@ -198,22 +221,32 @@ namespace LibPixelPet {
 						break;
 					}
 					indexedTile = indexedTiles[count];
+				} else if (failPixel > maxFailPixel) {
+					maxFailPixel = failPixel;
 				}
+			}
+
+			if (count == 0) {
+				throw new InvalidOperationException("Could not index tile at " +
+					"(" + this.OriginX + ", " + this.OriginY + ")" +
+					"; color 0x" + this.Pixels[maxFailPixel].ToString("X") + " at " +
+					"(" + (this.OriginX + maxFailPixel % this.Width) + ", " + (this.OriginY + maxFailPixel / this.Width) + ")" +
+					" not found in any palette.");
 			}
 
 			return count;
 		}
 
-		private bool TryIndexTile(Palette pal, ref Tile indexedTile) {
+		private int TryIndexTile(Palette pal, ref Tile indexedTile) {
 			for (int i = 0; i < this.Count; i++) {
 				int c = pal.IndexOfColor(this.Pixels[i]);
 				if (c < 0) {
-					return false;
+					return i;
 				}
 				indexedTile.Pixels[i] = c;
 			}
 			indexedTile.ClearHashCodes();
-			return true;
+			return -1;
 		}
 
 		public override bool Equals(object obj)
@@ -223,6 +256,7 @@ namespace LibPixelPet {
 			=> this.Equals(other, false, false);
 		public bool Equals(in Tile other, in bool hFlip, in bool vFlip)
 			=> ReferenceEquals(this, other) || (
+				// Do not include origin in equality check.
 				this.Width == other.Width &&
 				this.Height == other.Height &&
 				this.GetHashCode(hFlip, vFlip) == other.GetHashCode() &&
@@ -230,7 +264,7 @@ namespace LibPixelPet {
 			);
 
 		public Tile Clone() {
-			Tile clone = new Tile(this.Width, this.Height);
+			Tile clone = new Tile(this.Width, this.Height, this.OriginX, this.OriginY);
 			clone.SetAllPixels(this.Pixels);
 			clone.PaletteNumber = this.PaletteNumber;
 			return clone;

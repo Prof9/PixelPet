@@ -30,14 +30,19 @@ namespace PixelPet.CLI.Commands {
 			int beforeCount = workbench.Tilemap.Count;
 
 			using (Bitmap bmp = workbench.GetCroppedBitmap(x, y, w, h, logger)) {
-				if (fmt.IsIndexed) {
-					if (workbench.PaletteSet.Count <= 0) {
-						logger?.Log("Cannot generate indexed tiles: no palettes loaded.", LogLevel.Error);
-						return;
+				try {
+					if (fmt.IsIndexed) {
+						if (workbench.PaletteSet.Count <= 0) {
+							logger?.Log("Cannot generate indexed tiles: no palettes loaded.", LogLevel.Error);
+							return;
+						}
+						workbench.Tilemap.AddBitmapIndexed(bmp, workbench.Tileset, workbench.PaletteSet, fmt, !noReduce);
+					} else {
+						workbench.Tilemap.AddBitmap(bmp, workbench.Tileset, fmt, !noReduce);
 					}
-					workbench.Tilemap.AddBitmapIndexed(bmp, workbench.Tileset, workbench.PaletteSet, fmt, !noReduce);
-				} else {
-					workbench.Tilemap.AddBitmap(bmp, workbench.Tileset, fmt, !noReduce);
+				} catch (Exception ex) {
+					logger?.Log(ex.Message, LogLevel.Error);
+					return;
 				}
 			}
 
