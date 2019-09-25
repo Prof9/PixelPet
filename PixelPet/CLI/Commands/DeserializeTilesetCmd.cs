@@ -5,7 +5,7 @@ namespace PixelPet.CLI.Commands {
 	internal class DeserializeTilesetCmd : CliCommand {
 		public DeserializeTilesetCmd()
 			: base("Deserialize-Tileset",
-				new Parameter(true, new ParameterValue("tilemapFormat")),
+				new Parameter(true, new ParameterValue("image-format")),
 				new Parameter("tile-count", "tc", false, new ParameterValue("count", "" + int.MaxValue)),
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
 			) { }
@@ -19,7 +19,7 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Invalid tile count.", LogLevel.Error);
 				return;
 			}
-			if (!(TilemapFormat.GetFormat(mapFmtName) is TilemapFormat mapFmt)) {
+			if (!(BitmapFormat.GetFormat(mapFmtName) is BitmapFormat mapFmt)) {
 				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
 				return;
 			}

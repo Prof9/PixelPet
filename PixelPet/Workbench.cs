@@ -18,7 +18,7 @@ namespace PixelPet {
 		public Tileset Tileset { get; set; }
 		public Tilemap Tilemap { get; set; }
 		public ColorFormat BitmapFormat { get; set; }
-		public TilemapFormat TilemapFormat { get; set; }
+		public BitmapFormat TilemapFormat { get; set; }
 
 		public Workbench() {
 			this.PaletteSet = new PaletteSet();
@@ -36,7 +36,7 @@ namespace PixelPet {
 			this.Graphics.Flush();
 
 			this.BitmapFormat = ColorFormat.BGRA8888;
-			this.TilemapFormat = TilemapFormat.GBA4BPP;
+			this.TilemapFormat = LibPixelPet.BitmapFormat.GBA4BPP;
 		}
 
 		public void SetBitmap(Bitmap bmp) {
@@ -47,7 +47,7 @@ namespace PixelPet {
 			this.Graphics = Graphics.FromImage(this.Bitmap);
 
 			this.BitmapFormat = ColorFormat.BGRA8888;
-			this.TilemapFormat = TilemapFormat.GBA4BPP;
+			this.TilemapFormat = LibPixelPet.BitmapFormat.GBA4BPP;
 		}
 
 		public Bitmap GetCroppedBitmap(int x, int y, int width, int height, ILogger logger = null) {
