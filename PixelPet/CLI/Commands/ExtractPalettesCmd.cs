@@ -33,7 +33,10 @@ namespace PixelPet.CLI.Commands {
 				return;
 			}
 
-			TileCutter cutter = new TileCutter(8, 8);
+			int tw = workbench.Tileset.TileWidth;
+			int th = workbench.Tileset.TileHeight;
+
+			TileCutter cutter = new TileCutter(tw, th);
 			int ti = 0;
 			int addedPalettes = 0;
 			int addedColors = 0;
