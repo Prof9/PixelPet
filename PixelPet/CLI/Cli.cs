@@ -6,7 +6,8 @@ using System.Linq;
 
 namespace PixelPet.CLI {
 	internal class Cli : ILogger {
-		protected static readonly IEnumerable<CliCommand> Commands = new ReadOnlyCollection<CliCommand>(new CliCommand[] {
+		internal readonly IEnumerable<CliCommand> Commands = new ReadOnlyCollection<CliCommand>(new CliCommand[] {
+			new HelpCmd(),
 			new RunScriptCmd(),
 			new ImportBitmapCmd(),
 			new ExportBitmapCmd(),

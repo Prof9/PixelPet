@@ -10,7 +10,7 @@ namespace PixelPet.CLI {
 		/// </summary>
 		protected Cli CLI { get; private set; }
 		public string Name { get; }
-		protected IList<Parameter> Parameters { get; }
+		internal IList<Parameter> Parameters { get; }
 		public bool ReachedEnd { get; private set; }
 
 		protected CliCommand(in string name, params Parameter[] parameters) {

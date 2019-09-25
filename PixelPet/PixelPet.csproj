@@ -62,6 +62,7 @@
     <Compile Include="CLI\Commands\ExportBitmapCmd.cs" />
     <Compile Include="CLI\Commands\ExtractPalettesCmd.cs" />
     <Compile Include="CLI\Commands\GenerateTilemapCmd.cs" />
+    <Compile Include="CLI\Commands\HelpCmd.cs" />
     <Compile Include="CLI\Commands\ReadPalettesCmd.cs" />
     <Compile Include="CLI\Commands\ImportBitmapCmd.cs" />
     <Compile Include="CLI\Commands\ImportBytesCmd.cs" />

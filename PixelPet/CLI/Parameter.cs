@@ -15,10 +15,10 @@ namespace PixelPet.CLI {
 			=> this.LongName != null || this.ShortName != null;
 		public string PrimaryName
 			=> this.LongName ?? this.ShortName;
-		public bool HasValues
+		public bool HasAllValues
 			=> this.Values.All(v => v.HasValue);
 		public bool IsLoaded
-			=> this.IsPresent && this.HasValues;
+			=> this.IsPresent && this.HasAllValues;
 
 		public override string ToString() {
 			StringBuilder builder = new StringBuilder();
