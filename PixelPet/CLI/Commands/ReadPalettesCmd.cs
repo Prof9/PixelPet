@@ -49,10 +49,13 @@ namespace PixelPet.CLI.Commands {
 
 				// Add finished palette to palette set.
 				if (palSize != -1 && pal.Count >= palSize) {
-					if (palNum < 0) {
-						workbench.PaletteSet.Add(pal);
-					} else {
+					if (palNum >= 0) {
+						while (workbench.PaletteSet.ContainsPalette(palNum)) {
+							palNum++;
+						}
 						workbench.PaletteSet.Add(pal, palNum++);
+					} else {
+						workbench.PaletteSet.Add(pal);
 					}
 					addedPalettes++;
 					pal = null;
@@ -61,10 +64,13 @@ namespace PixelPet.CLI.Commands {
 				ti++;
 			}
 			if (pal != null) {
-				if (palNum < 0) {
-					workbench.PaletteSet.Add(pal);
-				} else {
+				if (palNum >= 0) {
+					while (workbench.PaletteSet.ContainsPalette(palNum)) {
+						palNum++;
+					}
 					workbench.PaletteSet.Add(pal, palNum++);
+				} else {
+					workbench.PaletteSet.Add(pal);
 				}
 				addedPalettes++;
 			}

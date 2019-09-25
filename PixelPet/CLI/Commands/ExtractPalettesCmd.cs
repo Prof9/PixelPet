@@ -74,7 +74,10 @@ namespace PixelPet.CLI.Commands {
 					if (bestPal < 0) {
 						pal = new Palette(workbench.BitmapFormat, palSize);
 						if (palNum >= 0) {
-							workbench.PaletteSet.Add(pal, palNum);
+							while (workbench.PaletteSet.ContainsPalette(palNum)) {
+								palNum++;
+							}
+							workbench.PaletteSet.Add(pal, palNum++);
 						} else {
 							workbench.PaletteSet.Add(pal);
 						}
