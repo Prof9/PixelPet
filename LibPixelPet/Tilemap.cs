@@ -210,11 +210,12 @@ namespace LibPixelPet {
 						if (indexed) {
 							if (pal != null && p < pal.Count) {
 								c = pal[p];
+								fmt = pal.Format;
 							} else {
 								// TODO: Throw an exception?
-								c = 0;
+								c = p;
+								fmt = tileset.ColorFormat;
 							}
-							fmt = pal?.Format ?? tileset.ColorFormat;
 						} else {
 							c = p;
 							fmt = tileset.ColorFormat;

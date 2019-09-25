@@ -229,7 +229,7 @@ namespace LibPixelPet {
 							if (pal != null && c < pal.Count) {
 								c = bgra8888.Convert(pal[c], pal.Format);
 							} else {
-								c = 0;
+								c = bgra8888.Convert(c, this.ColorFormat);
 							}
 							buffer[ptr] = c;
 						}
