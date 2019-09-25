@@ -22,7 +22,7 @@ namespace PixelPet.CLI.Commands {
 			int w = FindNamedParameter("--width").Values[0].ToInt32();
 			int h = FindNamedParameter("--height").Values[0].ToInt32();
 
-			if (!(TilemapFormat.GetFormat(fmtName) is TilemapFormat fmt)) {
+			if (!(BitmapFormat.GetFormat(fmtName) is BitmapFormat fmt)) {
 				logger?.Log("Unknown tilemap format \"" + fmtName + "\".", LogLevel.Error);
 				return;
 			}

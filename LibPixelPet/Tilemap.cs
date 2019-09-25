@@ -64,7 +64,7 @@ namespace LibPixelPet {
 		/// <param name="tileset">The tileset to use.</param>
 		/// <param name="format">The tilemap format to use.</param>
 		/// <param name="reduce">If true, reduces the tilemap; otherwise, does not reduce.</param>
-		public void AddBitmap(Bitmap bmp, Tileset tileset, TilemapFormat format, bool reduce) {
+		public void AddBitmap(Bitmap bmp, Tileset tileset, BitmapFormat format, bool reduce) {
 			if (bmp == null)
 				throw new ArgumentNullException(nameof(bmp));
 			if (tileset == null)
@@ -87,7 +87,7 @@ namespace LibPixelPet {
 			tileset.IsIndexed = false;
 		}
 
-		public void AddBitmapIndexed(Bitmap bmp, Tileset tileset, PaletteSet palettes, TilemapFormat format, bool reduce) {
+		public void AddBitmapIndexed(Bitmap bmp, Tileset tileset, PaletteSet palettes, BitmapFormat format, bool reduce) {
 			if (bmp == null)
 				throw new ArgumentNullException(nameof(bmp));
 			if (tileset == null)

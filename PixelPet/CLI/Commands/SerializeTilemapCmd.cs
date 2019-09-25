@@ -13,7 +13,7 @@ namespace PixelPet.CLI.Commands {
 			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
 			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
 
-			TilemapFormat fmt = workbench.TilemapFormat;
+			BitmapFormat fmt = workbench.TilemapFormat;
 
 			workbench.Stream.SetLength(0);
 

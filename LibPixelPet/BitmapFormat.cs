@@ -1,23 +1,23 @@
 ﻿using System;
 
 namespace LibPixelPet {
-	public struct TilemapFormat : IEquatable<TilemapFormat> {
-		public static readonly TilemapFormat GBA4BPP = new TilemapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale4BPP);
-		public static readonly TilemapFormat GBA8BPP = new TilemapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale8BPP);
+	public struct BitmapFormat : IEquatable<BitmapFormat> {
+		public static readonly BitmapFormat GBA4BPP = new BitmapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale4BPP);
+		public static readonly BitmapFormat GBA8BPP = new BitmapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale8BPP);
 
 		/// <summary>
-		/// Gets a tilemap format with the specified name, or null if no such tilemap format exists.
+		/// Gets a bitmap format with the specified name, or null if no such bitmap format exists.
 		/// </summary>
-		/// <param name="formatName">The name of the tilemap format.</param>
-		/// <returns>The tilemap format matching the specified name.</returns>
-		public static TilemapFormat? GetFormat(in string formatName) {
+		/// <param name="formatName">The name of the bitmap format.</param>
+		/// <returns>The bitmap format matching the specified name.</returns>
+		public static BitmapFormat? GetFormat(in string formatName) {
 			switch (formatName?.ToUpperInvariant()) {
 			case "GBA-4BPP":
 			case "NDS-4BPP":
-				return TilemapFormat.GBA4BPP;
+				return BitmapFormat.GBA4BPP;
 			case "GBA-8BPP":
 			case "NDS-8BPP":
-				return TilemapFormat.GBA8BPP;
+				return BitmapFormat.GBA8BPP;
 			default:
 				return null;
 			}
@@ -109,7 +109,7 @@ namespace LibPixelPet {
 		public ColorFormat ColorFormat => colorFmt;
 
 		/// <summary>
-		/// Gets a boolean that indicates whether this tilemap format uses indexed colors.
+		/// Gets a boolean that indicates whether this bitmap format uses indexed colors.
 		/// </summary>
 		public bool IsIndexed { get; }
 
@@ -132,14 +132,14 @@ namespace LibPixelPet {
 			=> ((1 << this.Bits) - 1) & this.Mask;
 
 		/// <summary>
-		/// Checks that the specified tilemap entry is a valid tilemap entry for this tilemap format.
+		/// Checks that the specified tilemap entry is a valid tilemap entry for this bitmap format.
 		/// </summary>
 		/// <param name="entry">The tilemap entry to check.</param>
 		/// <returns>true if the tilemap entry is valid; otherwise, false.</returns>
 		public bool IsValid(int entry)
 			=> (entry & this.Mask) == entry;
 
-		private TilemapFormat(
+		private BitmapFormat(
 			in int tnumShift, in int tnumBits,
 			in int hflipShift, in bool hflipAllowed,
 			in int vflipShift, in bool vflipAllowed,
@@ -160,7 +160,7 @@ namespace LibPixelPet {
 			this.IsIndexed     = isIndexed;
 		}
 
-		public bool Equals(TilemapFormat other)
+		public bool Equals(BitmapFormat other)
 			=> this.  tnumBits    == other.  tnumBits
 			&& this.   palBits    == other.   palBits
 			&& this.  tnumShift   == other.  tnumShift
@@ -173,7 +173,7 @@ namespace LibPixelPet {
 			&& this. colorFmt     == other.colorFmt;
 
 		public override bool Equals(object obj)
-			=> obj is TilemapFormat tf ? this.Equals(tf) : false;
+			=> obj is BitmapFormat tf ? this.Equals(tf) : false;
 
 		public override int GetHashCode() {
 			unchecked {
@@ -192,9 +192,9 @@ namespace LibPixelPet {
 			}
 		}
 
-		public static bool operator ==(TilemapFormat format1, TilemapFormat format2)
+		public static bool operator ==(BitmapFormat format1, BitmapFormat format2)
 			=> format1.Equals(format2);
-		public static bool operator !=(TilemapFormat format1, TilemapFormat format2)
+		public static bool operator !=(BitmapFormat format1, BitmapFormat format2)
 			=> !format1.Equals(format2);
 	}
 }

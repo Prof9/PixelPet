@@ -60,7 +60,7 @@
     <Compile Include="Tile.cs" />
     <Compile Include="TileCutter.cs" />
     <Compile Include="TileEntry.cs" />
-    <Compile Include="TilemapFormat.cs" />
+    <Compile Include="BitmapFormat.cs" />
     <Compile Include="Tilemap.cs" />
     <Compile Include="Tileset.cs" />
   </ItemGroup>
