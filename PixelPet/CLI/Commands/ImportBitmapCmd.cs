@@ -16,13 +16,17 @@ namespace PixelPet.CLI.Commands {
 			string path = FindUnnamedParameter(0).Values[0].ToString();
 
 			try {
+				if (!File.Exists(path)) {
+					logger?.Log("File not found: " + Path.GetFileName(path), LogLevel.Error);
+					return;
+				}
 				using (Bitmap bmp = new Bitmap(path)) {
 					workbench.ClearBitmap(bmp.Width, bmp.Height);
 					workbench.Graphics.CompositingMode = CompositingMode.SourceCopy;
 					workbench.Graphics.DrawImage(bmp, 0, 0, bmp.Width, bmp.Height);
 				}
-			} catch (IOException) {
-				logger?.Log("Could not read file " + Path.GetFileName(path), LogLevel.Error);
+			} catch {
+				logger?.Log("Could not import " + Path.GetFileName(path), LogLevel.Error);
 				return;
 			}
 			workbench.Graphics.Flush();

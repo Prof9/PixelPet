@@ -28,6 +28,10 @@ namespace PixelPet.CLI.Commands {
 			workbench.Stream.SetLength(0);
 
 			try {
+				if (!File.Exists(path)) {
+					logger?.Log("File not found: " + Path.GetFileName(path), LogLevel.Error);
+					return;
+				}
 				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)) {
 					if (offset >= fs.Length) {
 						logger?.Log("Offset past the end of the file.", LogLevel.Warning);
@@ -50,8 +54,8 @@ namespace PixelPet.CLI.Commands {
 						workbench.Stream.Write(buffer, 0, read);
 					}
 				}
-			} catch (IOException) {
-				logger?.Log("Could not read file " + Path.GetFileName(path), LogLevel.Error);
+			} catch {
+				logger?.Log("Could not import " + Path.GetFileName(path), LogLevel.Error);
 				return;
 			}
 
