@@ -54,7 +54,7 @@ PixelPet currently supports the following color formats. A color format describe
  *  **4BPP** - General 4-bit grayscale, where `0x0` is pure black and `0xF` is pure white.
  *  **8BPP** - General 8-bit grayscale, where `0x00` is pure black and `0xFF` is pure white.
  *  **GBA** / **RGB555** - 15-bit color as it is used on the Game Boy Advance, where the Red, Green and Blue components are all 5 bits. `0x0000` is pure black, and `0x7FFF` is pure white.
- *  **NDS** / **RGBA5551** - 16-bit color as it is used on the Nintendo DS, where the Red, Green and Blue components are 5 bits, and the Alpha component is 1 bit. `0x0000` is pure black, and `0x7FFF` is pure white.
+ *  **NDS** / **RGBA5551** - 16-bit color as it is used on the Nintendo DS, where the Red, Green and Blue components are 5 bits, and the Alpha component is 1 bit. `0x8000` is pure black, and `0xFFFF` is pure white.
  *  **24BPP** / **BGR888** - General 24-bit color, where the Red, Green and Blue components are all 8 bits. `0x000000` is pure black, and `0xFFFFFF` is pure white.
  *  **32BPP** / **BGRA8888** - General 32-bit color, where the Red, Green, Blue and Alpha components are all 8 bits. `0xFF000000` is pure black, and `0xFFFFFFFF` is pure white.
 
