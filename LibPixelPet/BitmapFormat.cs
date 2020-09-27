@@ -2,8 +2,9 @@
 
 namespace LibPixelPet {
 	public struct BitmapFormat : IEquatable<BitmapFormat> {
-		public static readonly BitmapFormat GBA4BPP = new BitmapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale4BPP);
-		public static readonly BitmapFormat GBA8BPP = new BitmapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale8BPP);
+		public static readonly BitmapFormat GB      = new BitmapFormat(0, 8,  0, false, 0, false, 0, 0, true, false, ColorFormat.GameBoy,       BitmapEncoding.GameBoy);
+		public static readonly BitmapFormat GBA4BPP = new BitmapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale4BPP, BitmapEncoding.Normal);
+		public static readonly BitmapFormat GBA8BPP = new BitmapFormat(0, 10, 10, true, 11, true, 12, 4, true, true, ColorFormat.Grayscale8BPP, BitmapEncoding.Normal);
 
 		/// <summary>
 		/// Gets a bitmap format with the specified name, or null if no such bitmap format exists.
@@ -12,6 +13,8 @@ namespace LibPixelPet {
 		/// <returns>The bitmap format matching the specified name.</returns>
 		public static BitmapFormat? GetFormat(in string formatName) {
 			switch (formatName?.ToUpperInvariant()) {
+			case "GB":
+				return BitmapFormat.GB;
 			case "GBA-4BPP":
 			case "NDS-4BPP":
 				return BitmapFormat.GBA4BPP;
@@ -108,6 +111,12 @@ namespace LibPixelPet {
 		/// </summary>
 		public ColorFormat ColorFormat => colorFmt;
 
+		private readonly BitmapEncoding bmpEncoding;
+		/// <summary>
+		/// Gets the bitmap encoding.
+		/// </summary>
+		public BitmapEncoding BitmapEncoding => bmpEncoding;
+
 		private readonly bool isIndexed;
 		/// <summary>
 		/// Gets a boolean that indicates whether this bitmap format uses indexed colors.
@@ -146,7 +155,7 @@ namespace LibPixelPet {
 			in int vflipShift, in bool vflipAllowed,
 			in int palShift, in int palBits,
 			in bool reduceAllowed, in bool isIndexed,
-			in ColorFormat colorFmt
+			in ColorFormat colorFmt, in BitmapEncoding bmpEncoding
 		) {
 			this.  tnumBits    = (byte)(tnumBits > 0 ?  tnumBits  : 0);
 			this.   palBits    = (byte)( palBits > 0 ?   palBits  : 0);
@@ -158,7 +167,7 @@ namespace LibPixelPet {
 			this. vflipAllowed =  vflipAllowed;
 			this.reduceAllowed = reduceAllowed;
 			this. colorFmt     =  colorFmt;
-			this.IsIndexed     = isIndexed;
+			this.bmpEncoding   = bmpEncoding;
 			this.isIndexed     = isIndexed;
 		}
 
@@ -174,6 +183,7 @@ namespace LibPixelPet {
 			&& this.reduceAllowed == other.reduceAllowed
 			&& this.isIndexed     == other.isIndexed
 			&& this. colorFmt     == other.colorFmt
+			&& this.bmpEncoding   == other.bmpEncoding;
 
 		public override bool Equals(object obj)
 			=> obj is BitmapFormat tf ? this.Equals(tf) : false;
@@ -192,6 +202,7 @@ namespace LibPixelPet {
 				hash = hash * -1521134295 + this.reduceAllowed.GetHashCode();
 				hash = hash * -1521134295 + this.    isIndexed.GetHashCode();
 				hash = hash * -1521134295 + this.     colorFmt.GetHashCode();
+				hash = hash * -1521134295 + this.  bmpEncoding.GetHashCode();
 				return hash;
 			}
 		}

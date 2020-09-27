@@ -3,19 +3,21 @@ using System.Drawing;
 
 namespace LibPixelPet {
 	public struct ColorFormat : IEquatable<ColorFormat> {
-		public static readonly ColorFormat RGB555 = new ColorFormat(0, 5, 5, 5, 10, 5, 0, 0);
-		public static readonly ColorFormat BGR888 = new ColorFormat(16, 8, 8, 8, 0, 8, 0, 0);
-		public static readonly ColorFormat RGBA5551 = new ColorFormat(0, 5, 5, 5, 10, 5, 15, 1);
-		public static readonly ColorFormat BGRA8888 = new ColorFormat(16, 8, 8, 8, 0, 8, 24, 8);
-		public static readonly ColorFormat Grayscale4BPP = new ColorFormat(0, 4, 0, 4, 0, 4, 0, 0);
-		public static readonly ColorFormat Grayscale8BPP = new ColorFormat(0, 8, 0, 8, 0, 8, 0, 0);
+		public static readonly ColorFormat RGB555 = SequentialRGBA(5, 5, 5, 0);
+		public static readonly ColorFormat BGR888 = SequentialBGRA(8, 8, 8, 0);
+		public static readonly ColorFormat RGBA5551 = SequentialRGBA(5, 5, 5, 1);
+		public static readonly ColorFormat BGRA8888 = SequentialBGRA(8, 8, 8, 8);
+		public static readonly ColorFormat Grayscale2BPP = Grayscale(2);
+		public static readonly ColorFormat Grayscale4BPP = Grayscale(4);
+		public static readonly ColorFormat Grayscale8BPP = Grayscale(8);
+		public static readonly ColorFormat GameBoy = new ColorFormat(0, 2, 0, 2, 0, 2, 0, 0, true);
 
 		public static ColorFormat SequentialRGBA(in int rBits, in int gBits, in int bBits, in int aBits)
-			=> new ColorFormat(0, rBits, rBits, gBits, rBits + gBits, bBits, rBits + gBits + bBits, aBits);
+			=> new ColorFormat(0, rBits, rBits, gBits, rBits + gBits, bBits, rBits + gBits + bBits, aBits, false);
 		public static ColorFormat SequentialBGRA(in int rBits, in int gBits, in int bBits, in int aBits)
-			=> new ColorFormat(bBits + gBits, rBits, bBits, gBits, 0, bBits, bBits + gBits + rBits, aBits);
+			=> new ColorFormat(bBits + gBits, rBits, bBits, gBits, 0, bBits, bBits + gBits + rBits, aBits, false);
 		public static ColorFormat Grayscale(in int bits)
-			=> new ColorFormat(0, bits, 0, bits, 0, bits, 0, 0);
+			=> new ColorFormat(0, bits, 0, bits, 0, bits, 0, 0, false);
 
 		/// <summary>
 		/// Gets a color format with the specified name, or null if no such color format exists.
@@ -24,6 +26,8 @@ namespace LibPixelPet {
 		/// <returns>The color format matching the specified name.</returns>
 		public static ColorFormat? GetFormat(in string formatName) {
 			switch (formatName?.ToUpperInvariant()) {
+			case "2BPP":
+				return ColorFormat.Grayscale2BPP;
 			case "4BPP":
 				return ColorFormat.Grayscale4BPP;
 			case "8BPP":
@@ -40,6 +44,8 @@ namespace LibPixelPet {
 			case "BGRA8888":
 			case "32BPP":
 				return ColorFormat.BGRA8888;
+			case "GB":
+				return ColorFormat.GameBoy;
 			default:
 				return null;
 			}
@@ -92,6 +98,12 @@ namespace LibPixelPet {
 			ConvertComponent(ref b, from.bBits, to.bBits, to. BlueMax, from. BlueMax, 0);
 			ConvertComponent(ref a, from.aBits, to.aBits, to.AlphaMax, from.AlphaMax, to.AlphaMax);
 
+			if (from.Invert != to.Invert) {
+				r = (to.RedMax   - r);
+				g = (to.GreenMax - g);
+				b = (to.BlueMax  - b);
+			}
+
 			return (r << to.rShift)
 			     | (g << to.gShift)
 			     | (b << to.bShift)
@@ -101,7 +113,7 @@ namespace LibPixelPet {
 				if (toBits == fromBits) {
 					return;
 				} else if (fromBits == 0) {
-					c = def;
+					c = def; // default
 				} else if (sloppy && toBits < fromBits) {
 					c >>= fromBits - toBits;
 				} else if (sloppy && toBits > fromBits) {
@@ -188,6 +200,12 @@ namespace LibPixelPet {
 		/// </summary>
 		public int AlphaMask => ((1 << aBits) - 1) << aShift;
 
+		private readonly bool invert;
+		/// <summary>
+		/// Gets a boolean indicating whether color values are inverted.
+		/// </summary>
+		public bool Invert => invert;
+
 		/// <summary>
 		/// Gets the mask for the color channel.
 		/// </summary>
@@ -224,7 +242,8 @@ namespace LibPixelPet {
 			in int rShift, in int rBits,
 			in int gShift, in int gBits,
 			in int bShift, in int bBits,
-			in int aShift, in int aBits
+			in int aShift, in int aBits,
+			in bool invert
 		) {
 			this.rBits  = (byte)(rBits > 0 ? rBits  : 0);
 			this.gBits  = (byte)(gBits > 0 ? gBits  : 0);
@@ -234,6 +253,7 @@ namespace LibPixelPet {
 			this.gShift = (byte)(gBits > 0 ? gShift : 0);
 			this.bShift = (byte)(bBits > 0 ? bShift : 0);
 			this.aShift = (byte)(aBits > 0 ? aShift : 0);
+			this.invert = invert;
 		}
 
 		public bool Equals(ColorFormat other)
@@ -244,7 +264,8 @@ namespace LibPixelPet {
 			&& this.rShift == other.rShift
 			&& this.gShift == other.gShift
 			&& this.bShift == other.bShift
-			&& this.aShift == other.aShift;
+			&& this.aShift == other.aShift
+			&& this.invert == other.invert;
 
 		public override bool Equals(object obj)
 			=> obj is ColorFormat pf ? this.Equals(pf) : false;
@@ -260,6 +281,7 @@ namespace LibPixelPet {
 				hash = hash * -1521134295 + this.gShift;
 				hash = hash * -1521134295 + this.bShift;
 				hash = hash * -1521134295 + this.aShift;
+				hash = hash * -1521134295 + this.invert.GetHashCode();
 				return hash;
 			}
 		}

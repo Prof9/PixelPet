@@ -51,8 +51,10 @@ In PixelPet, the tilemap does not have a specific predefined width or height (i.
 
 PixelPet currently supports the following color formats. A color format describes the range of each color component (Red, Green, Blue, and optionally, Alpha), and how these are stored in memory.
 
+ *  **2BPP** - General 2-bit grayscale, where `0x0` is pure black and `0x3` is pure white.
  *  **4BPP** - General 4-bit grayscale, where `0x0` is pure black and `0xF` is pure white.
  *  **8BPP** - General 8-bit grayscale, where `0x00` is pure black and `0xFF` is pure white.
+ *  **GB** - 2-bit grayscale as it is used on the Game Boy, where the luminance is inverted. `0x0` is pure white, and `0x3` is pure black.
  *  **GBA** / **RGB555** - 15-bit color as it is used on the Game Boy Advance, where the Red, Green and Blue components are all 5 bits. `0x0000` is pure black, and `0x7FFF` is pure white.
  *  **NDS** / **RGBA5551** - 16-bit color as it is used on the Nintendo DS, where the Red, Green and Blue components are 5 bits, and the Alpha component is 1 bit. `0x8000` is pure black, and `0xFFFF` is pure white.
  *  **24BPP** / **BGR888** - General 24-bit color, where the Red, Green and Blue components are all 8 bits. `0x000000` is pure black, and `0xFFFFFF` is pure white.
@@ -62,6 +64,7 @@ PixelPet currently supports the following color formats. A color format describe
 
 PixelPet currently supports the following bitmap formats. A bitmap format describes how many bits are stored per pixel; whether the image is indexed (meaning a palette is needed to proper display it); if the image is indexed, which color format should be used to render the image if a palette is not present; and how tilemap entries are stored in memory.
 
+ *  **GB** - 2 bits per pixel bitmap format as it used on the Game Boy, where a pair of 2 bytes collectively holds 8 pixels.
  *  **GBA-4BPP** / **NDS-4BPP** - 4 bits per pixel bitmap format as it is used on the Game Boy Advance and Nintendo DS. This bitmap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `4BPP` grayscale color format instead.
  *  **GBA-8BPP** / **NDS-8BPP** - 8 bits per pixel bitmap format as it is used on the Game Boy Advance and Nintendo DS. This bitmap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `8BPP` grayscale color format instead.
 
