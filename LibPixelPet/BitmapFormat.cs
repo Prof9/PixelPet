@@ -108,10 +108,11 @@ namespace LibPixelPet {
 		/// </summary>
 		public ColorFormat ColorFormat => colorFmt;
 
+		private readonly bool isIndexed;
 		/// <summary>
 		/// Gets a boolean that indicates whether this bitmap format uses indexed colors.
 		/// </summary>
-		public bool IsIndexed { get; }
+		public bool IsIndexed => isIndexed;
 
 		/// <summary>
 		/// Gets the mask for a tilemap entry.
@@ -158,6 +159,7 @@ namespace LibPixelPet {
 			this.reduceAllowed = reduceAllowed;
 			this. colorFmt     =  colorFmt;
 			this.IsIndexed     = isIndexed;
+			this.isIndexed     = isIndexed;
 		}
 
 		public bool Equals(BitmapFormat other)
@@ -170,7 +172,8 @@ namespace LibPixelPet {
 			&& this. hflipAllowed == other. hflipAllowed
 			&& this. vflipAllowed == other. vflipAllowed
 			&& this.reduceAllowed == other.reduceAllowed
-			&& this. colorFmt     == other.colorFmt;
+			&& this.isIndexed     == other.isIndexed
+			&& this. colorFmt     == other.colorFmt
 
 		public override bool Equals(object obj)
 			=> obj is BitmapFormat tf ? this.Equals(tf) : false;
@@ -187,7 +190,8 @@ namespace LibPixelPet {
 				hash = hash * -1521134295 + this. hflipAllowed.GetHashCode();
 				hash = hash * -1521134295 + this. vflipAllowed.GetHashCode();
 				hash = hash * -1521134295 + this.reduceAllowed.GetHashCode();
-				hash = hash * -1521134295 + this. colorFmt    .GetHashCode();
+				hash = hash * -1521134295 + this.    isIndexed.GetHashCode();
+				hash = hash * -1521134295 + this.     colorFmt.GetHashCode();
 				return hash;
 			}
 		}
