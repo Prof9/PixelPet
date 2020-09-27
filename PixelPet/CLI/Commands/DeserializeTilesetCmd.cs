@@ -34,6 +34,7 @@ namespace PixelPet.CLI.Commands {
 			int bpt = (tw * th) / ppb;				// bytes per tile
 			int pmask = mapFmt.ColorFormat.Mask;	// mask per pixel
 			int b;									// current byte
+			int b2;									// current byte 2
 			int bi;									// byte index in current tile
 			int pi;									// pixel index in current byte
 			int c;									// current pixel
@@ -48,6 +49,27 @@ namespace PixelPet.CLI.Commands {
 			int[] pixels = new int[tw * th];
 			int added = 0;
 			while (tc-- > 0 && workbench.Stream.Read(buffer, 0, bpt) == bpt) {
+				switch (mapFmt.BitmapEncoding) {
+				case BitmapEncoding.Normal:
+					DeserializeTileNormal();
+					break;
+				case BitmapEncoding.GameBoy:
+					DeserializeTileGameBoy();
+					break;
+				}
+
+				// Add tile to the tileset.
+				Tile tile = new Tile(tw, th);
+				tile.SetAllPixels(pixels);
+				workbench.Tileset.AddTile(tile, mapFmt.CanFlipHorizontal, mapFmt.CanFlipVertical);
+				added++;
+			}
+
+			workbench.Tileset.ColorFormat = pal?.Format ?? mapFmt.ColorFormat;
+
+			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
+
+			void DeserializeTileNormal() {
 				// Process all bytes.
 				for (bi = 0; bi < bpt; bi++) {
 					// Get current byte.
@@ -64,17 +86,27 @@ namespace PixelPet.CLI.Commands {
 						pixels[bi * ppb + pi] = c;
 					}
 				}
-
-				// Add tile to the tileset.
-				Tile tile = new Tile(tw, th);
-				tile.SetAllPixels(pixels);
-				workbench.Tileset.AddTile(tile, mapFmt.CanFlipHorizontal, mapFmt.CanFlipVertical);
-				added++;
 			}
 
-			workbench.Tileset.ColorFormat = pal?.Format ?? mapFmt.ColorFormat;
+			void DeserializeTileGameBoy() {
+				// Process all byte pairs.
+				for (bi = 0; bi < bpt; bi += 2) {
+					b  = buffer[bi];
+					b2 = buffer[bi + 1];
 
-			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
+					// Extract pixels from byte.
+					for (pi = 0; pi < 2 * ppb; pi++) {
+						c = ((b & 0x80) >> 7) | ((b2 & 0x80) >> 6);
+						b  <<= 1;
+						b2 <<= 1;
+
+						// Apply palette.
+						c = pal?[c] ?? c;
+
+						pixels[bi * ppb + pi] = c;
+					}
+				}
+			}
 		}
 	}
 }

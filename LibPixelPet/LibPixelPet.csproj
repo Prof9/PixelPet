@@ -49,6 +49,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitmapEncoding.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MultiValueDictionary.cs" />
     <Compile Include="NumberParser.cs" />
