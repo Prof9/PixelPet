@@ -84,6 +84,8 @@ namespace LibPixelPet {
 				this.TileEntries.Add(te);
 			}
 
+			// Update the color format of the tileset
+			tileset.ColorFormat = format.ColorFormat;
 			tileset.IsIndexed = false;
 		}
 
