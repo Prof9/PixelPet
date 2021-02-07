@@ -25,7 +25,7 @@ namespace PixelPet {
 			this.ClearBitmap(8, 8);
 			this.Stream = new MemoryStream();
 			this.Tileset = new Tileset(8, 8);
-			this.Tilemap = new Tilemap();
+			this.Tilemap = new Tilemap(LibPixelPet.BitmapFormat.GBA4BPP);
 		}
 
 		public void ClearBitmap(in int width, in int height) {

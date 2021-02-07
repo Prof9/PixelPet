@@ -18,15 +18,23 @@ namespace LibPixelPet {
 		/// Gets the palette number for this tile entry.
 		/// </summary>
 		public int PaletteNumber { get; }
+		/// <summary>
+		/// Gets the texture mode for this tile entry.
+		/// </summary>
+		public int TextureMode { get; }
 
 		public TileEntry(int tileNumber, bool hFlip, bool vFlip)
 			: this(tileNumber, hFlip, vFlip, 0) { }
 
-		public TileEntry(int tileNumber, bool hFlip, bool vFlip, int paletteNumber) {
+		public TileEntry(int tileNumber, bool hFlip, bool vFlip, int paletteNumber)
+			: this(tileNumber, hFlip, vFlip, paletteNumber, 0) { }
+
+		public TileEntry(int tileNumber, bool hFlip, bool vFlip, int paletteNumber, int mode) {
 			this.TileNumber = tileNumber;
 			this.HFlip = hFlip;
 			this.VFlip = vFlip;
 			this.PaletteNumber = paletteNumber;
+			this.TextureMode = mode;
 		}
 
 		public override int GetHashCode() {
