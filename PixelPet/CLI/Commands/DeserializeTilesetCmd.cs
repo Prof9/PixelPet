@@ -63,7 +63,8 @@ namespace PixelPet.CLI.Commands {
 			int added = 0;
 			while (tc-- > 0 && workbench.Stream.Read(buffer, 0, bpt) == bpt) {
 				switch (mapFmt.BitmapEncoding) {
-				case BitmapEncoding.Normal:
+				case BitmapEncoding.GameBoyAdvance:
+				case BitmapEncoding.NintendoDSTexture:
 					DeserializeTileNormal();
 					break;
 				case BitmapEncoding.GameBoy:

@@ -12,6 +12,11 @@ namespace LibPixelPet {
 		private List<TileEntry> TileEntries { get; }
 
 		/// <summary>
+		/// Gets or sets the bitmap format of the tilemap.
+		/// </summary>
+		public BitmapFormat BitmapFormat { get; set; }
+
+		/// <summary>
 		/// Gets the amount of tile entries currently in the tilemap.
 		/// </summary>
 		public int Count => this.TileEntries.Count;
@@ -34,9 +39,14 @@ namespace LibPixelPet {
 		}
 
 		/// <summary>
-		/// Creates a new empty tilemap.
+		/// Creates a new empty tilemap with the given bitmap format.
 		/// </summary>
-		public Tilemap() {
+		/// <param name="mapFmt">The bitmap format to use.</param>
+		public Tilemap(BitmapFormat mapFmt) {
+			if (mapFmt == null) {
+				throw new ArgumentNullException(nameof(mapFmt));
+			}
+			this.BitmapFormat = mapFmt;
 			this.TileEntries = new List<TileEntry>();
 		}
 
@@ -161,7 +171,7 @@ namespace LibPixelPet {
 		public Bitmap ToBitmapIndexed(Tileset tileset, PaletteSet palettes, in int tilesPerRow, in int tilesPerColumn)
 			=> this.ToBitmapInternal(tileset, palettes, tilesPerRow, tilesPerColumn, true);
 
-		private Bitmap ToBitmapInternal(Tileset tileset, PaletteSet palettes, in int tilesPerRow, in int tilesPerColumn, in bool indexed) {
+		private Bitmap ToBitmapInternal(Tileset tileset, PaletteSet palettes, in int tilesPerRow, in int tilesPerColumn, bool indexed) {
 			if (tileset == null)
 				throw new ArgumentNullException(nameof(tileset));
 			if (tilesPerRow <= 0)
@@ -198,30 +208,25 @@ namespace LibPixelPet {
 						break;
 					}
 
+					// Skip if invalid tile number.
+					if (te.TileNumber >= tileset.Count) {
+						continue;
+					}
+
 					// Draw the tile for this tile entry.
 					Tile tile = tileset[te.TileNumber];
-					Palette pal = palettes?.FindPalette(te.PaletteNumber);
+					int palNum = this.BitmapFormat.BitmapEncoding switch {
+						BitmapEncoding.NintendoDSTexture => 0,
+						_ => te.PaletteNumber
+					};
+					Palette pal = palettes?.FindPalette(palNum);
 					int pi = 0;
 					foreach (int p in tile.EnumerateTile(te.HFlip, te.VFlip)) {
 						int px = pi % tileset.TileWidth + ti * tileset.TileWidth;
 						int py = pi / tileset.TileWidth + tj * tileset.TileHeight;
 						int ptr = (py * bmpData.Stride + px * 4) / 4;
 
-						int c;
-						ColorFormat fmt;
-						if (indexed) {
-							if (pal != null && p < pal.Count) {
-								c = pal[p];
-								fmt = pal.Format;
-							} else {
-								// TODO: Throw an exception?
-								c = p;
-								fmt = tileset.ColorFormat;
-							}
-						} else {
-							c = p;
-							fmt = tileset.ColorFormat;
-						}
+						GetColor(te, pal, p, out int c, out ColorFormat fmt);
 
 						buffer[ptr] = bgra8888.Convert(c, fmt);
 						pi++;
@@ -236,10 +241,103 @@ namespace LibPixelPet {
 				bmp?.Dispose();
 				throw;
 			}
+
+			void GetColor(TileEntry te, Palette pal, int p, out int c, out ColorFormat fmt) {
+				if (this.BitmapFormat.BitmapEncoding == BitmapEncoding.NintendoDSTexture) {
+					switch (te.TextureMode) {
+					case 0:
+						if (p == 3) {
+							c = 0;
+							fmt = bgra8888;
+						} else {
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + p, out c, out fmt);
+						}
+						break;
+					case 1:
+						if (p == 3) {
+							c = 0;
+							fmt = bgra8888;
+						} else if (p == 2) {
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + 0, out int c1, out ColorFormat fmt1);
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + 1, out int c2, out ColorFormat _);
+							c = BlendColors(c1, c2, 1, 1, fmt1);
+							fmt = bgra8888;
+						} else {
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + p, out c, out fmt);
+						}
+						break;
+					case 2:
+						GetColorFromPalette(pal, p, out c, out fmt);
+						break;
+					case 3:
+						if (p == 3) {
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + 0, out int c1, out ColorFormat fmt1);
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + 1, out int c2, out ColorFormat _);
+							c = BlendColors(c1, c2, 3, 5, fmt1);
+							fmt = bgra8888;
+						} else if (p == 2) {
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + 0, out int c1, out ColorFormat fmt1);
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + 1, out int c2, out ColorFormat _);
+							c = BlendColors(c1, c2, 5, 3, fmt1);
+							fmt = bgra8888;
+						} else {
+							GetColorFromPalette(pal, te.PaletteNumber * 2 + p, out c, out fmt);
+						}
+						break;
+					default:
+						// Should never happen
+						c = 0;
+						fmt = bgra8888;
+						break;
+					}
+				} else if (indexed) {
+					GetColorFromPalette(pal, p, out c, out fmt);
+				} else {
+					c = p;
+					fmt = tileset.ColorFormat;
+				}
+			}
+			int BlendColors(int c1, int c2, int ratio1, int ratio2, ColorFormat fmt) {
+				int r1, r2, r3, g1, g2, g3, b1, b2, b3, a1, a2, a3;
+				int den = ratio1 + ratio2;
+
+				// Normalize to 32-bit color
+				c1 = bgra8888.Convert(c1, fmt);
+				c2 = bgra8888.Convert(c2, fmt);
+
+				// Get components
+				r1 = (c1 >> bgra8888.  RedShift) & bgra8888.  RedMax;
+				r2 = (c2 >> bgra8888.  RedShift) & bgra8888.  RedMax;
+				g1 = (c1 >> bgra8888.GreenShift) & bgra8888.GreenMax;
+				g2 = (c2 >> bgra8888.GreenShift) & bgra8888.GreenMax;
+				b1 = (c1 >> bgra8888. BlueShift) & bgra8888. BlueMax;
+				b2 = (c2 >> bgra8888. BlueShift) & bgra8888. BlueMax;
+				a1 = (c1 >> bgra8888.AlphaShift) & bgra8888.AlphaMax;
+				a2 = (c2 >> bgra8888.AlphaShift) & bgra8888.AlphaMax;
+
+				// Blend components
+				r3 = (r1 * ratio1 + r2 * ratio2 + den / 2) / den;
+				g3 = (g1 * ratio1 + g2 * ratio2 + den / 2) / den;
+				b3 = (b1 * ratio1 + b2 * ratio2 + den / 2) / den;
+				a3 = (a1 * ratio1 + a2 * ratio2 + den / 2) / den;
+
+				// Form new color
+				return (r3 << bgra8888.RedShift) | (g3 << bgra8888.GreenShift) | (b3 << bgra8888.BlueShift) | (a3 << bgra8888.AlphaShift);
+			}
+			void GetColorFromPalette(Palette pal, int p, out int c, out ColorFormat fmt) {
+				if (pal != null && p < pal.Count) {
+					c = pal[p];
+					fmt = pal.Format;
+				} else {
+					// TODO: Throw an exception?
+					c = p;
+					fmt = tileset.ColorFormat;
+				}
+			}
 		}
 
 		public Tilemap Clone() {
-			Tilemap clone = new Tilemap();
+			Tilemap clone = new Tilemap(this.BitmapFormat);
 			clone.TileEntries.AddRange(this.TileEntries);
 			return clone;
 		}

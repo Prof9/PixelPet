@@ -5,7 +5,8 @@ using System.Text;
 
 namespace LibPixelPet {
 	public enum BitmapEncoding {
-		Normal,
-		GameBoy
+		GameBoy,
+		GameBoyAdvance,
+		NintendoDSTexture,
 	}
 }
