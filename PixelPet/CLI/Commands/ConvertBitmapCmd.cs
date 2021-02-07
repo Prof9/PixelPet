@@ -29,18 +29,18 @@ namespace PixelPet.CLI.Commands {
 			byte[] buffer = new byte[bmpData.Stride * workbench.Bitmap.Height];
 			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
 
-			bool mayNeedSloppy = false;
+			int mayNeedSloppy = 0;
 
 			for (int i = 0; i < buffer.Length; i += 4) {
 				int cb = BitConverter.ToInt32(buffer, i);
 				int ca = fmt.Convert(cb, workbench.BitmapFormat, sloppy);
-				if (!sloppy && !mayNeedSloppy && fmt.Bits < workbench.BitmapFormat.Bits) {
+				if (!sloppy && fmt.Bits < workbench.BitmapFormat.Bits) {
 					// Convert sloppy and back.
 					int csa = fmt.Convert(cb, workbench.BitmapFormat, true);
 					int csb = workbench.BitmapFormat.Convert(csa, fmt, true);
 					// Check if original color may be sloppy, and this would change the output.
 					if (cb == csb && ca != csa) {
-						mayNeedSloppy = true;
+						mayNeedSloppy++;
 					}
 				}
 				buffer[i + 0] = (byte)(ca >>  0);
@@ -54,7 +54,7 @@ namespace PixelPet.CLI.Commands {
 
 			workbench.BitmapFormat = fmt;
 
-			if (mayNeedSloppy) {
+			if (mayNeedSloppy >= workbench.Bitmap.Width * workbench.Bitmap.Height) {
 				logger?.Log("This bitmap appears to be improperly scaled. The --sloppy flag may be required.", LogLevel.Warning);
 			}
 			logger?.Log("Converted bitmap to color format " + fmtName + ".");
