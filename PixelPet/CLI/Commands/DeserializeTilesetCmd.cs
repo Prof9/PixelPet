@@ -6,6 +6,7 @@ namespace PixelPet.CLI.Commands {
 		public DeserializeTilesetCmd()
 			: base("Deserialize-Tileset",
 				new Parameter(true, new ParameterValue("image-format")),
+				new Parameter("ignore-palette", "ip", false),
 				new Parameter("tile-count", "tc", false, new ParameterValue("count", "" + int.MaxValue)),
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
 			) { }
@@ -14,17 +15,29 @@ namespace PixelPet.CLI.Commands {
 			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
 			int tc = FindNamedParameter("--tile-count").Values[0].ToInt32();
 			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
-			
+			bool usePalette = !FindNamedParameter("--ignore-palette").IsPresent;
+
+			if (!(BitmapFormat.GetFormat(mapFmtName) is BitmapFormat mapFmt)) {
+				logger?.Log("Unknown bitmap format \"" + mapFmtName + "\".", LogLevel.Error);
+				return;
+			}
 			if (tc < 0) {
 				logger?.Log("Invalid tile count.", LogLevel.Error);
 				return;
 			}
-			if (!(BitmapFormat.GetFormat(mapFmtName) is BitmapFormat mapFmt)) {
-				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
-				return;
-			}
 
 			workbench.Stream.Position = Math.Min(offset, workbench.Stream.Length);
+
+			// Set correct tileset dimensions
+			if (workbench.Tileset.TileWidth != mapFmt.TileWidth ||
+				workbench.Tileset.TileHeight != mapFmt.TileHeight) {
+				if (workbench.Tileset.Count != 0) {
+					logger?.Log("Bitmap format \"" + mapFmtName + "\" requires " + mapFmt.TileWidth + "x" + mapFmt.TileHeight + " tiles, " +
+						"but current tileset is " + workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + ". " +
+						"Current tileset will be discarded.", LogLevel.Warning);
+				}
+				workbench.Tileset = new Tileset(mapFmt.TileWidth, mapFmt.TileHeight);
+			}
 
 			int bpp = mapFmt.ColorFormat.Bits;		// bits per pixel
 			int tw = workbench.Tileset.TileWidth;	// tile width
@@ -66,6 +79,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			workbench.Tileset.ColorFormat = pal?.Format ?? mapFmt.ColorFormat;
+			workbench.Tileset.IsIndexed = !usePalette;
 
 			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
 
@@ -81,7 +95,9 @@ namespace PixelPet.CLI.Commands {
 						b >>= bpp;
 
 						// Apply palette.
-						c = pal?[c] ?? c;
+						if (usePalette) {
+							c = pal?[c] ?? c;
+						}
 
 						pixels[bi * ppb + pi] = c;
 					}
@@ -101,7 +117,9 @@ namespace PixelPet.CLI.Commands {
 						b2 <<= 1;
 
 						// Apply palette.
-						c = pal?[c] ?? c;
+						if (usePalette) {
+							c = pal?[c] ?? c;
+						}
 
 						pixels[bi * ppb + pi] = c;
 					}
