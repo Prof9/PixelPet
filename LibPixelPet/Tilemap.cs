@@ -267,7 +267,7 @@ namespace LibPixelPet {
 						}
 						break;
 					case 2:
-						GetColorFromPalette(pal, p, out c, out fmt);
+						GetColorFromPalette(pal, te.PaletteNumber * 2 + p, out c, out fmt);
 						break;
 					case 3:
 						if (p == 3) {
