@@ -99,7 +99,11 @@ namespace PixelPet.CLI.Commands {
 				added++;
 			}
 
-			workbench.Tileset.ColorFormat = pal?.Format ?? mapFmt.ColorFormat;
+			if (usePalette && pal != null) {
+				workbench.Tileset.ColorFormat = pal.Format;
+			} else {
+				workbench.Tileset.ColorFormat = mapFmt.ColorFormat;
+			}
 			workbench.Tileset.IsIndexed = !usePalette;
 
 			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
