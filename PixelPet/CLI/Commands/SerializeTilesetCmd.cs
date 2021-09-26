@@ -45,14 +45,21 @@ namespace PixelPet.CLI.Commands {
 				b  = 0;
 				foreach (int c in tile.EnumerateTile()) {
 					co = c + colorOffset;
-					// Add pixel to current byte.
-					b |= (int)(co << (pi * bpp));
 
-					if (++pi >= ppb) {
-						// Write byte to stream if it's finished.
-						workbench.Stream.WriteByte((byte)b);
-						b  = 0;
-						pi = 0;
+					if (bpp > 4) {
+						for (int bi = 0; bi < bpp; bi += 8) {
+							workbench.Stream.WriteByte((byte)(co >> bi));
+						}
+					} else {
+						// Add pixel to current byte.
+						b |= (int)(co << (pi * bpp));
+
+						if (++pi >= ppb) {
+							// Write byte to stream if it's finished.
+							workbench.Stream.WriteByte((byte)b);
+							b = 0;
+							pi = 0;
+						}
 					}
 				}
 				if (pi > 0) {
