@@ -1,5 +1,6 @@
 ﻿using LibPixelPet;
 using System;
+using System.Drawing;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
@@ -8,13 +9,21 @@ namespace PixelPet.CLI.Commands {
 			: base("Read-Palettes",
 				new Parameter("append", "a", false),
 				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
-				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1"))
+				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
+				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
+				new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
+				new Parameter("width", "w", false, new ParameterValue("pixels", "-1")),
+				new Parameter("height", "h", false, new ParameterValue("pixels", "-1"))
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
 			bool append = FindNamedParameter("--append").IsPresent;
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
+			int x = FindNamedParameter("--x").Values[0].ToInt32();
+			int y = FindNamedParameter("--y").Values[0].ToInt32();
+			int w = FindNamedParameter("--width").Values[0].ToInt32();
+			int h = FindNamedParameter("--height").Values[0].ToInt32();
 
 			if (palNum < -1) {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
@@ -34,40 +43,42 @@ namespace PixelPet.CLI.Commands {
 			int addedColors = 0;
 			int addedPalettes = 0;
 			Palette pal = null;
-			foreach (Tile tile in cutter.CutTiles(workbench.Bitmap)) {
-				// Grab color from tile.
-				int color = tile[0, 0];
-				foreach (int otherColor in tile.EnumerateTile().Skip(1)) {
-					if (otherColor != color) {
-						logger?.Log("Palette tile " + ti + " is not a single color.", LogLevel.Error);
-						return;
-					}
-				}
-
-				// Create new palette if needed.
-				if (pal == null) {
-					pal = new Palette(workbench.BitmapFormat, palSize);
-				}
-
-				// Add finished palette to palette set.
-				pal.Add(color, workbench.BitmapFormat);
-				addedColors++;
-
-				// Add finished palette to palette set.
-				if (palSize != -1 && pal.Count >= palSize) {
-					if (palNum >= 0) {
-						while (workbench.PaletteSet.ContainsPalette(palNum)) {
-							palNum++;
+			using (Bitmap bmp = workbench.GetCroppedBitmap(x, y, w, h, logger)) {
+				foreach (Tile tile in cutter.CutTiles(bmp)) {
+					// Grab color from tile.
+					int color = tile[0, 0];
+					foreach (int otherColor in tile.EnumerateTile().Skip(1)) {
+						if (otherColor != color) {
+							logger?.Log("Palette tile " + ti + " is not a single color.", LogLevel.Error);
+							return;
 						}
-						workbench.PaletteSet.Add(pal, palNum++);
-					} else {
-						workbench.PaletteSet.Add(pal);
 					}
-					addedPalettes++;
-					pal = null;
-				}
 
-				ti++;
+					// Create new palette if needed.
+					if (pal == null) {
+						pal = new Palette(workbench.BitmapFormat, palSize);
+					}
+
+					// Add finished palette to palette set.
+					pal.Add(color, workbench.BitmapFormat);
+					addedColors++;
+
+					// Add finished palette to palette set.
+					if (palSize != -1 && pal.Count >= palSize) {
+						if (palNum >= 0) {
+							while (workbench.PaletteSet.ContainsPalette(palNum)) {
+								palNum++;
+							}
+							workbench.PaletteSet.Add(pal, palNum++);
+						} else {
+							workbench.PaletteSet.Add(pal);
+						}
+						addedPalettes++;
+						pal = null;
+					}
+
+					ti++;
+				}
 			}
 			// Finish up remaining palette
 			if (pal != null) {

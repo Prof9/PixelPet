@@ -220,7 +220,7 @@ Extracts 16-color palettes from the workbench bitmap.
 
 ### Read-Palettes
 ```
-Read-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>]
+Read-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>]
 ```
 
 Reads a palettes from a *palette image* loaded into the workbench bitmap. The colors read from the palette image are loaded into new palette(s).
@@ -234,6 +234,8 @@ If `--append` is present, then the read palettes are added to the current workbe
 The `--palette-number` option can be used to specify the initial palette slot number that will be used for any newly created palette. This slot number is increased until an empty slot is found. If this option is not specified, new palettes will get the highest slot number among the loaded palettes + 1.
 
 The `--palette-size` option can be used to specify the maximum palette size for the newly created palettes. Once the maximum size for the current palette is reached, a new palette is added. As such, by using the `--palette-size` option, multiple palettes can be read at once. If the `--palette-size` option is not used, all colors will be placed into a single, unbounded palette.
+
+The `--x`, `--y`, `--width` and `--height` options can be used to process only a portion of the workbench bitmap. The workbench bitmap will not be changed, but it will be processed as if it was cropped using the given parameters, and the first tile begins in the top left corner of the cropped bitmap. By default, the entire workbench bitmap is processed.
 
 **Example usage:**
 ```
