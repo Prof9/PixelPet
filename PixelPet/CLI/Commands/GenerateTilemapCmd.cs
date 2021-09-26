@@ -7,6 +7,7 @@ namespace PixelPet.CLI.Commands {
 		public GenerateTilemapCmd()
 			: base("Generate-Tilemap",
 				new Parameter(true, new ParameterValue("format")),
+				new Parameter("append", "a", false),
 				new Parameter("no-reduce", "nr", false),
 				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
 				new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
@@ -16,6 +17,7 @@ namespace PixelPet.CLI.Commands {
 
 		protected override void Run(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].Value;
+			bool append = FindNamedParameter("--append").IsPresent;
 			bool noReduce = FindNamedParameter("--no-reduce").IsPresent;
 			int x = FindNamedParameter("--x").Values[0].ToInt32();
 			int y = FindNamedParameter("--y").Values[0].ToInt32();
@@ -25,6 +27,11 @@ namespace PixelPet.CLI.Commands {
 			if (!(BitmapFormat.GetFormat(fmtName) is BitmapFormat fmt)) {
 				logger?.Log("Unknown tilemap format \"" + fmtName + "\".", LogLevel.Error);
 				return;
+			}
+
+			if (!append) {
+				workbench.Tileset.Clear();
+				workbench.Tilemap.Clear();
 			}
 
 			int beforeCount = workbench.Tilemap.Count;

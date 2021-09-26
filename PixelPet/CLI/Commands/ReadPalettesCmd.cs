@@ -6,11 +6,13 @@ namespace PixelPet.CLI.Commands {
 	internal class ReadPalettesCmd : CliCommand {
 		public ReadPalettesCmd()
 			: base("Read-Palettes",
+				new Parameter("append", "a", false),
 				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
 				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1"))
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
+			bool append = FindNamedParameter("--append").IsPresent;
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
 
@@ -21,6 +23,10 @@ namespace PixelPet.CLI.Commands {
 			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
+			}
+
+			if (!append) {
+				workbench.PaletteSet.Clear();
 			}
 
 			TileCutter cutter = new TileCutter(8, 8);
@@ -63,6 +69,7 @@ namespace PixelPet.CLI.Commands {
 
 				ti++;
 			}
+			// Finish up remaining palette
 			if (pal != null) {
 				if (palNum >= 0) {
 					while (workbench.PaletteSet.ContainsPalette(palNum)) {

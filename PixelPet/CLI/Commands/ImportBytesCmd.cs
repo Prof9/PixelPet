@@ -7,12 +7,14 @@ namespace PixelPet.CLI.Commands {
 		public ImportBytesCmd()
 			: base("Import-Bytes",
 				new Parameter(true, new ParameterValue("path")),
+				new Parameter("append", "a", false),
 				new Parameter("offset", "o", false, new ParameterValue("count", "0")),
 				new Parameter("length", "l", false, new ParameterValue("count", "" + long.MaxValue))
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
 			string path = FindUnnamedParameter(0).Values[0].ToString();
+			bool append = FindNamedParameter("--append").IsPresent;
 			long offset = this.FindNamedParameter("--offset").Values[0].ToInt64();
 			long length = this.FindNamedParameter("--length").Values[0].ToInt64();
 
@@ -25,7 +27,11 @@ namespace PixelPet.CLI.Commands {
 				return;
 			}
 
-			workbench.Stream.SetLength(0);
+			if (append) {
+				workbench.Stream.Position = workbench.Stream.Length;
+			} else {
+				workbench.Stream.SetLength(0);
+			}
 
 			try {
 				if (!File.Exists(path)) {

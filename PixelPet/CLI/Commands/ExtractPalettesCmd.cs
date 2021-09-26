@@ -8,15 +8,17 @@ namespace PixelPet.CLI.Commands {
 	internal class ExtractPalettesCmd : CliCommand {
 		public ExtractPalettesCmd()
 			: base("Extract-Palettes",
-				  new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
-				  new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
-				  new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
-				  new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
-				  new Parameter("width", "w", false, new ParameterValue("pixels", "-1")),
-				  new Parameter("height", "h", false, new ParameterValue("pixels", "-1"))
+				new Parameter("append", "a", false),
+				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
+				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
+				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
+				new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
+				new Parameter("width", "w", false, new ParameterValue("pixels", "-1")),
+				new Parameter("height", "h", false, new ParameterValue("pixels", "-1"))
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
+			bool append = FindNamedParameter("--append").IsPresent;
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
 			int x = FindNamedParameter("--x").Values[0].ToInt32();
@@ -31,6 +33,10 @@ namespace PixelPet.CLI.Commands {
 			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
+			}
+
+			if (!append) {
+				workbench.PaletteSet.Clear();
 			}
 
 			int tw = workbench.Tileset.TileWidth;
@@ -101,9 +107,9 @@ namespace PixelPet.CLI.Commands {
 
 					ti++;
 				}
-
-				logger?.Log("Added " + addedPalettes + " new palettes, " + addedColors + " colors total.");
 			}
+
+			logger?.Log("Added " + addedPalettes + " new palettes, " + addedColors + " colors total.");
 		}
 	}
 }

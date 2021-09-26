@@ -5,12 +5,19 @@ using System.Linq;
 namespace PixelPet.CLI.Commands {
 	internal class SerializePalettesCmd : CliCommand {
 		public SerializePalettesCmd()
-			: base("Serialize-Palettes") { }
+			: base("Serialize-Palettes",
+				new Parameter("append", "a", false)
+			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
+			bool append = FindNamedParameter("--append").IsPresent;
 			int width = workbench.PaletteSet.Max(pe => pe.Palette.Count);
 
-			workbench.Stream.SetLength(0);
+			if (append) {
+				workbench.Stream.Position = workbench.Stream.Length;
+			} else {
+				workbench.Stream.SetLength(0);
+			}
 
 			int colors = 0;
 			foreach (PaletteEntry pe in workbench.PaletteSet) {

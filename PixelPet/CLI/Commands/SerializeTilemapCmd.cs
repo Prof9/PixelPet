@@ -5,17 +5,23 @@ namespace PixelPet.CLI.Commands {
 	internal class SerializeTilemapCmd : CliCommand {
 		public SerializeTilemapCmd()
 			: base("Serialize-Tilemap",
+				new Parameter("append", "a", false),
 				new Parameter("base-tile", "bt", false, new ParameterValue("index", "0")),
 				new Parameter("first-tile", "ft", false, new ParameterValue("tilemap-entry", "-1"))
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
+			bool append = FindNamedParameter("--append").IsPresent;
 			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
 			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
 
 			BitmapFormat fmt = workbench.TilemapFormat;
 
-			workbench.Stream.SetLength(0);
+			if (append) {
+				workbench.Stream.Position = workbench.Stream.Length;
+			} else {
+				workbench.Stream.SetLength(0);
+			}
 
 			// Get byte count of single entry.
 			int size = (fmt.Bits + 7) / 8;

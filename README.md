@@ -140,10 +140,10 @@ Exports the bitmap in the workbench to `output.png`.
 
 ### Import-Bytes
 ```
-Import-Bytes <path> [--offset/-o <count>] [--length/-l <count>]
+Import-Bytes <path> [--append/-a] [--offset/-o <count>] [--length/-l <count>]
 ```
 
-Imports the binary file specified by `<path>` to the workbench bytestream. The previous workbench bytestream is discarded.
+Imports the binary file specified by `<path>` to the workbench bytestream. If `--append` is present, then the binary file is appended to the previous  workbench bytestream; otherwise, the previous workbench bytestream is discarded.
 
 Optionally, you can use the `--offset` and/or `--length` parameters to specify the offset in the file from which bytes should be read (by default, this is 0), and/or the maximum number of bytes that should be loaded (by default, this is unbounded). Bytes will be loaded until the end of the file or the maximum length is reached, whichever comes first.
 
@@ -194,7 +194,7 @@ Discards the workbench tilemap, and initializes a new one.
 
 ### Extract-Palettes
 ```
-Extract-Palettes [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>]
+Extract-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>]
 ```
 
 Extracts palettes from the workbench bitmap.
@@ -202,6 +202,8 @@ Extracts palettes from the workbench bitmap.
 This is done by first splitting the bitmap into tiles (the tile size is dictated by the workbench tileset). For each tile, we then take the color values present and add these to one of the existing palettes (removing any duplicate colors) if possible, or add a new palette if this does not fit in any of the current palettes.
 
 PixelPet attempts to minimize the number of palettes used, but a greedy algorithm is used, so it is not guaranteed that this does lead to the minimum number of palettes. If this is a concern, it may be better to create the templates manually and load them via the `Read-Palettes` command instead.
+
+If `--append` is present, then the extracted palettes are added to the current workbench palettes. Otherwise, the current workbench palettes are discarded first.
 
 The `--palette-number` option can be used to specify the initial palette slot number that will be used for any newly created palette. This slot number is increased until an empty slot is found. If this option is not specified, new palettes will get the highest slot number among the loaded palettes + 1.
 
@@ -218,12 +220,14 @@ Extracts 16-color palettes from the workbench bitmap.
 
 ### Read-Palettes
 ```
-Read-Palettes [--palette-number/-pn <number>] [--palette-size/-ps <count>]
+Read-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>]
 ```
 
 Reads a palettes from a *palette image* loaded into the workbench bitmap. The colors read from the palette image are loaded into new palette(s).
 
 This command can be used to load a predefined set of palettes. The palettes are stored as a *palette image*; an image consisting of 8 by 8 pixel blocks of a solid color, where each block represents one color in the palette. For example, a palette with 16 colors can be represented as a 128 by 8 pixels palette image. The blocks are read left-to-right, top-to-bottom. If any 8 by 8 pixel block does not consist solely of pixels with the exact same color value, an error will be thrown.
+
+If `--append` is present, then the read palettes are added to the current workbench palettes. Otherwise, the current workbench palettes are discarded first.
 
 The `--palette-number` option can be used to specify the initial palette slot number that will be used for any newly created palette. This slot number is increased until an empty slot is found. If this option is not specified, new palettes will get the highest slot number among the loaded palettes + 1.
 
@@ -406,12 +410,14 @@ All tiles that are added consist only of pixels with color value 0.
 
 ### Generate-Tilemap
 ```
-Generate-Tilemap <format> [--no-reduce/-nr] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>]
+Generate-Tilemap <format> [--append/-a] [--no-reduce/-nr] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>]
 ```
 
-Generates a tilemap + tileset from the workbench bitmap. Any new tilemap entries and tiles are appended to the current workbench tilemap and tileset. The bitmap is processed left-to-right, top-to-bottom.
+Generates a tilemap + tileset from the workbench bitmap. The bitmap is processed left-to-right, top-to-bottom.
 
 The `<format>` parameter specifies the bitmap format that is used. This also specifies whether the generated tiles will be indexed. Note that, to generate indexed tiles, the appropriate palettes must first be loaded or extracted.
+
+If `--append` is present, then any new tilemap entries and tiles are appended to the current workbench tilemap and tileset. Otherwise, both the current tilemap and tileset are cleared first.
 
 By default, PixelPet will attempt to reduce the number of tiles in the tileset by eliminating tiles that are already in the tileset, either as-is or flipped horizontally, vertically or in both directions -- provided that the bitmap format supports this. However, you can use the `--no-reduce` option to disable this; if this option is present, PixelPet will add every single tile from the workbench bitmap to the tileset as a new tile.
 
@@ -427,12 +433,14 @@ This imports an image `input-256-colors.png`, extracts a 256-color palette from 
 
 ### Deserialize-Palettes
 ```
-Deserialize-Palettes <format> [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--palette-count/-pc <count>] [--offset/-o <count>]
+Deserialize-Palettes <format> [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--palette-count/-pc <count>] [--offset/-o <count>]
 ```
 
 Deserializes a series of palettes from the workbench bytestream. `<format>` specifies the color format in which the palettes are stored.
 
 By default this command will read from the start to the end of the bytestream, one unbounded palette. The `--palette-size` option can be used to specify the size of each palette; once the maximum number of colors for the palette has been reached, PixelPet will create a new one, until the end of the bytestream is reached. The `--palette-count` option can be used to set a maximum on the number of palettes, to stop reading earlier.
+
+If `--append` is present, then the new palettes will be added to the current workbench palettes. Otherwise, the current palettes are first discarded.
 
 The `--palette-number` option can be used to specify the initial palette slot number that will be used for any newly created palette. This slot number is increased until an empty slot is found. If this option is not specified, new palettes will get the highest slot number among the loaded palettes + 1.
 
@@ -447,17 +455,19 @@ Imports a ROM `rom.gba`, and reads two 16-color, GBA color format palettes from 
 
 ### Serialize-Palettes
 ```
-Serialize-Palettes
+Serialize-Palettes [--append/-a]
 ```
 
-Serializes all palettes currently in the workbench to the workbench bytestream. The previous workbench bytestream is discarded. Each color is serialized in accordance with its current color format; for instance, a 15-bit color palette is serialized as 2 bytes per color. The palettes are serialized in the order that they were added to the workbench.
+Serializes all palettes currently in the workbench to the workbench bytestream. Each color is serialized in accordance with its current color format; for instance, a 15-bit color palette is serialized as 2 bytes per color. The palettes are serialized in the order that they were added to the workbench.
+
+If `--append` is present, then the serialized palettes are appended to the current workbench bytestream. Otherwise, the current workbench bytestream is discarded first.
 
 ### Deserialize-Tileset
 ```
-Deserialize-Tileset <image-format> [--tile-count/-tc <count>] [--offset/-o <count>]
+Deserialize-Tileset [--append/-a] [--tile-count/-tc <count>] [--offset/-o <count>]
 ```
 
-Deserializes a tileset from the workbench bytestream. The tiles are added to the existing workbench tileset, and the same tile width/height is used.
+Deserializes a tileset from the workbench bytestream. The same tile width/height is used as the existing workbench tileset. If `--append` is present, then the tiles are added to the existing workbench tileset; otherwise, the current tileset is discarded.
 
 The `<image-format>` parameter specifies the bitmap format that is used. By default this command will begin deserializing from the start of the workbench bytestream until the end; however, the `--offset` option can be used to specify the starting address, and `--tile-count` can be used to specify the number of tiles that should be read. PixelPet will read tiles from the workbench bytestream until the number of tiles specified by `--tile-count` is reached, or the end of the bytestream is reached; whichever comes first.
 
@@ -470,17 +480,21 @@ Imports a ROM `rom.gba`, and reads 32 (`0x20`) tiles in GBA-4BPP format from off
 
 ### Serialize-Tileset
 ```
-Serialize-Tileset
+Serialize-Tileset [--append/a]
 ```
 
-Serializes the entire workbench tileset to the workbench bytestream. The previous workbench bytestream is discarded. Each tile is serialized in accordance with its current color format; for instance, an 8 by 8 pixels, 4BPP tile is serialized to 32 bytes. The tiles are serialized in the order that they were added to the workbench tileset.
+Serializes the entire workbench tileset to the workbench bytestream. Each tile is serialized in accordance with its current color format; for instance, an 8 by 8 pixels, 4BPP tile is serialized to 32 bytes. The tiles are serialized in the order that they were added to the workbench tileset.
+
+If `--append` is present, the serialized tileset is appended to the end of the workbench bytestream. Otherwise, the previous workbench bytestream is discarded.
 
 ### Deserialize-Tilemap
 ```
-Deserialize-Tilemap [--base-tile/-bt <index>] [--tile-count/-tc <count>] [--offset/-o <count>]
+Deserialize-Tilemap [--append/-a] [--base-tile/-bt <index>] [--tile-count/-tc <count>] [--offset/-o <count>]
 ```
 
-Deserializes a tilemap from the workbench bytestream. The tilemap entries are added to the existing workbench tilemap. Currently this command is hardcoded to use the GBA tilemap format.
+Deserializes a tilemap from the workbench bytestream.
+
+If `--append` is present, the tilemap entries are added to the existing workbench tilemap. Otherwise, the workbench tilemap is cleared first.
 
 The `--base-tile` option can be used to specify the tile number that corresponds with the first tile in the tileset. Whichever value is specified for `--base-tile` will be subtracted from the tile numbers referenced in the tilemap as it is being deserialized. By default this is 0.
 
@@ -495,10 +509,12 @@ Imports a ROM `rom.gba`, and reads 600 tilemap entries from offset `0x800000`. T
 
 ### Serialize-Tilemap
 ```
-Serialize-Tilemap [--base-tile/-bt <index>] [--first-tile/-ft <tilemap-entry>]
+Serialize-Tilemap [--append/-a] [--base-tile/-bt <index>] [--first-tile/-ft <tilemap-entry>]
 ```
 
-Serializes the entire workbench tilemap to the workbench bytestream. The previous workbench bytestream is discarded. Currently this command is hardcoded to use the GBA tilemap format.
+Serializes the entire workbench tilemap to the workbench bytestream. Currently this command is hardcoded to use the GBA tilemap format.
+
+If `--append` is present, the serialized tilemap is append to the end of the workbench bytestream. Otherwise, the previous workbench bytestream is discarded.
 
 The `--base-tile` option can be used to specify the tile number that corresponds with the first tile in the tileset. Whichever value is specified for `--base-tile` will be added to the tile numbers referenced in the tilemap as it is being serialized. By default this is 0.
 

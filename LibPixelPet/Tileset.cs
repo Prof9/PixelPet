@@ -11,14 +11,35 @@ namespace LibPixelPet {
 		private List<Tile> Tiles { get; }
 		private MultiValueDictionary<int, TileEntry> TileDictionary { get; }
 
+		private int tileWidth;
+		private int tileHeight;
+
 		/// <summary>
-		/// Gets the width of a tile in the tileset, in pixels.
+		/// Gets or sets the width of a tile in the tileset, in pixels.
+		/// The width can only be modified if the tileset is empty.
 		/// </summary>
-		public int TileWidth { get; }
+		public int TileWidth {
+			get => this.tileWidth;
+			set {
+				if (this.Tiles.Count > 0 && this.tileWidth != value) {
+					throw new InvalidOperationException("Cannot change tile width for a nonempty tileset");
+				}
+				this.tileWidth = value;
+			}
+		}
 		/// <summary>
-		/// Gets the height of a tile in the tileset, in pixels.
+		/// Gets or sets the height of a tile in the tileset, in pixels.
+		/// The height can only be modified if the tileset is empty.
 		/// </summary>
-		public int TileHeight { get; }
+		public int TileHeight {
+			get => this.tileHeight;
+			set {
+				if (this.Tiles.Count > 0 && this.tileHeight != value) {
+					throw new InvalidOperationException("Cannot change tile height for a nonempty tileset");
+				}
+				this.tileHeight = value;
+			}
+		}
 		/// <summary>
 		/// Gets the number of tiles in the tileset.
 		/// </summary>
@@ -43,8 +64,8 @@ namespace LibPixelPet {
 			if (tileHeight < 1)
 				throw new ArgumentOutOfRangeException(nameof(tileHeight));
 
-			this.TileWidth = tileWidth;
-			this.TileHeight = tileHeight;
+			this.tileWidth = tileWidth;
+			this.tileHeight = tileHeight;
 			this.ColorFormat = ColorFormat.BGRA8888;
 			this.IsIndexed = false;
 
@@ -59,6 +80,14 @@ namespace LibPixelPet {
 
 				return this.Tiles[index];
 			}
+		}
+
+		/// <summary>
+		/// Clears the tileset.
+		/// </summary>
+		public void Clear() {
+			this.Tiles.Clear();
+			this.TileDictionary.Clear();
 		}
 
 		/// <summary>

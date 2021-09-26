@@ -6,6 +6,7 @@ namespace PixelPet.CLI.Commands {
 		public DeserializeTilesetCmd()
 			: base("Deserialize-Tileset",
 				new Parameter(true, new ParameterValue("image-format")),
+				new Parameter("append", "a", false),
 				new Parameter("ignore-palette", "ip", false),
 				new Parameter("tile-count", "tc", false, new ParameterValue("count", "" + int.MaxValue)),
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
@@ -13,6 +14,7 @@ namespace PixelPet.CLI.Commands {
 
 		protected override void Run(Workbench workbench, ILogger logger) {
 			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
+			bool append = FindNamedParameter("--append").IsPresent;
 			int tc = FindNamedParameter("--tile-count").Values[0].ToInt32();
 			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
 			bool usePalette = !FindNamedParameter("--ignore-palette").IsPresent;
@@ -24,6 +26,10 @@ namespace PixelPet.CLI.Commands {
 			if (tc < 0) {
 				logger?.Log("Invalid tile count.", LogLevel.Error);
 				return;
+			}
+
+			if (!append) {
+				workbench.Tileset.Clear();
 			}
 
 			workbench.Stream.Position = Math.Min(offset, workbench.Stream.Length);

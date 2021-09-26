@@ -6,6 +6,7 @@ namespace PixelPet.CLI.Commands {
 		public DeserializePalettesCmd()
 			: base("Deserialize-Palettes",
 				new Parameter(true, new ParameterValue("format")),
+				new Parameter("append", "a", false),
 				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
 				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
 				new Parameter("palette-count", "pc", false, new ParameterValue("count", "" + int.MaxValue)),
@@ -14,6 +15,7 @@ namespace PixelPet.CLI.Commands {
 
 		protected override void Run(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].Value;
+			bool append = FindNamedParameter("--append").IsPresent;
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
 			int palCount = FindNamedParameter("--palette-count").Values[0].ToInt32();
@@ -38,6 +40,10 @@ namespace PixelPet.CLI.Commands {
 			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
 				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
 				return;
+			}
+
+			if (!append) {
+				workbench.PaletteSet.Clear();
 			}
 
 			workbench.Stream.Position = Math.Min(offset, workbench.Stream.Length);
