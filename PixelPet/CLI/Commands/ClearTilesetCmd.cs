@@ -9,8 +9,18 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
-			int tw = FindNamedParameter("--tile-size").Values[0].ToInt32();
-			int th = FindNamedParameter("--tile-size").Values[1].ToInt32();
+			Parameter ts = FindNamedParameter("--tile-size");
+			int tw = ts.Values[0].ToInt32();
+			int th = ts.Values[1].ToInt32();
+
+			if (ts.IsPresent && tw <= 0) {
+				logger?.Log("Invalid tile width.", LogLevel.Error);
+				return;
+			}
+			if (ts.IsPresent && th <= 0) {
+				logger?.Log("Invalid tile height.", LogLevel.Error);
+				return;
+			}
 
 			workbench.Tileset.Clear();
 			workbench.Tileset.TileWidth = tw;

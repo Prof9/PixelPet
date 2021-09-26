@@ -194,12 +194,12 @@ Discards the workbench tilemap, and initializes a new one.
 
 ### Extract-Palettes
 ```
-Extract-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>]
+Extract-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>] [--tile-size/-s <width> <height>]
 ```
 
 Extracts palettes from the workbench bitmap.
 
-This is done by first splitting the bitmap into tiles (the tile size is dictated by the workbench tileset). For each tile, we then take the color values present and add these to one of the existing palettes (removing any duplicate colors) if possible, or add a new palette if this does not fit in any of the current palettes.
+This is done by first splitting the bitmap into tiles. For each tile, we then take the color values present and add these to one of the existing palettes (removing any duplicate colors) if possible, or add a new palette if this does not fit in any of the current palettes.
 
 PixelPet attempts to minimize the number of palettes used, but a greedy algorithm is used, so it is not guaranteed that this does lead to the minimum number of palettes. If this is a concern, it may be better to create the templates manually and load them via the `Read-Palettes` command instead.
 
@@ -210,6 +210,8 @@ The `--palette-number` option can be used to specify the initial palette slot nu
 The `--palette-size` option can be used to specify a maximum palette size for any newly create palette. Palettes that were created before this command is run retain their original maximum palette size. By default, the maximum palette size is unbounded.
 
 The `--x`, `--y`, `--width` and `--height` options can be used to process only a portion of the workbench bitmap. The workbench bitmap will not be changed, but it will be processed as if it was cropped using the given parameters, and the first tile begins in the top left corner of the cropped bitmap. By default, the entire workbench bitmap is processed.
+
+The `--tile-size` option specifies the size of each tile in pixels. If this option is omitted, then tile size of the current workbench tileset is used. Note: `--tile-size 1 1` is equivalent to equivalent to treating the entire bitmap as a single "tile".
 
 **Example usage:**
 ```
@@ -409,16 +411,18 @@ Imports the image `input.png`, extracts palettes from it and then pads all palet
 
 ### Pad-Tileset
 ```
-Pad-Tileset <width>
+Pad-Tileset <width> [--tile-size/-s <width> <height>]
 ```
 
 Pads the workbench tileset by adding tiles until the tileset has at least the specified number of tiles.
 
 All tiles that are added consist only of pixels with color value 0.
 
+The `--tile-size` option specifies the size of each tile in pixels. If this is omitted, the tile size of the current tileset will be used. If the current tileset is nonempty, the tile size specified with `--tile-size` must match the tile size of the current tileset.
+
 ### Generate-Tilemap
 ```
-Generate-Tilemap <format> [--append/-a] [--no-reduce/-nr] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>]
+Generate-Tilemap <format> [--append/-a] [--no-reduce/-nr] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>] [--tile-size/-s <width> <height>]
 ```
 
 Generates a tilemap + tileset from the workbench bitmap. The bitmap is processed left-to-right, top-to-bottom.
@@ -430,6 +434,8 @@ If `--append` is present, then any new tilemap entries and tiles are appended to
 By default, PixelPet will attempt to reduce the number of tiles in the tileset by eliminating tiles that are already in the tileset, either as-is or flipped horizontally, vertically or in both directions -- provided that the bitmap format supports this. However, you can use the `--no-reduce` option to disable this; if this option is present, PixelPet will add every single tile from the workbench bitmap to the tileset as a new tile.
 
 The `--x`, `--y`, `--width` and `--height` options can be used to process only a portion of the workbench bitmap. The workbench bitmap will not be changed, but it will be processed as if it was cropped using the given parameters, and the first tile begins in the top left corner of the cropped bitmap. By default, the entire workbench bitmap is processed.
+
+The `--tile-size` option specifies the size of each tile in pixels. If this is omitted, the tile size of the current tileset will be used. If the current tileset is nonempty, the tile size specified with `--tile-size` must match the tile size of the current tileset.
 
 **Example usage:**
 ```
@@ -472,14 +478,18 @@ If `--append` is present, then the serialized palettes are appended to the curre
 
 ### Deserialize-Tileset
 ```
-Deserialize-Tileset <image-format> [--append/-a] [--ignore-palette/-ip] [--tile-count/-tc <count>] [--offset/-o <count>]
+Deserialize-Tileset <image-format> [--append/-a] [--ignore-palette/-ip] [--tile-count/-tc <count>] [--offset/-o <count>] [--tile-size/-s <width> <height>]
 ```
 
-Deserializes a tileset from the workbench bytestream. The same tile width/height is used as the existing workbench tileset. If `--append` is present, then the tiles are added to the existing workbench tileset; otherwise, the current tileset is discarded.
+Deserializes a tileset from the workbench bytestream.
+
+If `--append` is present, then the tiles are added to the existing workbench tileset; otherwise, the current tileset is discarded.
 
 The `<image-format>` parameter specifies the bitmap format that is used. By default this command will begin deserializing from the start of the workbench bytestream until the end; however, the `--offset` option can be used to specify the starting address, and `--tile-count` can be used to specify the number of tiles that should be read. PixelPet will read tiles from the workbench bytestream until the number of tiles specified by `--tile-count` is reached, or the end of the bytestream is reached; whichever comes first.
 
 By default, `Deserialize-Tileset` will apply the loaded palettes to the tileset as it's deserialized (if `<image-format>` is indexed). This results in a tileset where each pixel value is an actual color value. However, if `--ignore-palette` is present, this is omitted, and this creates a tileset where each pixel value is a palette color index.
+
+The `--tile-size` option specifies the size of each tile in pixels. If this is omitted, the tile size of the current tileset will be used. If the current tileset is nonempty, the tile size specified with `--tile-size` must match the tile size of the current tileset.
 
 **Example usage:**
 ```

@@ -14,7 +14,8 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
 				new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
 				new Parameter("width", "w", false, new ParameterValue("pixels", "-1")),
-				new Parameter("height", "h", false, new ParameterValue("pixels", "-1"))
+				new Parameter("height", "h", false, new ParameterValue("pixels", "-1")),
+				new Parameter("tile-size", "s", false, new ParameterValue("width", "-1"), new ParameterValue("height", "-1"))
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
@@ -25,6 +26,9 @@ namespace PixelPet.CLI.Commands {
 			int y = FindNamedParameter("--y").Values[0].ToInt32();
 			int w = FindNamedParameter("--width").Values[0].ToInt32();
 			int h = FindNamedParameter("--height").Values[0].ToInt32();
+			Parameter ts = FindNamedParameter("--tile-size");
+			int tw = ts.Values[0].ToInt32();
+			int th = ts.Values[1].ToInt32();
 
 			if (palNum < -1) {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
@@ -34,20 +38,39 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
 			}
+			if (ts.IsPresent && tw <= 0) {
+				logger?.Log("Invalid tile width.", LogLevel.Error);
+				return;
+			}
+			if (ts.IsPresent && th <= 0) {
+				logger?.Log("Invalid tile height.", LogLevel.Error);
+				return;
+			}
 
 			if (!append) {
 				workbench.PaletteSet.Clear();
 			}
 
-			int tw = workbench.Tileset.TileWidth;
-			int th = workbench.Tileset.TileHeight;
+			// Use existing tile size if not specified
+			if (tw == -1 && th == -1) {
+				tw = workbench.Tileset.TileWidth;
+				th = workbench.Tileset.TileHeight;
+			}
 
-			TileCutter cutter = new TileCutter(tw, th);
 			int ti = 0;
 			int addedPalettes = 0;
 			int addedColors = 0;
 			Palette pal = null;
 			using (Bitmap bmp = workbench.GetCroppedBitmap(x, y, w, h, logger)) {
+				// Improve performance for pixel-by-pixel basis
+				if (tw == 1) {
+					tw = bmp.Width;
+					if (th == 1) {
+						th = bmp.Height;
+					}
+				}
+				TileCutter cutter = new TileCutter(tw, th);
+
 				foreach (Tile tile in cutter.CutTiles(bmp)) {
 					// Get all the unique colors in the tile.
 					List<int> tileColors = tile.EnumerateTile().Distinct().ToList();
