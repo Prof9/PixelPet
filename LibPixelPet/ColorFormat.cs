@@ -3,18 +3,18 @@ using System.Drawing;
 
 namespace LibPixelPet {
 	public struct ColorFormat : IEquatable<ColorFormat> {
-		public static readonly ColorFormat RGB555 = SequentialRGBA(5, 5, 5, 0);
-		public static readonly ColorFormat BGR888 = SequentialBGRA(8, 8, 8, 0);
-		public static readonly ColorFormat RGBA5551 = SequentialRGBA(5, 5, 5, 1);
-		public static readonly ColorFormat BGRA8888 = SequentialBGRA(8, 8, 8, 8);
+		public static readonly ColorFormat BGR555 = SequentialABGR(5, 5, 5, 0);
+		public static readonly ColorFormat RGB888 = SequentialARGB(8, 8, 8, 0);
+		public static readonly ColorFormat ABGR1555 = SequentialABGR(5, 5, 5, 1);
+		public static readonly ColorFormat ARGB8888 = SequentialARGB(8, 8, 8, 8);
 		public static readonly ColorFormat Grayscale2BPP = Grayscale(2);
 		public static readonly ColorFormat Grayscale4BPP = Grayscale(4);
 		public static readonly ColorFormat Grayscale8BPP = Grayscale(8);
 		public static readonly ColorFormat GameBoy = new ColorFormat(0, 2, 0, 2, 0, 2, 0, 0, true);
 
-		public static ColorFormat SequentialRGBA(in int rBits, in int gBits, in int bBits, in int aBits)
+		public static ColorFormat SequentialABGR(in int rBits, in int gBits, in int bBits, in int aBits)
 			=> new ColorFormat(0, rBits, rBits, gBits, rBits + gBits, bBits, rBits + gBits + bBits, aBits, false);
-		public static ColorFormat SequentialBGRA(in int rBits, in int gBits, in int bBits, in int aBits)
+		public static ColorFormat SequentialARGB(in int rBits, in int gBits, in int bBits, in int aBits)
 			=> new ColorFormat(bBits + gBits, rBits, bBits, gBits, 0, bBits, bBits + gBits + rBits, aBits, false);
 		public static ColorFormat Grayscale(in int bits)
 			=> new ColorFormat(0, bits, 0, bits, 0, bits, 0, 0, false);
@@ -32,18 +32,18 @@ namespace LibPixelPet {
 				return ColorFormat.Grayscale4BPP;
 			case "8BPP":
 				return ColorFormat.Grayscale8BPP;
-			case "RGB555":
+			case "BGR555":
 			case "GBA":
-				return ColorFormat.RGB555;
-			case "RGBA5551":
+				return ColorFormat.BGR555;
+			case "ABGR1555":
 			case "NDS":
-				return ColorFormat.RGBA5551;
-			case "BGR888":
+				return ColorFormat.ABGR1555;
+			case "RGB888":
 			case "24BPP":
-				return ColorFormat.BGR888;
-			case "BGRA8888":
+				return ColorFormat.RGB888;
+			case "ARGB8888":
 			case "32BPP":
-				return ColorFormat.BGRA8888;
+				return ColorFormat.ARGB8888;
 			case "GB":
 				return ColorFormat.GameBoy;
 			default:
@@ -85,7 +85,7 @@ namespace LibPixelPet {
 		/// <param name="sloppy">If true, uses 'sloppy' conversion consisting only of bit-shifts; otherwise, uses accurate conversion.</param>
 		/// <returns>The converted color value.</returns>
 		public int Convert(in Color color, bool sloppy)
-			=> this.Convert(color.ToArgb(), ColorFormat.BGRA8888, sloppy);
+			=> this.Convert(color.ToArgb(), ColorFormat.ARGB8888, sloppy);
 
 		private static int Convert(in int color, in ColorFormat from, in ColorFormat to, bool sloppy) {
 			int r = (int)((uint)(color & from.  RedMask) >> from.rShift);

@@ -66,7 +66,7 @@ namespace LibPixelPet {
 
 			this.tileWidth = tileWidth;
 			this.tileHeight = tileHeight;
-			this.ColorFormat = ColorFormat.BGRA8888;
+			this.ColorFormat = ColorFormat.ARGB8888;
 			this.IsIndexed = false;
 
 			this.Tiles = new List<Tile>();
@@ -156,7 +156,7 @@ namespace LibPixelPet {
 			}
 			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
 
-			ColorFormat bgra8888 = ColorFormat.BGRA8888;
+			ColorFormat bgra8888 = ColorFormat.ARGB8888;
 
 			Bitmap bmp = null;
 			try {
@@ -218,7 +218,7 @@ namespace LibPixelPet {
 			}
 			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
 
-			ColorFormat bgra8888 = ColorFormat.BGRA8888;
+			ColorFormat bgra8888 = ColorFormat.ARGB8888;
 
 			Bitmap bmp = null;
 #if !DEBUG

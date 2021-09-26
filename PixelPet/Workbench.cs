@@ -35,7 +35,7 @@ namespace PixelPet {
 			this.Graphics.Clear(Color.Transparent);
 			this.Graphics.Flush();
 
-			this.BitmapFormat = ColorFormat.BGRA8888;
+			this.BitmapFormat = ColorFormat.ARGB8888;
 			this.TilemapFormat = LibPixelPet.BitmapFormat.GBA4BPP;
 		}
 
@@ -46,7 +46,7 @@ namespace PixelPet {
 			this.Bitmap = bmp;
 			this.Graphics = Graphics.FromImage(this.Bitmap);
 
-			this.BitmapFormat = ColorFormat.BGRA8888;
+			this.BitmapFormat = ColorFormat.ARGB8888;
 			this.TilemapFormat = LibPixelPet.BitmapFormat.GBA4BPP;
 		}
 

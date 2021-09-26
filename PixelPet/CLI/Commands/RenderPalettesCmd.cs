@@ -38,7 +38,7 @@ namespace PixelPet.CLI.Commands {
 
 			int count = 0;
 
-			ColorFormat fmt = ColorFormat.BGRA8888;
+			ColorFormat fmt = ColorFormat.ARGB8888;
 
 			workbench.ClearBitmap(w * tw, h * th);
 			workbench.Graphics.CompositingMode = CompositingMode.SourceCopy;

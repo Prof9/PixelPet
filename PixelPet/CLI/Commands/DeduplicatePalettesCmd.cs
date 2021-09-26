@@ -23,7 +23,7 @@ namespace PixelPet.CLI.Commands {
 
 		private static int DeduplicatePalette(Palette palette, Random rng, ILogger logger) {
 			// Create sequential color format to remove alpha channel and padding.
-			ColorFormat seqFmt = ColorFormat.SequentialBGRA(
+			ColorFormat seqFmt = ColorFormat.SequentialARGB(
 				palette.Format.RedBits,
 				palette.Format.GreenBits,
 				palette.Format.BlueBits,

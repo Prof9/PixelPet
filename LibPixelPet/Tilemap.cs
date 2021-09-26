@@ -181,7 +181,7 @@ namespace LibPixelPet {
 			if (indexed && palettes == null)
 				throw new ArgumentNullException(nameof(palettes));
 
-			ColorFormat bgra8888 = ColorFormat.BGRA8888;
+			ColorFormat bgra8888 = ColorFormat.ARGB8888;
 
 			Bitmap bmp = null;
 			try {
