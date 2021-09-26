@@ -6,11 +6,13 @@ namespace PixelPet.CLI.Commands {
 		public PadTilesetCmd()
 			: base("Pad-Tileset",
 				new Parameter(true, new ParameterValue("width")),
+				new Parameter("color", "c", false, new ParameterValue("value", "0")),
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "-1"), new ParameterValue("height", "-1"))
 			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
 			int width = FindUnnamedParameter(0).Values[0].ToInt32();
+			int color = FindNamedParameter("--color").Values[0].ToInt32();
 			Parameter ts = FindNamedParameter("--tile-size");
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
@@ -45,9 +47,16 @@ namespace PixelPet.CLI.Commands {
 				workbench.Tileset.TileHeight = th;
 			}
 
+			int[] pixels = new int[tw * th];
+			for (int i = 0; i < pixels.Length; i++) {
+				pixels[i] = color;
+			}
+
 			int addedTiles = 0;
 			while (workbench.Tileset.Count < width) {
-				workbench.Tileset.AddTile(new Tile(tw, th), false, false);
+				Tile tile = new Tile(tw, th);
+				tile.SetAllPixels(pixels);
+				workbench.Tileset.AddTile(tile, false, false);
 				addedTiles++;
 			}
 

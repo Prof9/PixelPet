@@ -411,12 +411,12 @@ Imports the image `input.png`, extracts palettes from it and then pads all palet
 
 ### Pad-Tileset
 ```
-Pad-Tileset <width> [--tile-size/-s <width> <height>]
+Pad-Tileset <width> [--color/-c <value>] [--tile-size/-s <width> <height>]
 ```
 
 Pads the workbench tileset by adding tiles until the tileset has at least the specified number of tiles.
 
-All tiles that are added consist only of pixels with color value 0.
+The `--color` option specifies the color value with which to fill all added tiles. If this is omitted, color value 0 is used.
 
 The `--tile-size` option specifies the size of each tile in pixels. If this is omitted, the tile size of the current tileset will be used. If the current tileset is nonempty, the tile size specified with `--tile-size` must match the tile size of the current tileset.
 
