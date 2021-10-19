@@ -593,3 +593,23 @@ Convert-Bitmap GBA
 Serialize-Bitmap
 ```
 Imports a bitmap `input.png`, converts it to GBA colors, then serializes it to the workbench bytestream.
+
+### Apply-Palette-Bitmap
+```
+Apply-Bitmap-Palette [--palette-number/-pn <number>]
+```
+
+Applies a palette to the entire workbench bitmap. For this to work, the workbench bitmap must be in a color format that can be used as palette indices (e.g. 8BPP). After this command finishes, the color indices in the bitmap will have been replaced with the actual colors stored in the palette.
+
+If the `--palette-number` option is specified, the palette with the given number is used. Otherwise, this command will use the palette with the lowest number that has enough colors to be applied to the bitmap.
+
+Only one single palette can be applied to the whole bitmap. In order to use multiple palettes, use `Render-Tileset` or `Render-Tilemap` to render indexed tiles instead.
+
+**Example usage:**
+```
+Import-Bytes "rom.gba"
+Deserialize-Bitmap GBA-4BPP 256 256 0x800000
+Deserialize-Palettes GBA --offset 0x700000 --length 0x20
+Apply-Palette-Bitmap
+```
+Imports a ROM `rom.gba`, deserializes a 256x256 4BPP image from `0x800000` and a 16-color palette from `0x700000`, then applies the palette to the bitmap.

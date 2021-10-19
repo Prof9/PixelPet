@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="CLI\Cli.cs" />
     <Compile Include="CLI\CliCommand.cs" />
+    <Compile Include="CLI\Commands\ApplyPaletteBitmapCmd.cs" />
     <Compile Include="CLI\Commands\ConvertBitmapCmd.cs" />
     <Compile Include="CLI\Commands\ConvertPalettesCmd.cs" />
     <Compile Include="CLI\Commands\DeserializeBitmapCmd.cs" />
