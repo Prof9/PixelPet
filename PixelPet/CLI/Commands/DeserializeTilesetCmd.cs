@@ -75,7 +75,7 @@ namespace PixelPet.CLI.Commands {
 					if (pixelReader.ReadPixels(pixels, 0, pixels.Length) != pixels.Length) {
 						break;
 					}
-					
+
 					if (usePalette) {
 						for (int i = 0; i < pixels.Length; i++) {
 							int c = pixels[i];
@@ -86,7 +86,7 @@ namespace PixelPet.CLI.Commands {
 					// Add tile to the tileset.
 					Tile tile = new Tile(tw, th);
 					tile.SetAllPixels(pixels);
-					workbench.Tileset.AddTile(tile, mapFmt.CanFlipHorizontal, mapFmt.CanFlipVertical);
+					workbench.Tileset.AddTile(tile);
 					added++;
 				}
 			}

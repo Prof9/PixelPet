@@ -95,20 +95,14 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="tile">The tile to add.</param>
 		/// <returns>The created tile entry for the tile.</returns>
-		public TileEntry AddTile(Tile tile, bool hFlip, bool vFlip) {
+		public TileEntry AddTile(Tile tile) {
 			int tileNum = this.Count;
 			this.Tiles.Add(tile);
 
 			TileEntry entry = this.AddTileEntry(tile, tileNum, false, false);
-			if (hFlip) {
-				this.AddTileEntry(tile, tileNum, true, false);
-			}
-			if (vFlip) {
-				this.AddTileEntry(tile, tileNum, false, true);
-			}
-			if (hFlip && vFlip) {
-				this.AddTileEntry(tile, tileNum, true, true);
-			}
+			this.AddTileEntry(tile, tileNum, true,  false);
+			this.AddTileEntry(tile, tileNum, false, true);
+			this.AddTileEntry(tile, tileNum, true,  true);
 
 			return entry;
 		}
@@ -124,10 +118,16 @@ namespace LibPixelPet {
 		/// Finds a suitable tile entry for the specified tile.
 		/// </summary>
 		/// <param name="tile">The tile to find a tile entry for.</param>
+		/// <param name="canHFlip">Whether the tile can be horizontally flipped.</param>
+		/// <param name="canVFlip">Whether the tile can be vertically flipped.</param>
 		/// <param name="entry">The found tile entry, or null if no suitable tile entry was found.</param>
 		/// <returns>true if a tile entry was found; otherwise, false.</returns>
-		public bool TryFindTileEntry(in Tile tile, out TileEntry entry) {
+		public bool TryFindTileEntry(in Tile tile, bool canHFlip, bool canVFlip, out TileEntry entry) {
 			foreach (TileEntry candidate in this.TileDictionary[tile.GetHashCode()]) {
+				if ((candidate.HFlip && !canHFlip) || (candidate.VFlip && !canVFlip)) {
+					continue;
+				}
+
 				Tile candidateTile = this.Tiles[candidate.TileNumber];
 				if (tile.Equals(candidateTile, candidate.HFlip, candidate.VFlip)) {
 					entry = candidate;

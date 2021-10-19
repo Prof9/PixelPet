@@ -56,7 +56,7 @@ namespace PixelPet.CLI.Commands {
 			while (workbench.Tileset.Count < width) {
 				Tile tile = new Tile(tw, th);
 				tile.SetAllPixels(pixels);
-				workbench.Tileset.AddTile(tile, false, false);
+				workbench.Tileset.AddTile(tile);
 				addedTiles++;
 			}
 
