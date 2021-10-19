@@ -114,10 +114,12 @@ Run-Script "script.txt"
 
 ### Import-Bitmap
 ```
-Import-Bitmap <path>
+Import-Bitmap <path> [--format/-f <format>]
 ```
 
 Imports the image file specified by `<path>` to the workbench bitmap. The previous workbench bitmap is discarded. Using standard 24-bit or 32-bit PNG images is advised.
+
+If the `--format` option is not present, all pixels in the bitmap will be imported as-is. If it is present, all pixels in the bitmap will be interpreted as if they were in the specified color format.
 
 **Example usage:**
 ```
