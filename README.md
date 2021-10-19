@@ -127,10 +127,12 @@ Imports the image `input.png` to the workbench.
 
 ### Export-Bitmap
 ```
-Export-Bitmap <path>
+Export-Bitmap <path> [--format/-f <format>]
 ```
 
-Exports the workbench bitmap to the file specified by `<path>`.
+Exports the workbench bitmap to the file specified by `<path>`. The output bitmap is always stored as a 32-bit image.
+
+If the `--format` option is not present, all pixels in the bitmap are converted to 32-bit color during export (this does not modify the workbench bitmap). If it is present, the pixels are converted to the given format. Note that since the image itself is stored in 32-bit format, this means the image won't display correctly, but it can be a more convenient way to check color values than exporting to bytes and checking with a hex editor.
 
 **Example usage:**
 ```
