@@ -32,7 +32,7 @@ namespace PixelPet.CLI {
 			=> this.CurrentValue = null;
 
 		public int ToInt32() {
-			if (NumberParser.TryParseInt32(this.Value, out int r)) {
+			if (this.Value is not null && NumberParser.TryParseInt32(this.Value, out int r)) {
 				return r;
 			} else {
 				return 0;
