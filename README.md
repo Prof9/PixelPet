@@ -520,13 +520,13 @@ Deserialize-Tilemap <tilemap-format> [--append/-a] [--base-tile/-bt <index>] [--
 
 Deserializes a tilemap from the workbench bytestream.
 
-The `<tilemap-format>` specifies the tilemap format of the serialized tilemap.
+The `<tilemap-format>` parameter specifies the tilemap format of the serialized tilemap.
 
 If `--append` is present, the tilemap entries are added to the existing workbench tilemap. Otherwise, the workbench tilemap is cleared first.
 
 The `--base-tile` option can be used to specify the tile number that corresponds with the first tile in the tileset. Whichever value is specified for `--base-tile` will be subtracted from the tile numbers referenced in the tilemap as it is being deserialized. By default this is 0.
 
-By default this command begins deserialized from the start of the workbench bytestream, until the end of the bytestream is reached. The `--offset` option can be used to specify the offset in the bytestream from which to begin deserializing. The `--tile-count` option can be used to specify how many tilemap entries should be read; PixelPet will deserialize tilemap entries until the `--tile-count` is reached, or the end of the bytestream is reached; whichever comes first.
+By default this command begins deserializing from the start of the workbench bytestream, until the end of the bytestream is reached. The `--offset` option can be used to specify the offset in the bytestream from which to begin deserializing. The `--tile-count` option can be used to specify how many tilemap entries should be read; PixelPet will deserialize tilemap entries until the `--tile-count` is reached, or the end of the bytestream is reached; whichever comes first.
 
 **Example usage:**
 ```
@@ -556,3 +556,23 @@ Generate-Tilemap GBA-4BPP
 Serialize-Tilemap --base-tile 31 --first-tile 0
 ```
 Imports an image `input-16-colors.png`, generates a 16-color palette from it, generates a tileset + tilemap, then serializes the tilemap whilst adding 31 to all tile numbers and using the value 0 for tilemap entries that reference the first tile.
+
+### Deserialize-Bitmap
+```
+Deserialize-Bitmap <format> <width> <height> [--offset/-o <count>]
+```
+
+Deserializes a bitmap from the workbench bytestream to the workbench bitmap.
+
+The `<format>` parameter specifies the color format in which the bitmap is stored.
+
+The `<width>` and `<height>` parameters specify the width and height of the bitmap in pixels.
+
+By default this command begins deserializing from the start of the workbench bytestream, until a `<width>` times `<height>` pixels are read.. The `--offset` option can be used to specify the offset in the bytestream from which to begin deserializing.
+
+**Example usage:**
+```
+Import-Bytes "rom.gba"
+Deserialize-Bitmap GBA 256 256 --offset 0x800000
+```
+Imports a ROM `rom.gba`, and deserializes a 256x256 bitmap from offset `0x800000`.

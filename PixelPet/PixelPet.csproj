@@ -50,6 +50,7 @@
     <Compile Include="CLI\CliCommand.cs" />
     <Compile Include="CLI\Commands\ConvertBitmapCmd.cs" />
     <Compile Include="CLI\Commands\ConvertPalettesCmd.cs" />
+    <Compile Include="CLI\Commands\DeserializeBitmapCmd.cs" />
     <Compile Include="CLI\Commands\ExportBytesCmd.cs" />
     <Compile Include="CLI\Commands\ClearPalettesCmd.cs" />
     <Compile Include="CLI\Commands\ClearTilemapCmd.cs" />
