@@ -599,7 +599,7 @@ Imports a bitmap `input.png`, converts it to GBA colors, then serializes it to t
 Apply-Bitmap-Palette [--palette-number/-pn <number>]
 ```
 
-Applies a palette to the entire workbench bitmap. For this to work, the workbench bitmap must be in a color format that can be used as palette indices (e.g. 8BPP). After this command finishes, the color indices in the bitmap will have been replaced with the actual colors stored in the palette.
+Applies a palette to the entire workbench bitmap. For this to work, the workbench bitmap must be in a color format that can be used as palette indices (e.g. 8BPP). After this command finishes, the color indices in the bitmap will have been replaced by the actual colors stored in the palette.
 
 If the `--palette-number` option is specified, the palette with the given number is used. Otherwise, this command will use the palette with the lowest number that has enough colors to be applied to the bitmap.
 
@@ -613,3 +613,23 @@ Deserialize-Palettes GBA --offset 0x700000 --length 0x20
 Apply-Palette-Bitmap
 ```
 Imports a ROM `rom.gba`, deserializes a 256x256 4BPP image from `0x800000` and a 16-color palette from `0x700000`, then applies the palette to the bitmap.
+
+### Quantize-Bitmap
+```
+Quantize-Bitmap <format> [--palette-number/-pn <number>]
+```
+
+Quantizes the workbench bitmap using a palette. After this command finishes, all actual colors in the bitmap will have been replaced by color indices used with a palette.
+
+The `<format>` parameter specifies the color format used for the resulting color index pixels. This color format is used when serializing or rendering without palettes loaded. For example, when using a 16-color palette, the resulting pixels will probably be 4BPP.
+
+If the `--palette-number` option is specified, the palette with the given number is used. Otherwise, this command will use the palette with the lowest number that contains all colors used in the bitmap.
+
+**Example usage:**
+```
+Import-Bytes "rom.gba"
+Import-Bitmap "input.png"
+Deserialize-Palettes GBA --offset 0x700000 --length 0x20
+Quantize-Bitmap GBA-4BPP
+```
+Imports a ROM `rom.gba` and a bitmap `input.png`, deserializes a 16-color palette from `0x700000`, then quantizes the bitmap to 4BPP using the loaded palette.

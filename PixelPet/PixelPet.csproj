@@ -78,6 +78,7 @@
     <Compile Include="CLI\Commands\SerializePalettesCmd.cs" />
     <Compile Include="CLI\Commands\SerializeTilemapCmd.cs" />
     <Compile Include="CLI\Commands\SerializeTilesetCmd.cs" />
+    <Compile Include="CLI\Commands\QuantizeBitmapCmd.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="CLI\Parameter.cs" />
