@@ -27,7 +27,7 @@ namespace PixelPet.CLI.Commands {
 				palette.Format.RedBits,
 				palette.Format.GreenBits,
 				palette.Format.BlueBits,
-				0
+				0, 0
 			);
 			int n = seqFmt.MaxValue;
 

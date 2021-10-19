@@ -2,22 +2,27 @@
 using System.Drawing;
 
 namespace LibPixelPet {
-	public struct ColorFormat : IEquatable<ColorFormat> {
-		public static readonly ColorFormat BGR555 = SequentialABGR(5, 5, 5, 0);
-		public static readonly ColorFormat RGB888 = SequentialARGB(8, 8, 8, 0);
-		public static readonly ColorFormat ABGR1555 = SequentialABGR(5, 5, 5, 1);
-		public static readonly ColorFormat ARGB8888 = SequentialARGB(8, 8, 8, 8);
+	public enum PixelEncoding {
+		Normal,
+		GameBoy,
+	}
+
+	public readonly struct ColorFormat : IEquatable<ColorFormat> {
+		public static readonly ColorFormat BGR555        = SequentialABGR(5, 5, 5, 0, 1);
+		public static readonly ColorFormat RGB888        = SequentialARGB(8, 8, 8, 0, 0);
+		public static readonly ColorFormat ABGR1555      = SequentialABGR(5, 5, 5, 1, 0);
+		public static readonly ColorFormat ARGB8888      = SequentialARGB(8, 8, 8, 8, 0);
 		public static readonly ColorFormat Grayscale2BPP = Grayscale(2);
 		public static readonly ColorFormat Grayscale4BPP = Grayscale(4);
 		public static readonly ColorFormat Grayscale8BPP = Grayscale(8);
-		public static readonly ColorFormat GameBoy = new ColorFormat(0, 2, 0, 2, 0, 2, 0, 0, true);
+		public static readonly ColorFormat GameBoy       = new ColorFormat(PixelEncoding.GameBoy, 0, 2, 0, 2, 0, 2, 0, 0, 0, true);
 
-		public static ColorFormat SequentialABGR(in int rBits, in int gBits, in int bBits, in int aBits)
-			=> new ColorFormat(0, rBits, rBits, gBits, rBits + gBits, bBits, rBits + gBits + bBits, aBits, false);
-		public static ColorFormat SequentialARGB(in int rBits, in int gBits, in int bBits, in int aBits)
-			=> new ColorFormat(bBits + gBits, rBits, bBits, gBits, 0, bBits, bBits + gBits + rBits, aBits, false);
+		public static ColorFormat SequentialABGR(in int rBits, in int gBits, in int bBits, in int aBits, in int padBits)
+			=> new ColorFormat(PixelEncoding.Normal, 0, rBits, rBits, gBits, rBits + gBits, bBits, rBits + gBits + bBits, aBits, padBits, false);
+		public static ColorFormat SequentialARGB(in int rBits, in int gBits, in int bBits, in int aBits, in int padBits)
+			=> new ColorFormat(PixelEncoding.Normal, bBits + gBits, rBits, bBits, gBits, 0, bBits, bBits + gBits + rBits, aBits, padBits, false);
 		public static ColorFormat Grayscale(in int bits)
-			=> new ColorFormat(0, bits, 0, bits, 0, bits, 0, 0, false);
+			=> new ColorFormat(PixelEncoding.Normal, 0, bits, 0, bits, 0, bits, 0, 0, 0, false);
 
 		/// <summary>
 		/// Gets a color format with the specified name, or null if no such color format exists.
@@ -124,6 +129,12 @@ namespace LibPixelPet {
 			}
 		}
 
+		private readonly PixelEncoding encoding;
+		/// <summary>
+		/// Gets the pixel encoding method.
+		/// </summary>
+		public PixelEncoding Encoding => encoding;
+
 		private readonly byte rBits;
 		private readonly byte rShift;
 		/// <summary>
@@ -218,11 +229,27 @@ namespace LibPixelPet {
 		public int Mask
 			=> this.ColorMask | this.AlphaMask;
 
+		private readonly byte padBits;
+		/// <summary>
+		/// Gets the number of padding bits.
+		/// </summary>
+		public int PadBits => padBits;
+
 		/// <summary>
 		/// Gets the total number of bits used.
 		/// </summary>
 		public int Bits
-			=> Math.Max(Math.Max(rShift + rBits, gShift + gBits), Math.Max(bShift + bBits, aShift + aBits));
+			=> Math.Max(Math.Max(rShift + rBits, gShift + gBits), Math.Max(bShift + bBits, aShift + aBits)) + padBits;
+
+		/// <summary>
+		/// Gets the minimum number of bytes needed to represent one pixel.
+		/// Depending on the encoding, this may differ from the number of bits used.
+		/// </summary>
+		public int Bytes
+			=> this.Encoding switch {
+				PixelEncoding.GameBoy     => this.Bits,
+				PixelEncoding.Normal or _ => (this.Bits + 7) / 8,
+			};
 
 		/// <summary>
 		/// Gets the maximum value this color can take.
@@ -239,33 +266,38 @@ namespace LibPixelPet {
 			=> (color & this.Mask) == color;
 
 		private ColorFormat(
+			in PixelEncoding encoding,
 			in int rShift, in int rBits,
 			in int gShift, in int gBits,
 			in int bShift, in int bBits,
 			in int aShift, in int aBits,
-			in bool invert
+			in int padBits, in bool invert
 		) {
-			this.rBits  = (byte)(rBits > 0 ? rBits  : 0);
-			this.gBits  = (byte)(gBits > 0 ? gBits  : 0);
-			this.bBits  = (byte)(bBits > 0 ? bBits  : 0);
-			this.aBits  = (byte)(aBits > 0 ? aBits  : 0);
-			this.rShift = (byte)(rBits > 0 ? rShift : 0);
-			this.gShift = (byte)(gBits > 0 ? gShift : 0);
-			this.bShift = (byte)(bBits > 0 ? bShift : 0);
-			this.aShift = (byte)(aBits > 0 ? aShift : 0);
-			this.invert = invert;
+			this.encoding = encoding;
+			this.rBits    = (byte)(rBits   > 0 ? rBits   : 0);
+			this.gBits    = (byte)(gBits   > 0 ? gBits   : 0);
+			this.bBits    = (byte)(bBits   > 0 ? bBits   : 0);
+			this.aBits    = (byte)(aBits   > 0 ? aBits   : 0);
+			this.rShift   = (byte)(rBits   > 0 ? rShift  : 0);
+			this.gShift   = (byte)(gBits   > 0 ? gShift  : 0);
+			this.bShift   = (byte)(bBits   > 0 ? bShift  : 0);
+			this.aShift   = (byte)(aBits   > 0 ? aShift  : 0);
+			this.padBits  = (byte)(padBits > 0 ? padBits : 0);
+			this.invert   = invert;
 		}
 
 		public bool Equals(ColorFormat other)
-			=> this.rBits  == other.rBits
-			&& this.gBits  == other.gBits
-			&& this.bBits  == other.bBits
-			&& this.aBits  == other.aBits
-			&& this.rShift == other.rShift
-			&& this.gShift == other.gShift
-			&& this.bShift == other.bShift
-			&& this.aShift == other.aShift
-			&& this.invert == other.invert;
+			=> this.encoding == other.encoding
+			&& this.rBits    == other.rBits
+			&& this.gBits    == other.gBits
+			&& this.bBits    == other.bBits
+			&& this.aBits    == other.aBits
+			&& this.rShift   == other.rShift
+			&& this.gShift   == other.gShift
+			&& this.bShift   == other.bShift
+			&& this.aShift   == other.aShift
+			&& this.padBits  == other.padBits
+			&& this.invert   == other.invert;
 
 		public override bool Equals(object obj)
 			=> obj is ColorFormat pf ? this.Equals(pf) : false;
@@ -273,6 +305,7 @@ namespace LibPixelPet {
 		public override int GetHashCode() {
 			unchecked {
 				int hash = -490236692;
+				hash = hash * -1521134295 + this.encoding.GetHashCode();
 				hash = hash * -1521134295 + this.rBits;
 				hash = hash * -1521134295 + this.gBits;
 				hash = hash * -1521134295 + this.bBits;
@@ -281,6 +314,7 @@ namespace LibPixelPet {
 				hash = hash * -1521134295 + this.gShift;
 				hash = hash * -1521134295 + this.bShift;
 				hash = hash * -1521134295 + this.aShift;
+				hash = hash * -1521134295 + this.padBits;
 				hash = hash * -1521134295 + this.invert.GetHashCode();
 				return hash;
 			}

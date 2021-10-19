@@ -41,10 +41,10 @@ namespace PixelPet.CLI.Commands {
 			}
 			if (ts.IsPresent && workbench.Tileset.Count > 0 &&
 				(tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
-				logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
-					workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
-				return;
-			}
+					logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
+						workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
+					return;
+				}
 
 			if (!append) {
 				workbench.Tileset.Clear();
@@ -63,40 +63,32 @@ namespace PixelPet.CLI.Commands {
 				workbench.Tileset.TileHeight = th;
 			}
 
-			int bpp = mapFmt.ColorFormat.Bits;      // bits per pixel
-			int ppb = 8 / bpp;                      // pixels per byte
-			int bpt = (tw * th) / ppb;              // bytes per tile
-			int pmask = mapFmt.ColorFormat.Mask;    // mask per pixel
-			int b;                                  // current byte
-			int b2;                                 // current byte 2
-			int bi;                                 // byte index in current tile
-			int pi;                                 // pixel index in current byte
-			int c;                                  // current pixel
-
 			Palette pal = null;
 			if (mapFmt.IsIndexed && workbench.PaletteSet.Count > 0) {
 				pal = workbench.PaletteSet[0].Palette;
 			}
 
-			byte[] buffer = new byte[bpt];
 			int[] pixels = new int[tw * th];
 			int added = 0;
-			while (tc-- > 0 && workbench.Stream.Read(buffer, 0, bpt) == bpt) {
-				switch (mapFmt.BitmapEncoding) {
-				case BitmapEncoding.GameBoyAdvance:
-				case BitmapEncoding.NintendoDSTexture:
-					DeserializeTileNormal();
-					break;
-				case BitmapEncoding.GameBoy:
-					DeserializeTileGameBoy();
-					break;
+			using (PixelReader pixelReader = new PixelReader(workbench.Stream, mapFmt.ColorFormat, true)) {
+				while (tc-- > 0) {
+					if (pixelReader.ReadPixels(pixels, 0, pixels.Length) != pixels.Length) {
+						break;
+					}
+					
+					if (usePalette) {
+						for (int i = 0; i < pixels.Length; i++) {
+							int c = pixels[i];
+							pixels[i] = pal?[c] ?? c;
+						}
+					}
+					
+					// Add tile to the tileset.
+					Tile tile = new Tile(tw, th);
+					tile.SetAllPixels(pixels);
+					workbench.Tileset.AddTile(tile, mapFmt.CanFlipHorizontal, mapFmt.CanFlipVertical);
+					added++;
 				}
-
-				// Add tile to the tileset.
-				Tile tile = new Tile(tw, th);
-				tile.SetAllPixels(pixels);
-				workbench.Tileset.AddTile(tile, mapFmt.CanFlipHorizontal, mapFmt.CanFlipVertical);
-				added++;
 			}
 
 			if (usePalette && pal != null) {
@@ -107,49 +99,6 @@ namespace PixelPet.CLI.Commands {
 			workbench.Tileset.IsIndexed = !usePalette;
 
 			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
-
-			void DeserializeTileNormal() {
-				// Process all bytes.
-				for (bi = 0; bi < bpt; bi++) {
-					// Get current byte.
-					b = buffer[bi];
-
-					// Extract pixels from byte.
-					for (pi = 0; pi < ppb; pi++) {
-						c = (b & pmask);
-						b >>= bpp;
-
-						// Apply palette.
-						if (usePalette) {
-							c = pal?[c] ?? c;
-						}
-
-						pixels[bi * ppb + pi] = c;
-					}
-				}
-			}
-
-			void DeserializeTileGameBoy() {
-				// Process all byte pairs.
-				for (bi = 0; bi < bpt; bi += 2) {
-					b  = buffer[bi];
-					b2 = buffer[bi + 1];
-
-					// Extract pixels from byte.
-					for (pi = 0; pi < 2 * ppb; pi++) {
-						c = ((b & 0x80) >> 7) | ((b2 & 0x80) >> 6);
-						b  <<= 1;
-						b2 <<= 1;
-
-						// Apply palette.
-						if (usePalette) {
-							c = pal?[c] ?? c;
-						}
-
-						pixels[bi * ppb + pi] = c;
-					}
-				}
-			}
 		}
 	}
 }

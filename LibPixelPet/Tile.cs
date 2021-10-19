@@ -118,6 +118,12 @@ namespace LibPixelPet {
 				}
 			}
 		}
+
+		/// <summary>
+		/// Sets all pixels in the tile.
+		/// This is faster than setting them one by one.
+		/// </summary>
+		/// <param name="pixels">The new pixels. The length of the list must match the number of pixels exactly.</param>
 		public void SetAllPixels(in IList<int> pixels) {
 			if (pixels == null)
 				throw new ArgumentNullException(nameof(pixels));
