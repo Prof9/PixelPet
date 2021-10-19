@@ -40,16 +40,18 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Invalid tile height.", LogLevel.Error);
 				return;
 			}
-			if (ts.IsPresent && workbench.Tileset.Count > 0 &&
-				(tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
-				logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
-					workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
-				return;
-			}
 
 			if (!append) {
 				workbench.Tileset.Clear();
 				workbench.Tilemap.Clear();
+			}
+
+			if (workbench.Tileset.Count > 0) {
+				if (ts.IsPresent && (tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
+					logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
+						workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
+					return;
+				}
 			}
 
 			// Use existing tile size if not specified
