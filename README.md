@@ -60,13 +60,13 @@ PixelPet currently supports the following color formats. A color format describe
  *  **24BPP** / **RGB888** - General 24-bit color, where the Red, Green and Blue components are all 8 bits. `0x000000` is pure black, and `0xFFFFFF` is pure white.
  *  **32BPP** / **ARGB8888** - General 32-bit color, where the Red, Green, Blue and Alpha components are all 8 bits. `0xFF000000` is pure black, and `0xFFFFFFFF` is pure white.
 
-## Bitmap formats
+## Tilemap formats
 
-PixelPet currently supports the following bitmap formats. A bitmap format describes how many bits are stored per pixel; whether the image is indexed (meaning a palette is needed to proper display it); if the image is indexed, which color format should be used to render the image if a palette is not present; and how tilemap entries are stored in memory.
+PixelPet currently supports the following tilemap formats. A tilemap format contains information about how the tilemap (and by extension, the tileset) is stored. It describes the tile size; whether the image is indexed (meaning a palette is needed to proper display it); the color format used for tiles; how tilemap entries are stored in memory; and the capabilities of the platform (e.g. whether flipping tiles is allowed).
 
- *  **GB** - 2 bits per pixel bitmap format as it used on the Game Boy, where a pair of 2 bytes collectively holds 8 pixels.
- *  **GBA-4BPP** / **NDS-4BPP** - 4 bits per pixel bitmap format as it is used on the Game Boy Advance and Nintendo DS. This bitmap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `4BPP` grayscale color format instead.
- *  **GBA-8BPP** / **NDS-8BPP** - 8 bits per pixel bitmap format as it is used on the Game Boy Advance and Nintendo DS. This bitmap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `8BPP` grayscale color format instead.
+ *  **GB** - 2 bits per pixel tilemap format as it used on the Game Boy, where a pair of 2 bytes collectively holds 8 pixels.
+ *  **GBA-4BPP** / **NDS-4BPP** - 4 bits per pixel tilemap format as it is used on the Game Boy Advance and Nintendo DS. This tilemap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `4BPP` grayscale color format instead.
+ *  **GBA-8BPP** / **NDS-8BPP** - 8 bits per pixel tilemap format as it is used on the Game Boy Advance and Nintendo DS. This tilemap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `8BPP` grayscale color format instead.
 
 ## Usage
 
@@ -427,11 +427,11 @@ Generate-Tilemap <format> [--append/-a] [--no-reduce/-nr] [--x/-x <pixels>] [--y
 
 Generates a tilemap + tileset from the workbench bitmap. The bitmap is processed left-to-right, top-to-bottom.
 
-The `<format>` parameter specifies the bitmap format that is used. This also specifies whether the generated tiles will be indexed. Note that, to generate indexed tiles, the appropriate palettes must first be loaded or extracted.
+The `<format>` parameter specifies the tilemap format that is used. This also specifies whether the generated tiles will be indexed. Note that, to generate indexed tiles, the appropriate palettes must first be loaded or extracted.
 
 If `--append` is present, then any new tilemap entries and tiles are appended to the current workbench tilemap and tileset. Otherwise, both the current tilemap and tileset are cleared first.
 
-By default, PixelPet will attempt to reduce the number of tiles in the tileset by eliminating tiles that are already in the tileset, either as-is or flipped horizontally, vertically or in both directions -- provided that the bitmap format supports this. However, you can use the `--no-reduce` option to disable this; if this option is present, PixelPet will add every single tile from the workbench bitmap to the tileset as a new tile.
+By default, PixelPet will attempt to reduce the number of tiles in the tileset by eliminating tiles that are already in the tileset, either as-is or flipped horizontally, vertically or in both directions -- provided that the tilemap format supports this. However, you can use the `--no-reduce` option to disable this; if this option is present, PixelPet will add every single tile from the workbench bitmap to the tileset as a new tile.
 
 The `--x`, `--y`, `--width` and `--height` options can be used to process only a portion of the workbench bitmap. The workbench bitmap will not be changed, but it will be processed as if it was cropped using the given parameters, and the first tile begins in the top left corner of the cropped bitmap. By default, the entire workbench bitmap is processed.
 
@@ -443,7 +443,7 @@ Import-Bitmap "input-256-colors.png"
 Extract-Palettes --palette-size 256
 Generate-Tilemap GBA-8BPP
 ```
-This imports an image `input-256-colors.png`, extracts a 256-color palette from it, and then uses the palette to generate an optimized tilemap + tileset in the `GBA-8BPP` indexed bitmap format.
+This imports an image `input-256-colors.png`, extracts a 256-color palette from it, and then uses the palette to generate an optimized tilemap + tileset in the `GBA-8BPP` indexed tilemap format.
 
 ### Deserialize-Palettes
 ```
@@ -478,16 +478,16 @@ If `--append` is present, then the serialized palettes are appended to the curre
 
 ### Deserialize-Tileset
 ```
-Deserialize-Tileset <image-format> [--append/-a] [--ignore-palette/-ip] [--tile-count/-tc <count>] [--offset/-o <count>] [--tile-size/-s <width> <height>]
+Deserialize-Tileset <tilemap-format> [--append/-a] [--ignore-palette/-ip] [--tile-count/-tc <count>] [--offset/-o <count>] [--tile-size/-s <width> <height>]
 ```
 
 Deserializes a tileset from the workbench bytestream.
 
 If `--append` is present, then the tiles are added to the existing workbench tileset; otherwise, the current tileset is discarded.
 
-The `<image-format>` parameter specifies the bitmap format that is used. By default this command will begin deserializing from the start of the workbench bytestream until the end; however, the `--offset` option can be used to specify the starting address, and `--tile-count` can be used to specify the number of tiles that should be read. PixelPet will read tiles from the workbench bytestream until the number of tiles specified by `--tile-count` is reached, or the end of the bytestream is reached; whichever comes first.
+The `<tilemap-format>` parameter specifies the tilemap format that is used. By default this command will begin deserializing from the start of the workbench bytestream until the end; however, the `--offset` option can be used to specify the starting address, and `--tile-count` can be used to specify the number of tiles that should be read. PixelPet will read tiles from the workbench bytestream until the number of tiles specified by `--tile-count` is reached, or the end of the bytestream is reached; whichever comes first.
 
-By default, `Deserialize-Tileset` will apply the loaded palettes to the tileset as it's deserialized (if `<image-format>` is indexed). This results in a tileset where each pixel value is an actual color value. However, if `--ignore-palette` is present, this is omitted, and this creates a tileset where each pixel value is a palette color index.
+By default, `Deserialize-Tileset` will apply the loaded palettes to the tileset as it's deserialized (if `<tilemap-format>` is indexed). This results in a tileset where each pixel value is an actual color value. However, if `--ignore-palette` is present, this is omitted, and this creates a tileset where each pixel value is a palette color index.
 
 The `--tile-size` option specifies the size of each tile in pixels. If this is omitted, the tile size of the current tileset will be used. If the current tileset is nonempty, the tile size specified with `--tile-size` must match the tile size of the current tileset.
 
@@ -509,12 +509,12 @@ If `--append` is present, the serialized tileset is appended to the end of the w
 
 ### Deserialize-Tilemap
 ```
-Deserialize-Tilemap <image-format> [--append/-a] [--base-tile/-bt <index>] [--tile-count/-tc <count>] [--offset/-o <count>]
+Deserialize-Tilemap <tilemap-format> [--append/-a] [--base-tile/-bt <index>] [--tile-count/-tc <count>] [--offset/-o <count>]
 ```
 
 Deserializes a tilemap from the workbench bytestream.
 
-The `<image-format>` specifies the bitmap format of the serialized tilemap.
+The `<tilemap-format>` specifies the tilemap format of the serialized tilemap.
 
 If `--append` is present, the tilemap entries are added to the existing workbench tilemap. Otherwise, the workbench tilemap is cleared first.
 

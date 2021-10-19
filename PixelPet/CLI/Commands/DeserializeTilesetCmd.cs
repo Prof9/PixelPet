@@ -5,7 +5,7 @@ namespace PixelPet.CLI.Commands {
 	internal class DeserializeTilesetCmd : CliCommand {
 		public DeserializeTilesetCmd()
 			: base("Deserialize-Tileset",
-				new Parameter(true, new ParameterValue("image-format")),
+				new Parameter(true, new ParameterValue("tilemap-format")),
 				new Parameter("append", "a", false),
 				new Parameter("ignore-palette", "ip", false),
 				new Parameter("tile-count", "tc", false, new ParameterValue("count", "" + int.MaxValue)),
@@ -23,8 +23,8 @@ namespace PixelPet.CLI.Commands {
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 
-			if (!(BitmapFormat.GetFormat(mapFmtName) is BitmapFormat mapFmt)) {
-				logger?.Log("Unknown bitmap format \"" + mapFmtName + "\".", LogLevel.Error);
+			if (!(TilemapFormat.GetFormat(mapFmtName) is TilemapFormat mapFmt)) {
+				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
 				return;
 			}
 			if (tc < 0) {

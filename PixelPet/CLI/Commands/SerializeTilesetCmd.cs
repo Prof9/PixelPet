@@ -28,7 +28,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			foreach (Tile tile in workbench.Tileset) {
-				switch (workbench.TilemapFormat.BitmapEncoding) {
+				switch (workbench.Tilemap.TilemapFormat.BitmapEncoding) {
 				case BitmapEncoding.GameBoyAdvance:
 					SerializeNormal(tile);
 					break;

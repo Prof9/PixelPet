@@ -18,14 +18,13 @@ namespace PixelPet {
 		public Tileset Tileset { get; set; }
 		public Tilemap Tilemap { get; set; }
 		public ColorFormat BitmapFormat { get; set; }
-		public BitmapFormat TilemapFormat { get; set; }
 
 		public Workbench() {
 			this.PaletteSet = new PaletteSet();
 			this.ClearBitmap(8, 8);
 			this.Stream = new MemoryStream();
 			this.Tileset = new Tileset(8, 8);
-			this.Tilemap = new Tilemap(LibPixelPet.BitmapFormat.GBA4BPP);
+			this.Tilemap = new Tilemap(LibPixelPet.TilemapFormat.GBA4BPP);
 		}
 
 		public void ClearBitmap(in int width, in int height) {
@@ -36,7 +35,6 @@ namespace PixelPet {
 			this.Graphics.Flush();
 
 			this.BitmapFormat = ColorFormat.ARGB8888;
-			this.TilemapFormat = LibPixelPet.BitmapFormat.GBA4BPP;
 		}
 
 		public void SetBitmap(Bitmap bmp) {
@@ -47,7 +45,6 @@ namespace PixelPet {
 			this.Graphics = Graphics.FromImage(this.Bitmap);
 
 			this.BitmapFormat = ColorFormat.ARGB8888;
-			this.TilemapFormat = LibPixelPet.BitmapFormat.GBA4BPP;
 		}
 
 		public Bitmap GetCroppedBitmap(int x, int y, int width, int height, ILogger logger = null) {

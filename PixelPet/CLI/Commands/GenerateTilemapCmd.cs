@@ -28,7 +28,7 @@ namespace PixelPet.CLI.Commands {
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 
-			if (!(BitmapFormat.GetFormat(fmtName) is BitmapFormat fmt)) {
+			if (!(TilemapFormat.GetFormat(fmtName) is TilemapFormat fmt)) {
 				logger?.Log("Unknown tilemap format \"" + fmtName + "\".", LogLevel.Error);
 				return;
 			}
@@ -82,7 +82,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			workbench.TilemapFormat = fmt;
+			workbench.Tilemap.TilemapFormat = fmt;
 
 			int addedCount = workbench.Tilemap.Count - beforeCount;
 			logger?.Log("Generated " + addedCount + " tilemap entries.");

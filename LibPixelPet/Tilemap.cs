@@ -12,9 +12,9 @@ namespace LibPixelPet {
 		private List<TileEntry> TileEntries { get; }
 
 		/// <summary>
-		/// Gets or sets the bitmap format of the tilemap.
+		/// Gets or sets the format of the tilemap.
 		/// </summary>
-		public BitmapFormat BitmapFormat { get; set; }
+		public TilemapFormat TilemapFormat { get; set; }
 
 		/// <summary>
 		/// Gets the amount of tile entries currently in the tilemap.
@@ -39,14 +39,14 @@ namespace LibPixelPet {
 		}
 
 		/// <summary>
-		/// Creates a new empty tilemap with the given bitmap format.
+		/// Creates a new empty tilemap with the given format.
 		/// </summary>
-		/// <param name="mapFmt">The bitmap format to use.</param>
-		public Tilemap(BitmapFormat mapFmt) {
+		/// <param name="mapFmt">The tilemap format to use.</param>
+		public Tilemap(TilemapFormat mapFmt) {
 			if (mapFmt == null) {
 				throw new ArgumentNullException(nameof(mapFmt));
 			}
-			this.BitmapFormat = mapFmt;
+			this.TilemapFormat = mapFmt;
 			this.TileEntries = new List<TileEntry>();
 		}
 
@@ -74,7 +74,7 @@ namespace LibPixelPet {
 		/// <param name="tileset">The tileset to use.</param>
 		/// <param name="format">The tilemap format to use.</param>
 		/// <param name="reduce">If true, reduces the tilemap; otherwise, does not reduce.</param>
-		public void AddBitmap(Bitmap bmp, Tileset tileset, BitmapFormat format, bool reduce) {
+		public void AddBitmap(Bitmap bmp, Tileset tileset, TilemapFormat format, bool reduce) {
 			if (bmp == null)
 				throw new ArgumentNullException(nameof(bmp));
 			if (tileset == null)
@@ -99,7 +99,7 @@ namespace LibPixelPet {
 			tileset.IsIndexed = false;
 		}
 
-		public void AddBitmapIndexed(Bitmap bmp, Tileset tileset, PaletteSet palettes, BitmapFormat format, bool reduce) {
+		public void AddBitmapIndexed(Bitmap bmp, Tileset tileset, PaletteSet palettes, TilemapFormat format, bool reduce) {
 			if (bmp == null)
 				throw new ArgumentNullException(nameof(bmp));
 			if (tileset == null)
@@ -215,7 +215,7 @@ namespace LibPixelPet {
 
 					// Draw the tile for this tile entry.
 					Tile tile = tileset[te.TileNumber];
-					int palNum = this.BitmapFormat.BitmapEncoding switch {
+					int palNum = this.TilemapFormat.BitmapEncoding switch {
 						BitmapEncoding.NintendoDSTexture => 0,
 						_ => te.PaletteNumber
 					};
@@ -243,7 +243,7 @@ namespace LibPixelPet {
 			}
 
 			void GetColor(TileEntry te, Palette pal, int p, out int c, out ColorFormat fmt) {
-				if (this.BitmapFormat.BitmapEncoding == BitmapEncoding.NintendoDSTexture) {
+				if (this.TilemapFormat.BitmapEncoding == BitmapEncoding.NintendoDSTexture) {
 					switch (te.TextureMode) {
 					case 0:
 						if (p == 3) {
@@ -337,7 +337,7 @@ namespace LibPixelPet {
 		}
 
 		public Tilemap Clone() {
-			Tilemap clone = new Tilemap(this.BitmapFormat);
+			Tilemap clone = new Tilemap(this.TilemapFormat);
 			clone.TileEntries.AddRange(this.TileEntries);
 			return clone;
 		}
