@@ -35,6 +35,7 @@ namespace PixelPet.CLI {
 			new DeserializeTilemapCmd(),
 			new SerializeTilemapCmd(),
 			new DeserializeBitmapCmd(),
+			new SerializeBitmapCmd(),
 		});
 
 		public LogLevel MaximumLogLevel { get; private set; }

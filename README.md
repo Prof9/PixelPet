@@ -576,3 +576,20 @@ Import-Bytes "rom.gba"
 Deserialize-Bitmap GBA 256 256 --offset 0x800000
 ```
 Imports a ROM `rom.gba`, and deserializes a 256x256 bitmap from offset `0x800000`.
+
+### Serialize-Bitmap
+```
+Serialize-Bitmap [--append/-a]
+```
+
+Serializes the workbench bitmap to the workbench bytestream. The current color format of the workbench bitmap is used.
+
+If `--append` is present, the serialized tilemap is append to the end of the workbench bytestream. Otherwise, the previous workbench bytestream is discarded.
+
+**Example usage:**
+```
+Import-Bitmap "input.png"
+Convert-Bitmap GBA
+Serialize-Bitmap
+```
+Imports a bitmap `input.png`, converts it to GBA colors, then serializes it to the workbench bytestream.
