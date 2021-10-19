@@ -145,8 +145,9 @@ namespace LibPixelPet {
 		/// Converts this tileset to a bitmap.
 		/// </summary>
 		/// <param name="maxTilesPerRow">The maximum number of tiles per row. If set to 0, no maximum is used.</param>
+		/// <param name="targetFmt">The target color format.</param>
 		/// <returns>The created bitmap.</returns>
-		public Bitmap ToBitmap(in int maxTilesPerRow) {
+		public Bitmap ToBitmap(in int maxTilesPerRow, ColorFormat targetFmt) {
 			if (maxTilesPerRow < 0)
 				throw new ArgumentOutOfRangeException(nameof(maxTilesPerRow));
 
@@ -155,8 +156,6 @@ namespace LibPixelPet {
 				hTileCount = maxTilesPerRow;
 			}
 			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
-
-			ColorFormat bgra8888 = ColorFormat.ARGB8888;
 
 			Bitmap bmp = null;
 			try {
@@ -185,7 +184,7 @@ namespace LibPixelPet {
 							int ptr = (py * bmpData.Stride + px * 4) / 4;
 
 							int c = tile[tx, ty];
-							buffer[ptr] = bgra8888.Convert(c, this.ColorFormat);
+							buffer[ptr] = targetFmt.Convert(c, this.ColorFormat);
 						}
 					}
 				}
@@ -205,8 +204,9 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="maxTilesPerRow">The maximum number of tiles per row. If set to 0, no maximum is used.</param>
 		/// <param name="palettes">The palettes to use.</param>
+		/// <param name="targetFmt">The target color format.</param>
 		/// <returns>The created bitmap.</returns>
-		public Bitmap ToBitmapIndexed(in int maxTilesPerRow, PaletteSet palettes) {
+		public Bitmap ToBitmapIndexed(in int maxTilesPerRow, PaletteSet palettes, ColorFormat targetFmt) {
 			if (maxTilesPerRow < 0)
 				throw new ArgumentOutOfRangeException(nameof(maxTilesPerRow));
 			if (palettes == null)
@@ -217,8 +217,6 @@ namespace LibPixelPet {
 				hTileCount = maxTilesPerRow;
 			}
 			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
-
-			ColorFormat bgra8888 = ColorFormat.ARGB8888;
 
 			Bitmap bmp = null;
 #if !DEBUG
@@ -256,9 +254,9 @@ namespace LibPixelPet {
 
 							int c = tile[tx, ty];
 							if (pal != null && c < pal.Count) {
-								c = bgra8888.Convert(pal[c], pal.Format);
+								c = targetFmt.Convert(pal[c], pal.Format);
 							} else {
-								c = bgra8888.Convert(c, this.ColorFormat);
+								c = targetFmt.Convert(c, this.ColorFormat);
 							}
 							buffer[ptr] = c;
 						}

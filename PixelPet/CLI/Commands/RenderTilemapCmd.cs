@@ -24,7 +24,8 @@ namespace PixelPet.CLI.Commands {
 
 			workbench.SetBitmap(workbench.Tileset.IsIndexed
 				? workbench.Tilemap.ToBitmapIndexed(workbench.Tileset, workbench.PaletteSet, tpr, tpc)
-				: workbench.Tilemap.ToBitmap(workbench.Tileset, tpr, tpc)
+				: workbench.Tilemap.ToBitmap(workbench.Tileset, tpr, tpc),
+				ColorFormat.ARGB8888
 			);
 		}
 	}

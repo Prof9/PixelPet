@@ -17,7 +17,7 @@ namespace PixelPet.CLI.Commands {
 			int w = FindNamedParameter("--width").Values[0].ToInt32();
 			int h = FindNamedParameter("--height").Values[0].ToInt32();
 
-			workbench.SetBitmap(workbench.GetCroppedBitmap(x, y, w, h, logger));
+			workbench.SetBitmap(workbench.GetCroppedBitmap(x, y, w, h, logger), workbench.BitmapFormat);
 
 			logger?.Log("Cropped " + workbench.Bitmap.Width + 'x' + workbench.Bitmap.Height + " bitmap.");
 		}

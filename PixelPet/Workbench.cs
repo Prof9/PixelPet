@@ -1,7 +1,5 @@
 ﻿using LibPixelPet;
-using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -24,7 +22,7 @@ namespace PixelPet {
 			this.ClearBitmap(8, 8);
 			this.Stream = new MemoryStream();
 			this.Tileset = new Tileset(8, 8);
-			this.Tilemap = new Tilemap(LibPixelPet.TilemapFormat.GBA4BPP);
+			this.Tilemap = new Tilemap(TilemapFormat.GBA4BPP);
 		}
 
 		public void ClearBitmap(in int width, in int height) {
@@ -37,14 +35,14 @@ namespace PixelPet {
 			this.BitmapFormat = ColorFormat.ARGB8888;
 		}
 
-		public void SetBitmap(Bitmap bmp) {
+		public void SetBitmap(Bitmap bmp, ColorFormat fmt) {
 			this.Graphics?.Dispose();
 			this.Bitmap?.Dispose();
 
 			this.Bitmap = bmp;
 			this.Graphics = Graphics.FromImage(this.Bitmap);
 
-			this.BitmapFormat = ColorFormat.ARGB8888;
+			this.BitmapFormat = fmt;
 		}
 
 		public Bitmap GetCroppedBitmap(int x, int y, int width, int height, ILogger logger = null) {

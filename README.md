@@ -1,7 +1,7 @@
 # PixelPet
 PixelPet is an image processing tool for retro games modding. It allows you to automatize converting common image files (such as PNG) to the binary formats supported by retro consoles. You can also go the other way, using PixelPet to extract and render binary images from game ROMs.
 
-At the moment, PixelPet is geared mostly towards the Game Boy Advance and Nintendo DS family of systems, but should be easy to extend to other systems.
+At the moment, PixelPet is geared mostly towards the FFGame Boy Advance and Nintendo DS family of systems, but should be easy to extend to other systems.
 
 Note that PixelPet is a work-in-progress, and new features and functionality are added as the need for them arises. As such, the information described below is subject to change.
 
@@ -266,16 +266,18 @@ Imports a 16-color image, generates a 16-color palette from it, renders this pal
 
 ### Render-Tileset
 ```
-Render-Tileset [--tiles-per-row/-tw <count>]
+Render-Tileset [--tiles-per-row/-tw <count>] [--format/-f <format>]
 ```
 
-Renders the workbench tileset as an image, and writes this to the workbench bitmap. The old workbench bitmap is discarded. The tileset image is rendered in 32-bit color.
+Renders the workbench tileset as an image, and writes this to the workbench bitmap. The old workbench bitmap is discarded.
 
 If the workbench tileset uses indexed colors, then the workbench palettes are used when rendering the tiles. If there is a palette loaded with the same slot number as the palette that was originally used to index the tile, then that palette is used to render the tile. If there is no longer a palette loaded with that slot number, then the first palette that is currently loaded is used. Otherwise, if there are no palettes loaded at all, the tile is rendered using a generic grayscale palette.
 
 If the workbench tileset does not used indexed colors, then each pixel is rendered as-is.
 
 The `--tiles-per-row` option can be used to specify how many tiles should be rendered per row. By default, this is 32 tiles. For a tileset using 8 by 8 pixel tiles, this results in a tileset image that is 256 pixels wide. The height of the tileset image is computed automatically.
+
+If the `--format` option is present, the tileset image is rendered using the specified color format; otherwiseit is rendered in 32-bit color.
 
 **Example usage:**
 ```
