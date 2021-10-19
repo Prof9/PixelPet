@@ -134,6 +134,8 @@ Exports the workbench bitmap to the file specified by `<path>`. The output bitma
 
 If the `--format` option is not present, all pixels in the bitmap are converted to 32-bit color during export (this does not modify the workbench bitmap). If it is present, the pixels are converted to the given format. Note that since the image itself is stored in 32-bit format, this means the image won't display correctly, but it can be a more convenient way to check color values than exporting to bytes and checking with a hex editor.
 
+However, if the chosen color format for `--format` does not contain an alpha channel, `Export-Bitmap` will set the 32-bit alpha channel of all pixels to 255 after conversion.
+
 **Example usage:**
 ```
 Export-Bitmap "output.png"

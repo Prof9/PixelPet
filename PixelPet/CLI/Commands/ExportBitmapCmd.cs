@@ -30,6 +30,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			Bitmap bmp = null;
+			bool setAlpha = workbench.BitmapFormat.AlphaBits == 0;
 			try {
 				bmp = workbench.GetCroppedBitmap(0, 0, workbench.Bitmap.Width, workbench.Bitmap.Height, logger);
 				BitmapData bmpData = bmp.LockBits(
@@ -44,6 +45,13 @@ namespace PixelPet.CLI.Commands {
 					buffer[i] = fmt.Convert(buffer[i], workbench.BitmapFormat);
 				}
 
+				if (workbench.BitmapFormat.AlphaBits == 0) {
+					for (int i = 0; i < buffer.Length; i++) {
+						buffer[i] = (int)(buffer[i] | 0xFF000000);
+					}
+					setAlpha = true;
+				}
+
 				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length / 4);
 				bmp.UnlockBits(bmpData);
 
@@ -55,7 +63,7 @@ namespace PixelPet.CLI.Commands {
 				bmp?.Dispose();
 			}
 
-			logger?.Log("Exported bitmap " + Path.GetFileName(path) + '.');
+			logger?.Log("Exported bitmap " + Path.GetFileName(path) + (setAlpha ? " (added alpha)" : "") + '.');
 		}
 	}
 }
