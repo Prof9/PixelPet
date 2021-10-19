@@ -7,7 +7,6 @@ namespace PixelPet.CLI.Commands {
 			: base("Deserialize-Tileset",
 				new Parameter(true, new ParameterValue("tilemap-format")),
 				new Parameter("append", "a", false),
-				new Parameter("ignore-palette", "ip", false),
 				new Parameter("tile-count", "tc", false, new ParameterValue("count", "" + int.MaxValue)),
 				new Parameter("offset", "o", false, new ParameterValue("count", "0")),
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "-1"), new ParameterValue("height", "-1"))
@@ -18,7 +17,6 @@ namespace PixelPet.CLI.Commands {
 			bool append = FindNamedParameter("--append").IsPresent;
 			int tc = FindNamedParameter("--tile-count").Values[0].ToInt32();
 			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
-			bool usePalette = !FindNamedParameter("--ignore-palette").IsPresent;
 			Parameter ts = FindNamedParameter("--tile-size");
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
@@ -65,11 +63,6 @@ namespace PixelPet.CLI.Commands {
 				workbench.Tileset.TileHeight = th;
 			}
 
-			Palette pal = null;
-			if (mapFmt.IsIndexed && workbench.PaletteSet.Count > 0) {
-				pal = workbench.PaletteSet[0].Palette;
-			}
-
 			int[] pixels = new int[tw * th];
 			int added = 0;
 			using (PixelReader pixelReader = new PixelReader(workbench.Stream, mapFmt.ColorFormat, true)) {
@@ -78,13 +71,6 @@ namespace PixelPet.CLI.Commands {
 						break;
 					}
 
-					if (usePalette) {
-						for (int i = 0; i < pixels.Length; i++) {
-							int c = pixels[i];
-							pixels[i] = pal?[c] ?? c;
-						}
-					}
-					
 					// Add tile to the tileset.
 					Tile tile = new Tile(tw, th);
 					tile.SetAllPixels(pixels);
@@ -93,12 +79,8 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			if (usePalette && pal != null) {
-				workbench.Tileset.ColorFormat = pal.Format;
-			} else {
-				workbench.Tileset.ColorFormat = mapFmt.ColorFormat;
-			}
-			workbench.Tileset.IsIndexed = !usePalette;
+			workbench.Tileset.ColorFormat = mapFmt.ColorFormat;
+			workbench.Tileset.IsIndexed = mapFmt.IsIndexed;
 
 			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
 		}

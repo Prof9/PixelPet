@@ -486,7 +486,7 @@ If `--append` is present, then the serialized palettes are appended to the curre
 
 ### Deserialize-Tileset
 ```
-Deserialize-Tileset <tilemap-format> [--append/-a] [--ignore-palette/-ip] [--tile-count/-tc <count>] [--offset/-o <count>] [--tile-size/-s <width> <height>]
+Deserialize-Tileset <tilemap-format> [--append/-a] [--tile-count/-tc <count>] [--offset/-o <count>] [--tile-size/-s <width> <height>]
 ```
 
 Deserializes a tileset from the workbench bytestream.
@@ -494,8 +494,6 @@ Deserializes a tileset from the workbench bytestream.
 If `--append` is present, then the tiles are added to the existing workbench tileset; otherwise, the current tileset is discarded.
 
 The `<tilemap-format>` parameter specifies the tilemap format that is used. By default this command will begin deserializing from the start of the workbench bytestream until the end; however, the `--offset` option can be used to specify the starting address, and `--tile-count` can be used to specify the number of tiles that should be read. PixelPet will read tiles from the workbench bytestream until the number of tiles specified by `--tile-count` is reached, or the end of the bytestream is reached; whichever comes first.
-
-By default, `Deserialize-Tileset` will apply the loaded palettes to the tileset as it's deserialized (if `<tilemap-format>` is indexed). This results in a tileset where each pixel value is an actual color value. However, if `--ignore-palette` is present, this is omitted, and this creates a tileset where each pixel value is a palette color index.
 
 The `--tile-size` option specifies the size of each tile in pixels. If this is omitted, the tile size of the current tileset will be used. If the current tileset is nonempty, the tile size specified with `--tile-size` must match the tile size of the current tileset.
 
