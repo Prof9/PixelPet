@@ -55,6 +55,7 @@ namespace PixelPet.CLI.Commands {
 				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length / 4);
 				bmp.UnlockBits(bmpData);
 
+				Directory.CreateDirectory(Path.GetDirectoryName(path));
 				bmp.Save(path);
 			} catch (IOException) {
 				logger?.Log("Could not save bitmap " + Path.GetFileName(path) + ".", LogLevel.Error);
