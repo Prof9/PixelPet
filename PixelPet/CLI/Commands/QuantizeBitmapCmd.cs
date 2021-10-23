@@ -36,8 +36,8 @@ namespace PixelPet.CLI.Commands {
 				ImageLockMode.ReadWrite,
 				workbench.Bitmap.PixelFormat
 			);
-			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height];
-			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length / 4);
+			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height / 4];
+			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
 
 			if (pal == null) {
 				// Find first palette that contains all colors in the bitmap
@@ -74,7 +74,7 @@ namespace PixelPet.CLI.Commands {
 						break;
 					}
 					if (ci >= fmt.MaxValue) {
-						logger?.Log("Color index" + ci + " at pixel (" + x + ", " + y + ") cannot be represented in the given color format.", LogLevel.Error);
+						logger?.Log("Color index " + ci + " at pixel (" + x + ", " + y + ") cannot be represented in the given color format.", LogLevel.Error);
 						break;
 					}
 					buffer[i] = ci;
@@ -82,7 +82,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			workbench.BitmapFormat = fmt;
-			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length / 4);
+			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
 			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Quantized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap using palette " + palNum + ".");

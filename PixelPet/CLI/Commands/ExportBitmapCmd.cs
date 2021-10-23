@@ -38,8 +38,8 @@ namespace PixelPet.CLI.Commands {
 					ImageLockMode.ReadWrite,
 					workbench.Bitmap.PixelFormat
 				);
-				int[] buffer = new int[bmpData.Stride * bmp.Height];
-				Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length / 4);
+				int[] buffer = new int[bmpData.Stride * bmp.Height / 4];
+				Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
 
 				for (int i = 0; i < buffer.Length; i++) {
 					buffer[i] = fmt.Convert(buffer[i], workbench.BitmapFormat);
@@ -52,7 +52,7 @@ namespace PixelPet.CLI.Commands {
 					setAlpha = true;
 				}
 
-				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length / 4);
+				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
 				bmp.UnlockBits(bmpData);
 
 				Directory.CreateDirectory(Path.GetDirectoryName(path));

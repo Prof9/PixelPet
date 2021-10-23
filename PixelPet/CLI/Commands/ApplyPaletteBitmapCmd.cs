@@ -29,8 +29,8 @@ namespace PixelPet.CLI.Commands {
 				ImageLockMode.ReadWrite,
 				workbench.Bitmap.PixelFormat
 			);
-			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height];
-			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length / 4);
+			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height / 4];
+			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
 
 			// Check if there is a suitable palette
 			uint maxCol = buffer.Max(a => (uint)a);
@@ -73,7 +73,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			workbench.BitmapFormat = pal.Format;
-			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length / 4);
+			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
 			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Applied palette " + palNum + " to " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.");

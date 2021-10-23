@@ -24,8 +24,8 @@ namespace PixelPet.CLI.Commands {
 				ImageLockMode.ReadWrite,
 				workbench.Bitmap.PixelFormat
 			);
-			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height];
-			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length / 4);
+			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height / 4];
+			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
 
 			using (PixelWriter pixelWriter = new PixelWriter(workbench.Stream, workbench.BitmapFormat, true)) {
 				pixelWriter.WritePixels(buffer, 0, workbench.Bitmap.Width * workbench.Bitmap.Height);
