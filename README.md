@@ -1,7 +1,7 @@
 # PixelPet
 PixelPet is an image processing tool for retro games modding. It allows you to automatize converting common image files (such as PNG) to the binary formats supported by retro consoles. You can also go the other way, using PixelPet to extract and render binary images from game ROMs.
 
-At the moment, PixelPet is geared mostly towards the FFGame Boy Advance and Nintendo DS family of systems, but should be easy to extend to other systems.
+At the moment, PixelPet is geared mostly towards the Game Boy Advance and Nintendo DS family of systems, but should be easy to extend to other systems.
 
 Note that PixelPet is a work-in-progress, and new features and functionality are added as the need for them arises. As such, the information described below is subject to change.
 
@@ -27,7 +27,7 @@ A palette can hold any number of colors, but a palette may have a maximum number
 
 ### Bitmap
 
-The bitmap is simply a full image that is being operated on. This uses .NET's Bitmap class internally, and thus can be in any format that .NET's Bitmap class supports. The bitmap can be importanted from various file formats; this has not been extensively tested, however, so using standard PNG images in 24-bit RGB or 32-bit RGBA format is advised. You can also export the bitmap to a standard PNG image file.
+The bitmap is simply a full image that is being operated on. This uses .NET's Bitmap class internally, and thus can be in any format that .NET's Bitmap class supports. The bitmap can be imported from various file formats; this has not been extensively tested, however, so using standard PNG images in 24-bit RGB or 32-bit RGBA format is advised. You can also export the bitmap to a standard PNG image file.
 
 ### Bytestream
 
@@ -122,6 +122,7 @@ Imports the image file specified by `<path>` to the workbench bitmap. The previo
 If the `--format` option is not present, all pixels in the bitmap will be imported as-is. If it is present, all pixels in the bitmap will be interpreted as if they were in the specified color format.
 
 **Example usage:**
+
 ```
 Import-Bitmap "input.png"
 ```
@@ -217,7 +218,7 @@ The `--palette-size` option can be used to specify a maximum palette size for an
 
 The `--x`, `--y`, `--width` and `--height` options can be used to process only a portion of the workbench bitmap. The workbench bitmap will not be changed, but it will be processed as if it was cropped using the given parameters, and the first tile begins in the top left corner of the cropped bitmap. By default, the entire workbench bitmap is processed.
 
-The `--tile-size` option specifies the size of each tile in pixels. If this option is omitted, then tile size of the current workbench tileset is used. Note: `--tile-size 1 1` is equivalent to equivalent to treating the entire bitmap as a single "tile".
+The `--tile-size` option specifies the size of each tile in pixels. If this option is omitted, then tile size of the current workbench tileset is used. As a special case, when a width and/or height of 0 is specified for `--tile-size`, it will use the width and/or height of the entire workbench bitmap, so e.g. `--tile-size 0 0` will treat the entire bitmap as a single "tile".
 
 **Example usage:**
 ```
@@ -283,7 +284,7 @@ If the workbench tileset does not used indexed colors, then each pixel is render
 
 The `--tiles-per-row` option can be used to specify how many tiles should be rendered per row. By default, this is 32 tiles. For a tileset using 8 by 8 pixel tiles, this results in a tileset image that is 256 pixels wide. The height of the tileset image is computed automatically.
 
-If the `--format` option is present, the tileset image is rendered using the specified color format; otherwiseit is rendered in 32-bit color.
+If the `--format` option is present, the tileset image is rendered using the specified color format; otherwise it is rendered in 32-bit color.
 
 **Example usage:**
 ```

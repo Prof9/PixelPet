@@ -38,11 +38,11 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
 				return;
 			}
-			if (ts.IsPresent && tw <= 0) {
+			if (ts.IsPresent && tw < 0) {
 				logger?.Log("Invalid tile width.", LogLevel.Error);
 				return;
 			}
-			if (ts.IsPresent && th <= 0) {
+			if (ts.IsPresent && th < 0) {
 				logger?.Log("Invalid tile height.", LogLevel.Error);
 				return;
 			}
@@ -62,12 +62,12 @@ namespace PixelPet.CLI.Commands {
 			int addedColors = 0;
 			Palette pal = null;
 			using (Bitmap bmp = workbench.GetCroppedBitmap(x, y, w, h, logger)) {
-				// Improve performance for pixel-by-pixel basis
-				if (tw == 1) {
+				// Special case to use entire bitmap
+				if (tw == 0) {
 					tw = bmp.Width;
-					if (th == 1) {
-						th = bmp.Height;
-					}
+				}
+				if (th == 0) {
+					th = bmp.Height;
 				}
 				TileCutter cutter = new TileCutter(tw, th);
 
