@@ -11,6 +11,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("append", "a", false),
 				new Parameter("palette-number", "pn", false, new ParameterValue("number", "-1")),
 				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1")),
+				new Parameter("palette-count", "pc", false, new ParameterValue("count", "-1")),
 				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
 				new Parameter("y", "y", false, new ParameterValue("pixels", "0")),
 				new Parameter("width", "w", false, new ParameterValue("pixels", "-1")),
@@ -22,6 +23,7 @@ namespace PixelPet.CLI.Commands {
 			bool append = FindNamedParameter("--append").IsPresent;
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
+			int palCount = FindNamedParameter("--palette-count").Values[0].ToInt32();
 			int x = FindNamedParameter("--x").Values[0].ToInt32();
 			int y = FindNamedParameter("--y").Values[0].ToInt32();
 			int w = FindNamedParameter("--width").Values[0].ToInt32();
@@ -36,6 +38,10 @@ namespace PixelPet.CLI.Commands {
 			}
 			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
+				return;
+			}
+			if (palCount < -1) {
+				logger?.Log("Invalid palette count.", LogLevel.Error);
 				return;
 			}
 			if (ts.IsPresent && tw < 0) {
@@ -104,20 +110,25 @@ namespace PixelPet.CLI.Commands {
 
 					// Could not find a suitable palette, so have to make a new one.
 					if (bestPal < 0) {
-						pal = new Palette(workbench.BitmapFormat, palSize);
-						if (palNum >= 0) {
-							while (workbench.PaletteSet.ContainsPalette(palNum)) {
-								palNum++;
+						if (palCount == -1 || palCount > addedPalettes) {
+							pal = new Palette(workbench.BitmapFormat, palSize);
+							if (palNum >= 0) {
+								while (workbench.PaletteSet.ContainsPalette(palNum)) {
+									palNum++;
+								}
+								workbench.PaletteSet.Add(pal, palNum++);
+							} else {
+								workbench.PaletteSet.Add(pal);
 							}
-							workbench.PaletteSet.Add(pal, palNum++);
+
+							addedPalettes++;
+
+							bestPal = workbench.PaletteSet.Count - 1;
+							bestAdd = tileColors.Count;
 						} else {
-							workbench.PaletteSet.Add(pal);
+							logger?.Log("Cannot create a new palette for tile " + ti + " with " + tileColors.Count + " colors.", LogLevel.Error);
+							return;
 						}
-
-						addedPalettes++;
-
-						bestPal = workbench.PaletteSet.Count - 1;
-						bestAdd = tileColors.Count;
 					} else {
 						pal = workbench.PaletteSet[bestPal].Palette;
 					}

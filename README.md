@@ -201,7 +201,7 @@ Discards the workbench tilemap, and initializes a new one.
 
 ### Extract-Palettes
 ```
-Extract-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>] [--tile-size/-s <width> <height>]
+Extract-Palettes [--append/-a] [--palette-number/-pn <number>] [--palette-size/-ps <count>] [--palette-count/-pc <count>] [--x/-x <pixels>] [--y/-y <pixels>] [--width/-w <pixels>] [--height/-h <pixels>] [--tile-size/-s <width> <height>]
 ```
 
 Extracts palettes from the workbench bitmap.
@@ -215,6 +215,8 @@ If `--append` is present, then the extracted palettes are added to the current w
 The `--palette-number` option can be used to specify the initial palette slot number that will be used for any newly created palette. This slot number is increased until an empty slot is found. If this option is not specified, new palettes will get the highest slot number among the loaded palettes + 1.
 
 The `--palette-size` option can be used to specify a maximum palette size for any newly create palette. Palettes that were created before this command is run retain their original maximum palette size. By default, the maximum palette size is unbounded.
+
+The `--palette-count` option can be used to specify the maximum number of palettes that may be added. If the bitmap requires more palettes, then an error is thrown. By default, the maximum number of palettes that may be added is unbounded.
 
 The `--x`, `--y`, `--width` and `--height` options can be used to process only a portion of the workbench bitmap. The workbench bitmap will not be changed, but it will be processed as if it was cropped using the given parameters, and the first tile begins in the top left corner of the cropped bitmap. By default, the entire workbench bitmap is processed.
 
