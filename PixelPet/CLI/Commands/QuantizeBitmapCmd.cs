@@ -45,7 +45,7 @@ namespace PixelPet.CLI.Commands {
 					bool canUsePal = true;
 					foreach (int c in buffer) {
 						int ci = palEntry.Palette.IndexOfColor(c);
-						if (ci < 0 || ci >= fmt.MaxValue) {
+						if (ci < 0 || ci > fmt.MaxValue) {
 							canUsePal = false;
 							break;
 						}
@@ -73,7 +73,7 @@ namespace PixelPet.CLI.Commands {
 						logger?.Log("Color 0x" + buffer[i].ToString("X") + " at pixel (" + x + ", " + y + ") not found in palette " + palNum + ".", LogLevel.Error);
 						break;
 					}
-					if (ci >= fmt.MaxValue) {
+					if (ci > fmt.MaxValue) {
 						logger?.Log("Color index " + ci + " at pixel (" + x + ", " + y + ") cannot be represented in the given color format.", LogLevel.Error);
 						break;
 					}
