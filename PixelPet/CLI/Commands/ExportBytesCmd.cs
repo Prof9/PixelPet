@@ -13,7 +13,7 @@ namespace PixelPet.CLI.Commands {
 			string path = this.FindUnnamedParameter(0).Values[0].ToString();
 
 			try {
-				Directory.CreateDirectory(Path.GetDirectoryName(path));
+				Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
 				using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)) {
 					workbench.Stream.WriteTo(fs);
 				}
