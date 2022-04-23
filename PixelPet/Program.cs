@@ -4,8 +4,21 @@ using System.Collections.Generic;
 using System.Reflection;
 
 namespace PixelPet {
+	[AttributeUsage(AttributeTargets.Assembly)]
+	internal class AssemblyBuildInfoAttribute : Attribute
+	{
+		public string Timestamp { get; }
+		public string CommitID { get; }
+		public AssemblyBuildInfoAttribute(string timestamp, string commitID)
+		{
+			Timestamp = timestamp;
+			CommitID = commitID;
+		}
+	}
+
 	internal class Program {
-		public static string Version => "v1.0-alpha2";
+		public static string Version => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+		public static AssemblyBuildInfoAttribute BuildInfo => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyBuildInfoAttribute>();
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
 		static int Main(string[] args) {
@@ -23,7 +36,7 @@ namespace PixelPet {
 		private void RunCli(string[] args) {
 			string consoleTitle = Console.Title;
 			Console.Title = "PixelPet";
-			Console.WriteLine($"PixelPet " + Version + " by Prof. 9");
+			Console.WriteLine($"PixelPet {Version} by Prof. 9 ({BuildInfo.CommitID} @ {BuildInfo.Timestamp})");
 			Console.WriteLine();
 
 			Workbench workbench = new Workbench();
