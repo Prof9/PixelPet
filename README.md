@@ -1,4 +1,7 @@
 # PixelPet
+
+[![build](https://github.com/Prof9/PixelPet/actions/workflows/build.yaml/badge.svg)](https://github.com/Prof9/PixelPet/actions)
+
 PixelPet is an image processing tool for retro games modding. It allows you to automatize converting common image files (such as PNG) to the binary formats supported by retro consoles. You can also go the other way, using PixelPet to extract and render binary images from game ROMs.
 
 At the moment, PixelPet is geared mostly towards the Game Boy Advance and Nintendo DS family of systems, but should be easy to extend to other systems.
