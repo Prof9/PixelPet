@@ -42,7 +42,7 @@ namespace PixelPet {
 			Workbench workbench = new Workbench();
 			Cli cli = new Cli(workbench);
 
-			cli.Run(((IEnumerable<string>)args).GetEnumerator());
+			cli.Run(args);
 
 			if ((int)cli.MaximumLogLevel > this.ErrorLevel) {
 				this.ErrorLevel = (int)cli.MaximumLogLevel;

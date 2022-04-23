@@ -8,7 +8,7 @@ namespace PixelPet {
 	/// <summary>
 	/// PixelPet workbench instance.
 	/// </summary>
-	internal class Workbench {
+	public class Workbench {
 		public PaletteSet PaletteSet { get; set; }
 		public Bitmap Bitmap { get; private set; }
 		public Graphics Graphics { get; private set; }

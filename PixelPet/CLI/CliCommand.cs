@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PixelPet.CLI {
-	internal abstract class CliCommand {
+	public abstract class CliCommand {
 		/// <summary>
 		/// Gets or sets the CLI currently running this command.
 		/// </summary>

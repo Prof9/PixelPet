@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace PixelPet {
-	internal enum LogLevel {
+	public enum LogLevel {
 		VerboseInformation = -1,
 		Information = 0,
 		Warning = 1,

@@ -1,0 +1,3 @@
+Import-Bytes "input.bin"
+Export-Bytes "output.bin"
+Check-File-Equal "input.bin" "output.bin"

@@ -46,7 +46,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			CLI.Run(((IEnumerable<string>)args).GetEnumerator());
+			CLI.Run(args);
 
 			this.ScriptPaths.Remove(fullPath);
 		}

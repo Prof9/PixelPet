@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace PixelPet.CLI {
-	internal class Cli : ILogger {
-		internal readonly IEnumerable<CliCommand> Commands = new ReadOnlyCollection<CliCommand>(new CliCommand[] {
+	public class Cli : ILogger {
+		internal IList<CliCommand> Commands = new List<CliCommand>() {
 			new HelpCmd(),
 			new RunScriptCmd(),
 			new ImportBitmapCmd(),
@@ -38,27 +39,55 @@ namespace PixelPet.CLI {
 			new SerializeBitmapCmd(),
 			new ApplyPaletteBitmapCmd(),
 			new QuantizeBitmapCmd(),
-		});
+		};
 
 		public LogLevel MaximumLogLevel { get; private set; }
 		public bool Verbose { get; private set; }
 		public Workbench Workbench { get; }
+		public TextWriter ConsoleOut { get; set; }
+		public TextWriter ConsoleError { get; set; }
 
 		/// <summary>
 		/// Creates a new command line interface acting on the specified workbench.
 		/// </summary>
 		/// <param name="workbench">The workbench to act on.</param>
 		public Cli(Workbench workbench) {
+			if (workbench is null)
+				throw new ArgumentNullException(nameof(workbench));
+
+			this.ConsoleOut = Console.Out;
+			this.ConsoleError = Console.Error;
+
 			this.Workbench = workbench;
 			this.ResetLogLevel();
 			this.ResetVerbosity();
 		}
 
+		/// <summary>
+		/// Registers an additional command on the CLI.
+		/// </summary>
+		/// <param name="command">Command to register.</param>
+		public void RegisterCommand(CliCommand command) {
+			if (command is null)
+				throw new ArgumentNullException(nameof(command));
+
+			this.Commands.Add(command);
+		}
+
+		/// <summary>
+		/// Resets the maximum log level encountered.
+		/// </summary>
 		public void ResetLogLevel() {
 			this.MaximumLogLevel = 0;
 		}
 
-		public void Run(IEnumerator<string> args) {
+		/// <summary>
+		/// Run commands from the given arguments.
+		/// </summary>
+		/// <param name="args">Arguments containing commands to run.</param>
+		public void Run(IEnumerable<string> args) => Run(args.GetEnumerator());
+
+		internal void Run(IEnumerator<string> args) {
 			if (args == null)
 				throw new ArgumentNullException(nameof(args));
 
@@ -120,23 +149,29 @@ namespace PixelPet.CLI {
 
 			ConsoleColor color = Console.ForegroundColor;
 
-			switch (level) {
-			case LogLevel.Exception:
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.Write("FATAL: ");
-				break;
-			case LogLevel.Error:
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.Write("ERROR: ");
-				break;
-			case LogLevel.Warning:
-				Console.ForegroundColor = ConsoleColor.Yellow;
-				Console.Write("WARNING: ");
-				break;
+			TextWriter console = this.ConsoleOut;
+			if (level >= LogLevel.Exception) {
+				console = this.ConsoleError;
+				if (console == Console.Error) {
+					Console.ForegroundColor = ConsoleColor.Red;
+				}
+				console.Write("FATAL: ");
+			} else if (level == LogLevel.Error) {
+				console = this.ConsoleError;
+				if (console == Console.Error) {
+					Console.ForegroundColor = ConsoleColor.Red;
+				}
+				console.Write("ERROR: ");
+			} else if (level == LogLevel.Warning) {
+				console = this.ConsoleError;
+				if (console == Console.Error) {
+					Console.ForegroundColor = ConsoleColor.Yellow;
+				}
+				console.Write("WARNING: ");
 			}
-
 			Console.ForegroundColor = color;
-			Console.WriteLine(str);
+
+			console.WriteLine(str);
 		}
 
 		public void SetVerbosity(bool verbose)

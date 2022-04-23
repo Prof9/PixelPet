@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace PixelPet {
-	internal interface ILogger {
+	public interface ILogger {
 		void Log(string logString, LogLevel logLevel = 0);
 
 		void SetVerbosity(bool verbose);

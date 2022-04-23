@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI {
-	internal class ParameterValue {
+	public class ParameterValue {
 		public string Name { get; }
 		public string DefaultValue { get; }
 		public string CurrentValue { get; private set; }

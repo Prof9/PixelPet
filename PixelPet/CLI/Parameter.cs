@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace PixelPet.CLI {
-	internal class Parameter {
+	public class Parameter {
 		public string LongName { get; }
 		public string ShortName { get; }
 		public ReadOnlyCollection<ParameterValue> Values { get; }

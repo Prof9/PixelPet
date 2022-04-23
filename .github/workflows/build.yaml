@@ -14,10 +14,14 @@ jobs:
     name: build-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macOS-latest]
     steps:
       - uses: actions/checkout@v3
+      - name: Install libgdiplus
+        if: startsWith(matrix.os, 'macOS')
+        run: brew install mono-libgdiplus
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v2
         with:
@@ -28,3 +32,5 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity normal
+      - name: Run PixelPet tests
+        run: dotnet run --project Tests --configuration Release --no-build
