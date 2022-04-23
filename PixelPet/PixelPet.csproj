@@ -1,104 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6CFF2A7E-41A9-41F2-8ECA-208942A54853}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>PixelPet</RootNamespace>
-    <AssemblyName>PixelPet</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Drawing" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CLI\Cli.cs" />
-    <Compile Include="CLI\CliCommand.cs" />
-    <Compile Include="CLI\Commands\ApplyPaletteBitmapCmd.cs" />
-    <Compile Include="CLI\Commands\ConvertBitmapCmd.cs" />
-    <Compile Include="CLI\Commands\ConvertPalettesCmd.cs" />
-    <Compile Include="CLI\Commands\DeserializeBitmapCmd.cs" />
-    <Compile Include="CLI\Commands\ExportBytesCmd.cs" />
-    <Compile Include="CLI\Commands\ClearPalettesCmd.cs" />
-    <Compile Include="CLI\Commands\ClearTilemapCmd.cs" />
-    <Compile Include="CLI\Commands\ClearTilesetCmd.cs" />
-    <Compile Include="CLI\Commands\CropBitmapCmd.cs" />
-    <Compile Include="CLI\Commands\DeduplicatePalettesCmd.cs" />
-    <Compile Include="CLI\Commands\DeserializePalettesCmd.cs" />
-    <Compile Include="CLI\Commands\DeserializeTilemapCmd.cs" />
-    <Compile Include="CLI\Commands\DeserializeTilesetCmd.cs" />
-    <Compile Include="CLI\Commands\ExportBitmapCmd.cs" />
-    <Compile Include="CLI\Commands\ExtractPalettesCmd.cs" />
-    <Compile Include="CLI\Commands\GenerateTilemapCmd.cs" />
-    <Compile Include="CLI\Commands\HelpCmd.cs" />
-    <Compile Include="CLI\Commands\ReadPalettesCmd.cs" />
-    <Compile Include="CLI\Commands\ImportBitmapCmd.cs" />
-    <Compile Include="CLI\Commands\ImportBytesCmd.cs" />
-    <Compile Include="CLI\Commands\PadPalettesCmd.cs" />
-    <Compile Include="CLI\Commands\PadTilesetCmd.cs" />
-    <Compile Include="CLI\Commands\RenderPalettesCmd.cs" />
-    <Compile Include="CLI\Commands\RenderTilemapCmd.cs" />
-    <Compile Include="CLI\Commands\RenderTilesetCmd.cs" />
-    <Compile Include="CLI\Commands\RunScriptCmd.cs" />
-    <Compile Include="CLI\Commands\SerializeBitmapCmd.cs" />
-    <Compile Include="CLI\Commands\SerializePalettesCmd.cs" />
-    <Compile Include="CLI\Commands\SerializeTilemapCmd.cs" />
-    <Compile Include="CLI\Commands\SerializeTilesetCmd.cs" />
-    <Compile Include="CLI\Commands\QuantizeBitmapCmd.cs" />
-    <Compile Include="ILogger.cs" />
-    <Compile Include="LogLevel.cs" />
-    <Compile Include="CLI\Parameter.cs" />
-    <Compile Include="CLI\ParameterValue.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Workbench.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LibPixelPet\LibPixelPet.csproj">
-      <Project>{ABE257C0-2DC5-4D0A-8315-FBF457BEF41D}</Project>
-      <Name>LibPixelPet</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="key.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="CustomDictionary.xml" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Authors>Prof. 9</Authors>
+		<VersionPrefix>1.0.0</VersionPrefix>
+		<Copyright>Copyright © $(Authors) $([System.DateTime]::Now.Year)</Copyright>
+		<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<LangVersion>latest</LangVersion>
+		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<CodeAnalysisDictionary Include="CustomDictionary.xml" />
+		<ProjectReference Include="..\LibPixelPet\LibPixelPet.csproj" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	</ItemGroup>
 </Project>

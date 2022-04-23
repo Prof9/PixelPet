@@ -35,8 +35,6 @@ namespace LibPixelPet {
 		/// <param name="format">The color format.</param>
 		/// <param name="maxSize">The maximum palette size, or -1 if there is no maximum.</param>
 		public Palette(in ColorFormat format, in int maxSize) {
-			if (format == null)
-				throw new ArgumentNullException(nameof(format));
 			if (maxSize < -1)
 				throw new ArgumentOutOfRangeException(nameof(maxSize));
 
@@ -113,9 +111,6 @@ namespace LibPixelPet {
 		/// <param name="from">The color format that the color value is currently in.</param>
 		/// <returns>The index of the color, or -1 if it was not found.</returns>
 		public int IndexOfColor(in int color, in ColorFormat from) {
-			if (from == null)
-				throw new ArgumentNullException(nameof(from));
-
 			return this.IndexOfColor(this.Format.Convert(color, from));
 		}
 

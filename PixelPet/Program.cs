@@ -1,6 +1,7 @@
 ﻿using PixelPet.CLI;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace PixelPet {
 	internal class Program {

@@ -31,8 +31,6 @@ namespace LibPixelPet {
 			set {
 				if (index < 0 || index >= this.Count)
 					throw new ArgumentOutOfRangeException(nameof(index));
-				if (value == null)
-					throw new ArgumentNullException(nameof(value));
 
 				this.TileEntries[index] = value;
 			}
@@ -43,9 +41,6 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="mapFmt">The tilemap format to use.</param>
 		public Tilemap(TilemapFormat mapFmt) {
-			if (mapFmt == null) {
-				throw new ArgumentNullException(nameof(mapFmt));
-			}
 			this.TilemapFormat = mapFmt;
 			this.TileEntries = new List<TileEntry>();
 		}
@@ -55,9 +50,6 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="entry">The tile entry to add.</param>
 		public void Add(TileEntry entry) {
-			if (entry == null)
-				throw new ArgumentNullException(nameof(entry));
-
 			this.TileEntries.Add(entry);
 		}
 
@@ -79,8 +71,6 @@ namespace LibPixelPet {
 				throw new ArgumentNullException(nameof(bmp));
 			if (tileset == null)
 				throw new ArgumentNullException(nameof(tileset));
-			if (format == null)
-				throw new ArgumentNullException(nameof(format));
 
 			TileCutter cutter = new TileCutter(tileset.TileWidth, tileset.TileHeight);
 			foreach (Tile tile in cutter.CutTiles(bmp)) {
@@ -106,8 +96,6 @@ namespace LibPixelPet {
 				throw new ArgumentNullException(nameof(tileset));
 			if (palettes == null)
 				throw new ArgumentNullException(nameof(palettes));
-			if (format == null)
-				throw new ArgumentNullException(nameof(format));
 
 			TileCutter cutter = new TileCutter(tileset.TileWidth, tileset.TileHeight);
 			Tile[] indexedTiles = new Tile[palettes.Count];

@@ -27,8 +27,6 @@ namespace LibPixelPet {
 			set {
 				if (index < 0 || index > this.Count)
 					throw new ArgumentOutOfRangeException(nameof(index));
-				if (value == null)
-					throw new ArgumentNullException(nameof(value));
 				if (!value.IsValid())
 					throw new ArgumentException("The palette entry is invalid.", nameof(value));
 				if (this.ContainsPalette(value.Number))
