@@ -4,143 +4,129 @@ using System.Text.RegularExpressions;
 
 namespace LibPixelPet {
 	public static class NumberParser {
-		private static readonly List<char> _signChars = new List<char>() { '+', '−', '-' };
+		private static readonly IList<char> posSignChars = new char[] { '+' };
+		private static readonly IList<char> negSignChars = new char[] { '−', '-' };
 
-		/// <summary>
-		/// Determines whether the specified number string contains a radix identifier.
-		/// </summary>
-		/// <param name="number">The number string to check.</param>
-		/// <returns>true if the number string contains a radix identifier; otherwise, false.</returns>
-		public static bool HasRadix(in string number) {
-			return GetRadix(number, -1) == -1;
+		private record struct NumberInfo(int ParseStart, int ParseEnd, int Radix, int Sign) {
+			public int ParseLength => ParseEnd - ParseStart;
 		}
 
 		/// <summary>
-		/// Determines the most likely radix of a number string, removing radix identifiers from the number string in the process. Assumes a decimal number if no radix was found.
-		/// </summary>
-		/// <param name="s">A string representing the number.</param>
-		/// <returns>The radix of the number.</returns>
-		private static int GetRadix(in string s) {
-			return GetRadix(s, 10);
-		}
-
-		/// <summary>
-		/// Determines the most likely radix of a number string, removing radix identifiers from the number string in the process.
+		/// Determines the sign, most likely radix, and parse substring of a number string.
 		/// </summary>
 		/// <param name="number">A string representing the number.</param>
-		/// <param name="standard">The default radix to use, if no radix identifier was found.</param>
-		/// <returns>The radix of the number, or -1 if the radix could not be determined.</returns>
+		/// <returns>NumberInfo containing the sign, radix and substring boundaries. If the radix is -1, the radix could not be determined.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-		private static int GetRadix(in string number, in int standard) {
+		private static NumberInfo GetNumberInfo(in string number) {
 			if (number == null)
 				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
 
-			int radix = standard;
-			int start = 0;
-			int end = number.Length;
-
+			NumberInfo info = new NumberInfo(0, number.Length, 10, 1);
 			if (number.Length <= 0) {
-				return radix;
+				return info;
 			}
 
 			// Remove the sign for convenience.
-			if (_signChars.Contains(number[start])) {
-				start += 1;
+			if (posSignChars.Contains(number[info.ParseStart])) {
+				info.ParseStart += 1;
+			} else if (negSignChars.Contains(number[info.ParseStart])) {
+				info.ParseStart += 1;
+				info.Sign = -1;
 			}
 
-			char pos0 = char.ToUpperInvariant(number[start]);
-			char? pos1 = (end - start) > 1 ? (char?)char.ToUpperInvariant(number[start + 1]) : (char?)null;
-			char end1 = char.ToUpperInvariant(number[end - 1]);
+			char pos0 = char.ToUpperInvariant(number[info.ParseStart]);
+			char? pos1 = (info.ParseEnd - info.ParseStart) > 1 ? (char?)char.ToUpperInvariant(number[info.ParseStart + 1]) : (char?)null;
+			char end1 = char.ToUpperInvariant(number[info.ParseEnd - 1]);
 			string start3 = null;
 			string end3 = null;
-			if (end - start >= 3) {
-				start3 = number.Substring(start, 3).ToUpperInvariant();
-				end3 = number.Substring(end - 3).ToUpperInvariant();
+			if (info.ParseEnd - info.ParseStart >= 3) {
+				start3 = number.Substring(info.ParseStart, 3).ToUpperInvariant();
+				end3 = number.Substring(info.ParseEnd - 3).ToUpperInvariant();
 			}
 
 			if (pos0 == 'X' || pos0 == '$' || pos0 == '#') {
-				radix = 16;
-				start += 1;
+				info.Radix = 16;
+				info.ParseStart += 1;
 			} else if (pos1 == 'X') {
-				radix = 16;
-				start += 2;
+				info.Radix = 16;
+				info.ParseStart += 2;
 			} else if (start3 == "HEX") {
-				radix = 16;
-				start += 3;
+				info.Radix = 16;
+				info.ParseStart += 3;
 			} else if (end3 == "HEX") {
-				radix = 16;
-				end -= 3;
+				info.Radix = 16;
+				info.ParseEnd -= 3;
 			} else if (start3 == "OCT") {
-				radix = 8;
-				start += 3;
+				info.Radix = 8;
+				info.ParseStart += 3;
 			} else if (end3 == "OCT") {
-				radix = 8;
-				end -= 3;
+				info.Radix = 8;
+				info.ParseEnd -= 3;
 			} else if (pos0 == 'O') {
-				radix = 8;
-				start += 1;
+				info.Radix = 8;
+				info.ParseStart += 1;
 			} else if (pos0 == 'O') {
-				radix = 8;
-				start += 2;
+				info.Radix = 8;
+				info.ParseStart += 2;
 			} else if (end1 == 'O') {
-				radix = 8;
-				end -= 1;
+				info.Radix = 8;
+				info.ParseEnd -= 1;
 			} else if (start3 == "BIN") {
-				radix = 2;
-				start += 3;
+				info.Radix = 2;
+				info.ParseStart += 3;
 			} else if (end3 == "BIN") {
-				radix = 2;
-				end -= 3;
+				info.Radix = 2;
+				info.ParseEnd -= 3;
 			} else if (pos1 == 'H') {
-				radix = 16;
-				start += 2;
+				info.Radix = 16;
+				info.ParseStart += 2;
 			} else if (end1 == 'H') {
-				radix = 16;
-				end -= 2;
+				info.Radix = 16;
+				info.ParseEnd -= 2;
 			} else if (start3 == "DEC") {
-				radix = 10;
-				start += 3;
+				info.Radix = 10;
+				info.ParseStart += 3;
 			} else if (end3 == "DEC") {
-				radix = 10;
-				end -= 3;
+				info.Radix = 10;
+				info.ParseEnd -= 3;
 			} else if (pos0 == 'D') {
-				radix = 10;
-				start += 1;
+				info.Radix = 10;
+				info.ParseStart += 1;
 			} else if (pos1 == 'D') {
-				radix = 10;
-				start += 2;
+				info.Radix = 10;
+				info.ParseStart += 2;
 			} else if (end1 == 'D') {
-				radix = 10;
-				end -= 1;
+				info.Radix = 10;
+				info.ParseEnd -= 1;
 			} else if (pos0 == 'B') {
-				radix = 2;
-				start += 1;
+				info.Radix = 2;
+				info.ParseStart += 1;
 			} else if (pos1 == 'B') {
-				radix = 2;
-				start += 2;
+				info.Radix = 2;
+				info.ParseStart += 2;
 			} else if (end1 == 'B') {
-				radix = 2;
-				end -= 1;
+				info.Radix = 2;
+				info.ParseEnd -= 1;
 			}
 
 			// Check if the number is a valid number for the detected radix.
 			// This needs to be as fast as possible.
-			int numberMax = '0' + radix - 1;
-			int lowerMax = 'a' + radix - 1;
-			int upperMax = 'A' + radix - 1;
-			int i = start;
+			int numberMax = '0' + info.Radix - 1;
+			int lowerMax = 'a' + info.Radix - 1;
+			int upperMax = 'A' + info.Radix - 1;
+			int i = info.ParseStart;
 			char c;
-			while (i < end) {
+			while (i < info.ParseEnd) {
 				c = number[i++];
 				if (!((c >= '0' && c <= '9' && c <= numberMax)
-					|| (radix > 10 && (c >= 'A' && c <= 'Z' && c <= upperMax) || (c >= 'a' && c <= 'z' && c <= lowerMax))
+					|| (info.Radix > 10 && (c >= 'A' && c <= 'Z' && c <= upperMax) || (c >= 'a' && c <= 'z' && c <= lowerMax))
 				)) {
-					radix = -1;
+					info.Radix = -1;
 					break;
 				}
 			}
 
-			return radix;
+			return info;
 		}
 
 		/// <summary>
@@ -154,8 +140,8 @@ namespace LibPixelPet {
 			if (number.Length <= 0)
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
-			int radix = GetRadix(number);
-			return Convert.ToInt16(number, radix);
+			NumberInfo info = GetNumberInfo(number);
+			return (short)(Convert.ToInt16(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign);
 		}
 
 		/// <summary>
@@ -169,8 +155,8 @@ namespace LibPixelPet {
 			if (number.Length <= 0)
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
-			int radix = GetRadix(number);
-			return Convert.ToInt32(number, radix);
+			NumberInfo info = GetNumberInfo(number);
+			return Convert.ToInt32(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign;
 		}
 
 		/// <summary>
@@ -184,8 +170,8 @@ namespace LibPixelPet {
 			if (number.Length <= 0)
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
-			int radix = GetRadix(number);
-			return Convert.ToInt64(number, radix);
+			NumberInfo info = GetNumberInfo(number);
+			return Convert.ToInt64(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign;
 		}
 
 		/// <summary>
@@ -199,8 +185,11 @@ namespace LibPixelPet {
 			if (number.Length <= 0)
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
-			int radix = GetRadix(number);
-			return Convert.ToByte(number, radix);
+			NumberInfo info = GetNumberInfo(number);
+			if (info.Sign != 1) {
+				throw new ArgumentOutOfRangeException(nameof(number), number, "Unsigned byte cannot be negative.");
+			}
+			return Convert.ToByte(number.Substring(info.ParseStart, info.ParseLength), info.Radix);
 		}
 
 		/// <summary>
@@ -216,14 +205,14 @@ namespace LibPixelPet {
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
 			output = 0;
-			int radix = GetRadix(number);
+			NumberInfo info = GetNumberInfo(number);
 
-			if (radix == -1) {
+			if (info.Radix == -1) {
 				return false;
 			}
 
 			try {
-				output = Convert.ToInt16(number, radix);
+				output = (short)(Convert.ToInt16(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign);
 				return true;
 			} catch (Exception ex) {
 				if (ex is ArgumentException || ex is FormatException || ex is OverflowException) {
@@ -247,14 +236,14 @@ namespace LibPixelPet {
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
 			output = 0;
-			int radix = GetRadix(number);
+			NumberInfo info = GetNumberInfo(number);
 
-			if (radix == -1) {
+			if (info.Radix == -1) {
 				return false;
 			}
 
 			try {
-				output = Convert.ToInt32(number, radix);
+				output = Convert.ToInt32(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign;
 				return true;
 			} catch (Exception ex) {
 				if (ex is ArgumentException || ex is FormatException || ex is OverflowException) {
@@ -278,14 +267,14 @@ namespace LibPixelPet {
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
 			output = 0;
-			int radix = GetRadix(number);
+			NumberInfo info = GetNumberInfo(number);
 
-			if (radix == -1) {
+			if (info.Radix == -1) {
 				return false;
 			}
 
 			try {
-				output = Convert.ToInt64(number, radix);
+				output = Convert.ToInt64(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign;
 				return true;
 			} catch (Exception ex) {
 				if (ex is ArgumentException || ex is FormatException || ex is OverflowException) {
@@ -309,14 +298,14 @@ namespace LibPixelPet {
 				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
 
 			output = 0;
-			int radix = GetRadix(number);
+			NumberInfo info = GetNumberInfo(number);
 
-			if (radix == -1) {
+			if (info.Radix == -1 || info.Sign != 1) {
 				return false;
 			}
 
 			try {
-				output = Convert.ToByte(number, radix);
+				output = Convert.ToByte(number.Substring(info.ParseStart, info.ParseLength), info.Radix);
 				return true;
 			} catch (Exception ex) {
 				if (ex is ArgumentException || ex is FormatException || ex is OverflowException) {
