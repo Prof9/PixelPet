@@ -12,7 +12,7 @@ jobs:
   build:
     if: github.event.pull_request.draft == false
     name: build-${{matrix.os}}
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{matrix.os}}
     strategy:
       fail-fast: false
       matrix:
@@ -43,8 +43,13 @@ jobs:
       - name: Publish (macOS)
         if: startsWith(matrix.os, 'macOS')
         run: dotnet publish PixelPet --configuration Release -p:PublishProfile=FolderProfile --runtime osx-x64 --no-self-contained -o publish
-      - name: Upload artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: build-${{matrix.os}}
           path: publish/
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: tests-${{matrix.os}}
+          path: Tests/bin/Release/net6.0-windows/TestsOut/
