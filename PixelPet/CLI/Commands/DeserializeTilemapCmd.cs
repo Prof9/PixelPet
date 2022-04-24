@@ -49,11 +49,16 @@ namespace PixelPet.CLI.Commands {
 					scrn |= buffer[i] << i * 8;
 				}
 
+				int tileNum = mapFmt.BitmapEncoding switch {
+					BitmapEncoding.NintendoDSTexture => tn,
+					_ => ((scrn & mapFmt.TileNumberMask) >> mapFmt.TileNumberShift)
+				} - baseTile;
+				if (tileNum < 0) {
+					tileNum = int.MaxValue;
+				}
+
 				TileEntry te = new TileEntry(
-					tileNumber: mapFmt.BitmapEncoding switch {
-						BitmapEncoding.NintendoDSTexture => tn,
-						_ => ((scrn & mapFmt.TileNumberMask) >> mapFmt.TileNumberShift)
-					} - baseTile,
+					tileNumber: tileNum,
 					hFlip: mapFmt.CanFlipHorizontal && (scrn & mapFmt.FlipHorizontalMask) != 0,
 					vFlip: mapFmt.CanFlipVertical && (scrn & mapFmt.FlipVerticalMask) != 0,
 					paletteNumber: (scrn & mapFmt.PaletteMask) >> mapFmt.PaletteShift,
