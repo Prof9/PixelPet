@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace LibPixelPet {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
-	public class Palette : IEnumerable<int> {
+	public class Palette : IEnumerable<int>, ICloneable {
 		/// <summary>
 		/// Gets the color values currently in the palette.
 		/// </summary>
@@ -131,5 +131,16 @@ namespace LibPixelPet {
 			=> ((IEnumerable<int>)this.Colors).GetEnumerator();
 		IEnumerator IEnumerable.GetEnumerator() 
 			=> ((IEnumerable<int>)this.Colors).GetEnumerator();
+
+		public Palette Clone() {
+			Palette clone = new Palette(this.Format, this.MaximumSize);
+
+			foreach (int c in this) {
+				clone.Add(c);
+			}
+
+			return clone;
+		}
+		object ICloneable.Clone() => this.Clone();
 	}
 }

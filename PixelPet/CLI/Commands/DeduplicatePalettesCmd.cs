@@ -6,19 +6,61 @@ using System.Linq;
 namespace PixelPet.CLI.Commands {
 	internal class DeduplicatePalettesCmd : CliCommand {
 		public DeduplicatePalettesCmd()
-			: base("Deduplicate-Palettes") { }
+			: base("Deduplicate-Palettes",
+				new Parameter("global", "g", false)
+			) { }
 
 		protected override void Run(Workbench workbench, ILogger logger) {
-			int seed = 0;
+			bool global = FindNamedParameter("--global").IsPresent;
 
+			int seed = 0;
 			Random rng = new Random(seed);
 
+			// Do all the palettes individually first, so it's consistent between global and non-global
 			int dupes = 0;
 			foreach (PaletteEntry pe in workbench.PaletteSet) {
 				dupes += DeduplicatePalette(pe.Palette, rng, logger);
 			}
 
-			logger?.Log("Adding " + dupes + " new colors to palette.");
+			// Now we do global deduplication
+			if (global && workbench.PaletteSet.Count > 1) {
+				// We can't do deduplication on palettes with different color formats.
+				// - If we downscale everything to the minimum size color format, then
+				//   deduplicate that and convert the colors back, we might end up
+				//   deduplicating colors that aren't actually duplicates.
+				// - If we upscale everything to the maximum size color format, then
+				//   deduplicate that and convert the colors back, we might end up
+				//   duplicating the colors again.
+				// In general it doesn't make sense to compare colors of different color formats.
+				// Therefore we have to enforce that every palette shares the same color format.
+				ColorFormat format = workbench.PaletteSet[0].Palette.Format;
+				
+				// Construct a global palette containing every color across all palettes
+				Palette globalPal = new Palette(format, -1);
+
+				foreach (PaletteEntry pe in workbench.PaletteSet) {
+					if (pe.Palette.Format != format) {
+						logger?.Log("Cannot globally deduplicate palettes with different color formats", LogLevel.Error);
+						return;
+					}
+					foreach (int color in pe.Palette) {
+						globalPal.Add(color);
+					}
+				}
+				
+				// Next apply dedupliation to the global palette
+				dupes += DeduplicatePalette(globalPal, rng, logger);
+
+				// Finally, put the colors back in the original palettes
+				int i = 0;
+				foreach (PaletteEntry pe in workbench.PaletteSet) {
+					for (int j = 0; j < pe.Palette.Count; j++) {
+						pe.Palette[j] = globalPal[i++];
+					}
+				}
+			}
+
+			logger?.Log("Adding " + dupes + " new colors to palettes.");
 		}
 
 		private static int DeduplicatePalette(Palette palette, Random rng, ILogger logger) {
