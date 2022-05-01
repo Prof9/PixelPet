@@ -55,6 +55,7 @@ namespace PixelPet.CLI.Commands {
 			int addedPalettes = 0;
 			byte[] buffer = new byte[4];
 			Palette pal = null;
+			bool formatWarning = false;
 			while (palCount > 0 && workbench.Stream.Read(buffer, 0, bpc) == bpc) {
 				// Create new palette if needed.
 				if (pal == null) {
@@ -63,7 +64,12 @@ namespace PixelPet.CLI.Commands {
 
 				// Add color to palette.
 				int c = BitConverter.ToInt32(buffer, 0);
-				pal.Add(c);
+				int c2 = fmt.Convert(c, fmt);
+				if (c != c2 && !formatWarning) {
+					logger?.Log($"Color {addedColors} in palette {addedPalettes} read as 0x{c:X} but parsed as 0x{c2:X}; color format may not be correct", LogLevel.Warning);
+					formatWarning = true;
+				}
+				pal.Add(c2);
 				addedColors++;
 
 				// Add finished palette to palette set.
