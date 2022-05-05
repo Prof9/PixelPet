@@ -115,6 +115,27 @@ By default it is not allowed to recursively include any scripts that are already
 Run-Script "script.txt"
 ```
 
+### Set-Variable
+```
+Set-Variable <name> <value>
+```
+
+Sets the variable with name `<name>` to string `<value>`. If the variable does not exist, it is created. The `<name>` may consist only of alphanumerical characters and underscores (`[A-Za-z0-9_]`).
+
+After setting a variable, you can use it in any other command (including another `Set-Variable`) by writing the name of variable surrounded with `<>`. If you pass a parameter containing variable(s) to a command, any variables in the parameter are expanded before the command is executed. Expansion is done by replacing any instance of `<var>`, where `var` is the name of a variable, with the string value of that variable. It is possible to nest parameters, e.g. `<var1<var2>>`.
+
+When using the `Run-Script` command, all variables are passed to the script as well.
+
+**Example usage:**
+```
+Set-Variable map_top "map-top.png"
+Set-Variable map_bottom "map-bottom.png"
+Set-Variable layer "top"
+Import-Bitmap "<map_<layer>>"
+```
+
+Imports the image `map-top.png` to the workbench.
+
 ### Import-Bitmap
 ```
 Import-Bitmap <path> [--format/-f <format>]

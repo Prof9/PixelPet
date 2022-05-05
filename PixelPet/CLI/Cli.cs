@@ -9,6 +9,7 @@ namespace PixelPet.CLI {
 	public class Cli : ILogger {
 		internal IList<CliCommand> Commands = new List<CliCommand>() {
 			new HelpCmd(),
+			new SetVariableCmd(),
 			new RunScriptCmd(),
 			new ImportBitmapCmd(),
 			new ExportBitmapCmd(),
@@ -46,6 +47,7 @@ namespace PixelPet.CLI {
 		public Workbench Workbench { get; }
 		public TextWriter ConsoleOut { get; set; }
 		public TextWriter ConsoleError { get; set; }
+		public IDictionary<string, string> Variables { get; }
 
 		/// <summary>
 		/// Creates a new command line interface acting on the specified workbench.
@@ -58,6 +60,7 @@ namespace PixelPet.CLI {
 			this.ConsoleOut = Console.Out;
 			this.ConsoleError = Console.Error;
 
+			this.Variables = new Dictionary<string, string>();
 			this.Workbench = workbench;
 			this.ResetLogLevel();
 			this.ResetVerbosity();
@@ -128,11 +131,11 @@ namespace PixelPet.CLI {
 				return false;
 			}
 
-			cmd.Prepare(args);
+			cmd.Prepare(this, args);
 
 			this.Log("Running command: " + cmd.ToString() + "...", LogLevel.VerboseInformation);
 
-			if (!cmd.Run(this, this.Workbench, this)) {
+			if (!cmd.Run(this.Workbench, this)) {
 				return false;
 			}
 			return !cmd.ReachedEnd;

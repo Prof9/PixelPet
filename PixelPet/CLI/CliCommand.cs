@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI {
 	public abstract class CliCommand {
@@ -12,6 +13,7 @@ namespace PixelPet.CLI {
 		public string Name { get; }
 		internal IList<Parameter> Parameters { get; }
 		public bool ReachedEnd { get; private set; }
+		public bool IsPrepared { get; private set; }
 
 		protected CliCommand(in string name, params Parameter[] parameters) {
 			if (name == null)
@@ -25,10 +27,13 @@ namespace PixelPet.CLI {
 
 			this.Name = name;
 			this.Parameters = parameters.ToList();
+			this.IsPrepared = false;
 		}
 
-		public bool Run(Cli cli, Workbench workbench, ILogger logger) {
-			this.CLI = cli;
+		public bool Run(Workbench workbench, ILogger logger) {
+			if (!this.IsPrepared)
+				throw new InvalidOperationException("Command is not prepared to run");
+
 			return this.RunImplementation(workbench, logger);
 		}
 		protected abstract bool RunImplementation(Workbench workbench, ILogger logger);
@@ -41,10 +46,18 @@ namespace PixelPet.CLI {
 					val.Clear();
 				}
 			}
+			this.IsPrepared = false;
 		}
 
-		public void Prepare(IEnumerator<string> args) {
+		public void Prepare(Cli cli, IEnumerator<string> args) {
+			if (cli is null)
+				throw new ArgumentNullException(nameof(cli));
+			if (args is null)
+				throw new ArgumentNullException(nameof(args));
+
 			this.ClearParameter();
+
+			this.CLI = cli;
 
 			bool reachedEnd = true;
 			while (args.MoveNext()) {
@@ -63,6 +76,8 @@ namespace PixelPet.CLI {
 					+ string.Join(", ", missingParameters.Select(a => a.ToString()))
 					+ ".", nameof(args));
 			}
+
+			this.IsPrepared = true;
 		}
 
 		private bool ReadParameter(IEnumerator<string> args) {
@@ -88,10 +103,46 @@ namespace PixelPet.CLI {
 					}
 				}
 				first = false;
-				value.Value = args.Current;
+				value.Value = ExpandValue(args.Current);
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Expands any variables in the given parameter value.
+		/// </summary>
+		/// <param name="value">The parameter value to expand.</param>
+		/// <returns>The expanded value.</returns>
+		private string ExpandValue(string value) {
+			string before = value;
+
+			MatchCollection matches;
+			do {
+				matches = Regex.Matches(value, @"<([^<>]+)>");
+				// Go right to left so we can do multiple in one pass
+				foreach (Match match in matches.Reverse()) {
+					string varName = match.Groups[1].Value;
+					if (!(this.CLI?.Variables?.TryGetValue(varName, out string varValue) ?? false)) {
+						throw new ArgumentException($"Unknown variable {varName} in {before}");
+					}
+
+					// Insert the variable into the string
+					value = value[..match.Index] + varValue + value[(match.Index + match.Length)..];
+				}
+			}
+			while (matches.Count > 0);
+
+			int varStartIdx = value.IndexOf('<');
+			int varEndIdx   = value.IndexOf('>');
+			if (varStartIdx >= 0) {
+				throw new ArgumentException($"Unterminated variable {value[(varStartIdx + 1)..]} in {value}");
+			}
+			if (varEndIdx >= 0) {
+				throw new ArgumentException($"Unexpected > in {value}");
+			}
+
+			return value;
 		}
 
 		private Parameter FindUnpreparedParameter(in string str)
