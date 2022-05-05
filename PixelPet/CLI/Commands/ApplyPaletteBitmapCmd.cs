@@ -11,7 +11,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("palette-number", "pn", false, new ParameterValue("number"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			Parameter palNumP = FindNamedParameter("--palette-number");
 			int palNum = palNumP.Values[0].ToInt32();
 
@@ -20,7 +20,7 @@ namespace PixelPet.CLI.Commands {
 			if (palNumP.IsPresent) {
 				if (!workbench.PaletteSet.TryFindPalette(palNum, out pal)) {
 					logger?.Log("Palette number " + palNum + " not loaded.", LogLevel.Error);
-					return;
+					return false;
 				}
 			}
 
@@ -36,7 +36,8 @@ namespace PixelPet.CLI.Commands {
 			uint maxCol = buffer.Max(a => (uint)a);
 			if (maxCol > int.MaxValue) {
 				pal = null;
-				logger?.Log("The current bitmap is not indexed.");
+				logger?.Log("The current bitmap is not indexed.", LogLevel.Error);
+				return false;
 			} else if (pal == null) {
 				if (workbench.PaletteSet.Count == 1) {
 					// When there is only one palette, skip the check to improve speed
@@ -64,7 +65,7 @@ namespace PixelPet.CLI.Commands {
 			if (pal == null) {
 				logger?.Log("The current bitmap requires a palette with at least " + (maxCol + 1) + " colors.", LogLevel.Error);
 				workbench.Bitmap.UnlockBits(bmpData);
-				return;
+				return false;
 			}
 
 			// Apply the palette
@@ -77,6 +78,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Applied palette " + palNum + " to " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.");
+			return true;
 		}
 	}
 }

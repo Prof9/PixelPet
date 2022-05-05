@@ -13,7 +13,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("format", "f", false, new ParameterValue("format"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string path = this.FindUnnamedParameter(0).Values[0].ToString();
 			Parameter format = FindNamedParameter("--format");
 
@@ -23,7 +23,7 @@ namespace PixelPet.CLI.Commands {
 				ColorFormat? fmt2 = ColorFormat.GetFormat(fmtName);
 				if (fmt2 == null) {
 					logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
-					return;
+					return false;
 				} else {
 					fmt = (ColorFormat)fmt2;
 				}
@@ -59,12 +59,13 @@ namespace PixelPet.CLI.Commands {
 				bmp.Save(path);
 			} catch (IOException) {
 				logger?.Log("Could not save bitmap " + Path.GetFileName(path) + ".", LogLevel.Error);
-				return;
+				return false;
 			} finally {
 				bmp?.Dispose();
 			}
 
 			logger?.Log("Exported bitmap " + Path.GetFileName(path) + (setAlpha ? " (added alpha)" : "") + '.');
+			return true;
 		}
 	}
 }

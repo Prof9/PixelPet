@@ -10,7 +10,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("append", "a", false)
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			bool append = FindNamedParameter("--append").IsPresent;
 
 			if (append) {
@@ -34,6 +34,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Serialized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.", LogLevel.Information);
+			return true;
 		}
 	}
 }

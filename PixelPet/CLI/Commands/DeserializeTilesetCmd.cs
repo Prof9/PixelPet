@@ -12,7 +12,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "-1"), new ParameterValue("height", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
 			bool append = FindNamedParameter("--append").IsPresent;
 			int tc = FindNamedParameter("--tile-count").Values[0].ToInt32();
@@ -23,19 +23,19 @@ namespace PixelPet.CLI.Commands {
 
 			if (!(TilemapFormat.GetFormat(mapFmtName) is TilemapFormat mapFmt)) {
 				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (tc < 0) {
 				logger?.Log("Invalid tile count.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && tw <= 0) {
 				logger?.Log("Invalid tile width.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && th <= 0) {
 				logger?.Log("Invalid tile height.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			if (!append) {
@@ -46,7 +46,7 @@ namespace PixelPet.CLI.Commands {
 				if (ts.IsPresent && (tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
 					logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
 						workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
-					return;
+					return false;
 				}
 			}
 
@@ -83,6 +83,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Tileset.IsIndexed = mapFmt.IsIndexed;
 
 			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
+			return true;
 		}
 	}
 }

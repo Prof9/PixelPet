@@ -10,18 +10,18 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("palette-size", "ps", false, new ParameterValue("count", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			int width = FindUnnamedParameter(0).Values[0].ToInt32();
 			int color = FindNamedParameter("--color").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
 
 			if (width < 1) {
 				logger?.Log("Invalid palette width.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			if (workbench.PaletteSet.Count == 0) {
@@ -39,6 +39,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Padded palettes to width " + width + " (added " + addedColors + " colors).", LogLevel.Information);
+			return true;
 		}
 	}
 }

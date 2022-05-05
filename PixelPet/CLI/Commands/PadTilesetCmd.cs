@@ -10,7 +10,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "-1"), new ParameterValue("height", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			int width = FindUnnamedParameter(0).Values[0].ToInt32();
 			int color = FindNamedParameter("--color").Values[0].ToInt32();
 			Parameter ts = FindNamedParameter("--tile-size");
@@ -19,21 +19,21 @@ namespace PixelPet.CLI.Commands {
 
 			if (width < 1) {
 				logger?.Log("Invalid tileset width.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && tw <= 0) {
 				logger?.Log("Invalid tile width.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && th <= 0) {
 				logger?.Log("Invalid tile height.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && workbench.Tileset.Count > 0 &&
 				(tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
 				logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
 					workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			// Use existing tile size if not specified
@@ -61,6 +61,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Padded tileset to width " + width + " (added " + addedTiles + " tiles).", LogLevel.Information);
+			return true;
 		}
 	}
 }

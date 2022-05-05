@@ -16,7 +16,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("height", "h", false, new ParameterValue("pixels", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			bool append = FindNamedParameter("--append").IsPresent;
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
@@ -27,11 +27,11 @@ namespace PixelPet.CLI.Commands {
 
 			if (palNum < -1) {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			if (!append) {
@@ -50,7 +50,7 @@ namespace PixelPet.CLI.Commands {
 					foreach (int otherColor in tile.EnumerateTile().Skip(1)) {
 						if (otherColor != color) {
 							logger?.Log("Palette tile " + ti + " is not a single color.", LogLevel.Error);
-							return;
+							return false;
 						}
 					}
 
@@ -94,6 +94,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Read " + addedPalettes + " palettes with " + addedColors + " colors total.");
+			return true;
 		}
 	}
 }

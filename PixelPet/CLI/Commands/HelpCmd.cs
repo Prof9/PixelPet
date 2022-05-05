@@ -6,7 +6,7 @@ namespace PixelPet.CLI.Commands {
 		public HelpCmd()
 			: base ("Help") { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			Console.WriteLine();
 			Console.WriteLine("Supported commands:");
 			Console.WriteLine();
@@ -52,6 +52,7 @@ namespace PixelPet.CLI.Commands {
 				Console.WriteLine();
 			}
 			Console.WriteLine();
+			return true;
 		}
 	}
 }

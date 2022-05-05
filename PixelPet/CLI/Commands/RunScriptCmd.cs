@@ -15,7 +15,7 @@ namespace PixelPet.CLI.Commands {
 			this.ScriptPaths = new HashSet<string>();
 		}
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string path = FindUnnamedParameter(0).Values[0].ToString();
 			bool recursive = FindNamedParameter("--recursive").IsPresent;
 
@@ -23,7 +23,7 @@ namespace PixelPet.CLI.Commands {
 			string fullPath = Path.GetFullPath(path);
 			if (!recursive && ScriptPaths.Contains(fullPath)) {
 				logger?.Log("Recursive script inclusion of script " + Path.GetFileName(path) + " is not allowed without --recursive option.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			// Add the script path onto the list of included scripts. Since we stay in the same CLI, these will be shared for further Run-Scripts.
@@ -34,7 +34,7 @@ namespace PixelPet.CLI.Commands {
 				script = File.ReadAllText(path);
 			} catch (IOException) {
 				logger?.Log("Could not read file " + Path.GetFileName(path), LogLevel.Error);
-				return;
+				return false;
 			}
 
 			List<string> args = new List<string>();
@@ -49,6 +49,7 @@ namespace PixelPet.CLI.Commands {
 			CLI.Run(args);
 
 			this.ScriptPaths.Remove(fullPath);
+			return true;
 		}
 	}
 }

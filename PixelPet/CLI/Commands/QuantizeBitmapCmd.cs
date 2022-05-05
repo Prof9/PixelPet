@@ -12,14 +12,14 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("palette-number", "pn", false, new ParameterValue("number"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].Value;
 			Parameter palNumP = FindNamedParameter("--palette-number");
 			int palNum = palNumP.Values[0].ToInt32();
 
 			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
 				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			Palette pal = null;
@@ -27,7 +27,7 @@ namespace PixelPet.CLI.Commands {
 				// Get requested palette
 				if (!workbench.PaletteSet.TryFindPalette(palNum, out pal)) {
 					logger?.Log("Palette number " + palNum + " not loaded.", LogLevel.Error);
-					return;
+					return false;
 				}
 			}
 
@@ -61,7 +61,7 @@ namespace PixelPet.CLI.Commands {
 			if (pal == null) {
 				logger?.Log("No suitable palette loaded.", LogLevel.Error);
 				workbench.Bitmap.UnlockBits(bmpData);
-				return;
+				return false;
 			}
 
 			// Quantize using the palette
@@ -86,6 +86,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Quantized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap using palette " + palNum + ".");
+			return true;
 		}
 	}
 }

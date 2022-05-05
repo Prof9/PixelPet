@@ -12,7 +12,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
 			bool append = FindNamedParameter("--append").IsPresent;
 			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
@@ -21,15 +21,15 @@ namespace PixelPet.CLI.Commands {
 
 			if (!(TilemapFormat.GetFormat(mapFmtName) is TilemapFormat mapFmt)) {
 				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (offset < 0) {
 				logger?.Log("Invalid offset.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (tileCount < 0) {
 				logger?.Log("Invalid tile count.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			if (!append) {
@@ -72,6 +72,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			workbench.Tilemap.TilemapFormat = mapFmt;
+			return true;
 		}
 	}
 }

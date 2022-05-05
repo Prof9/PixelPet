@@ -19,7 +19,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "-1"), new ParameterValue("height", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			bool append = FindNamedParameter("--append").IsPresent;
 			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
 			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
@@ -34,23 +34,23 @@ namespace PixelPet.CLI.Commands {
 
 			if (palNum < -1) {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (palSize == 0 || palSize < -1) {
 				logger?.Log("Invalid palette size.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (palCount < -1) {
 				logger?.Log("Invalid palette count.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && tw < 0) {
 				logger?.Log("Invalid tile width.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && th < 0) {
 				logger?.Log("Invalid tile height.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			if (!append) {
@@ -83,7 +83,7 @@ namespace PixelPet.CLI.Commands {
 
 					if (palSize != -1 && tileColors.Count > palSize) {
 						logger?.Log("Tile " + ti + " has " + tileColors.Count + " colors, which is more than the " + palSize + " colors allowed by the palette.", LogLevel.Error);
-						return;
+						return false;
 					}
 
 					int bestPal = -1;
@@ -127,7 +127,7 @@ namespace PixelPet.CLI.Commands {
 							bestAdd = tileColors.Count;
 						} else {
 							logger?.Log("Cannot create a new palette for tile " + ti + " with " + tileColors.Count + " colors.", LogLevel.Error);
-							return;
+							return false;
 						}
 					} else {
 						pal = workbench.PaletteSet[bestPal].Palette;
@@ -144,6 +144,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Added " + addedPalettes + " new palettes, " + addedColors + " colors total.");
+			return true;
 		}
 	}
 }

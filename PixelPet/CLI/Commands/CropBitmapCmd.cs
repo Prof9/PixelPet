@@ -11,7 +11,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("height", "h", false, new ParameterValue("pixels", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			int x = FindNamedParameter("--x").Values[0].ToInt32();
 			int y = FindNamedParameter("--y").Values[0].ToInt32();
 			int w = FindNamedParameter("--width").Values[0].ToInt32();
@@ -20,6 +20,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.SetBitmap(workbench.GetCroppedBitmap(x, y, w, h, logger), workbench.BitmapFormat);
 
 			logger?.Log("Cropped " + workbench.Bitmap.Width + 'x' + workbench.Bitmap.Height + " bitmap.");
+			return true;
 		}
 	}
 }

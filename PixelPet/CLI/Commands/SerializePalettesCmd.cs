@@ -9,7 +9,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("append", "a", false)
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			bool append = FindNamedParameter("--append").IsPresent;
 			int width = workbench.PaletteSet.Max(pe => pe.Palette.Count);
 
@@ -37,6 +37,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Serialized " + width + "x" + workbench.PaletteSet.Count + " palette set (" + colors + " colors).", LogLevel.Information);
+			return true;
 		}
 	}
 }

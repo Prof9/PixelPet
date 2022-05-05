@@ -9,17 +9,17 @@ namespace PixelPet.CLI.Commands {
 				new Parameter(true, new ParameterValue("tiles-per-column"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			int tpr = FindUnnamedParameter(0).Values[0].ToInt32();
 			int tpc = FindUnnamedParameter(1).Values[0].ToInt32();
 
 			if (tpr <= 0) {
 				logger?.Log("Invalid tile count per row.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (tpc <= 0) {
 				logger?.Log("Invalid tile count per column.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			workbench.SetBitmap(workbench.Tileset.IsIndexed
@@ -27,6 +27,7 @@ namespace PixelPet.CLI.Commands {
 				: workbench.Tilemap.ToBitmap(workbench.Tileset, tpr, tpc),
 				ColorFormat.ARGB8888
 			);
+			return true;
 		}
 	}
 }

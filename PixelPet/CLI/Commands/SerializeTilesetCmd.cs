@@ -8,7 +8,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("color-offset", "o", false, new ParameterValue("value", "0"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			bool append = FindNamedParameter("--append").IsPresent;
 			long colorOffset = FindNamedParameter("--color-offset").Values[0].ToInt64();
 
@@ -29,6 +29,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Serialized " + workbench.Tileset.Count + " tiles.", LogLevel.Information);
+			return true;
 		}
 	}
 }

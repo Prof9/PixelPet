@@ -27,11 +27,11 @@ namespace PixelPet.CLI {
 			this.Parameters = parameters.ToList();
 		}
 
-		public void Run(Cli cli, Workbench workbench, ILogger logger) {
+		public bool Run(Cli cli, Workbench workbench, ILogger logger) {
 			this.CLI = cli;
-			this.Run(workbench, logger);
+			return this.RunImplementation(workbench, logger);
 		}
-		protected abstract void Run(Workbench workbench, ILogger logger);
+		protected abstract bool RunImplementation(Workbench workbench, ILogger logger);
 
 		protected void ClearParameter() {
 			foreach (Parameter par in this.Parameters) {

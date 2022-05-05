@@ -132,8 +132,9 @@ namespace PixelPet.CLI {
 
 			this.Log("Running command: " + cmd.ToString() + "...", LogLevel.VerboseInformation);
 
-			// This is kinda dumb
-			cmd.Run(this, this.Workbench, this);
+			if (!cmd.Run(this, this.Workbench, this)) {
+				return false;
+			}
 			return !cmd.ReachedEnd;
 		}
 

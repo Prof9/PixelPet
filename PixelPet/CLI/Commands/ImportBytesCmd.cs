@@ -12,7 +12,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("length", "l", false, new ParameterValue("count", "" + long.MaxValue))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string path = FindUnnamedParameter(0).Values[0].ToString();
 			bool append = FindNamedParameter("--append").IsPresent;
 			long offset = this.FindNamedParameter("--offset").Values[0].ToInt64();
@@ -20,11 +20,11 @@ namespace PixelPet.CLI.Commands {
 
 			if (offset < 0) {
 				logger?.Log("Invalid offset.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (length < 0) {
 				logger?.Log("Invalid length.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			if (append) {
@@ -36,7 +36,7 @@ namespace PixelPet.CLI.Commands {
 			try {
 				if (!File.Exists(path)) {
 					logger?.Log("File not found: " + Path.GetFileName(path), LogLevel.Error);
-					return;
+					return false;
 				}
 				using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)) {
 					if (offset >= fs.Length) {
@@ -54,7 +54,7 @@ namespace PixelPet.CLI.Commands {
 
 						if (read < length) {
 							logger?.Log("Error while reading " + Path.GetFileName(path), LogLevel.Error);
-							return;
+							return false;
 						}
 
 						workbench.Stream.Write(buffer, 0, read);
@@ -62,10 +62,11 @@ namespace PixelPet.CLI.Commands {
 				}
 			} catch {
 				logger?.Log("Could not import " + Path.GetFileName(path), LogLevel.Error);
-				return;
+				return false;
 			}
 
 			logger?.Log("Imported " + length + " bytes from binary " + Path.GetFileName(path), LogLevel.Information);
+			return true;
 		}
 	}
 }

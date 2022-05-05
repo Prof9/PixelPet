@@ -10,7 +10,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("global", "g", false)
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			bool global = FindNamedParameter("--global").IsPresent;
 
 			int seed = 0;
@@ -41,7 +41,7 @@ namespace PixelPet.CLI.Commands {
 				foreach (PaletteEntry pe in workbench.PaletteSet) {
 					if (pe.Palette.Format != format) {
 						logger?.Log("Cannot globally deduplicate palettes with different color formats", LogLevel.Error);
-						return;
+						return false;
 					}
 					foreach (int color in pe.Palette) {
 						globalPal.Add(color);
@@ -61,6 +61,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Adding " + dupes + " new colors to palettes.");
+			return true;
 		}
 
 		private static int DeduplicatePalette(Palette palette, Random rng, ILogger logger) {

@@ -14,7 +14,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("offset", "o", false, new ParameterValue("count", "0"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].ToString();
 			int w = FindUnnamedParameter(1).Values[0].ToInt32();
 			int h = FindUnnamedParameter(2).Values[0].ToInt32();
@@ -22,19 +22,19 @@ namespace PixelPet.CLI.Commands {
 
 			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
 				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (w <= 0) {
 				logger?.Log("Invalid width.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (h <= 0) {
 				logger?.Log("Invalid height.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (workbench.Stream.Length * 8 < fmt.Bits * w * h) {
 				logger?.Log("Bytes stream is not long enough to hold " + w + "x" + h + " bitmap with format \"" + fmtName + "\".", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			workbench.ClearBitmap(w, h);
@@ -56,6 +56,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Deserialized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.", LogLevel.Information);
+			return true;
 		}
 	}
 }

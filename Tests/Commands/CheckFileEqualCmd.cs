@@ -9,7 +9,7 @@ namespace Tests.Commands {
 				new Parameter(true, new ParameterValue("file2"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string file1 = this.FindUnnamedParameter(0).Values[0].ToString();
 			string file2 = this.FindUnnamedParameter(1).Values[0].ToString();
 
@@ -17,7 +17,7 @@ namespace Tests.Commands {
 			using FileStream fs2 = new FileStream(file2, FileMode.Open, FileAccess.Read, FileShare.Read);
 			if (fs1.Length != fs2.Length) {
 				logger?.Log($"{file1} size {fs1.Length} != {file2} size {fs2.Length}", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			Span<byte> buffer1 = stackalloc byte[8];
@@ -31,11 +31,12 @@ namespace Tests.Commands {
 				ulong val2 = BitConverter.ToUInt64(buffer2);
 				if (val1 != val2) {
 					logger?.Log($"{file1} {val1:0xX8} != {file2} {val2:0xX8}", LogLevel.Error);
-					return;
+					return false;
 				}
 			}
 
 			logger?.Log($"{file1} equals {file2}");
+			return true;
 		}
 	}
 }

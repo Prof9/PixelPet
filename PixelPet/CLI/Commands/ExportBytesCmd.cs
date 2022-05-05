@@ -9,7 +9,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter(true, new ParameterValue("path"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string path = this.FindUnnamedParameter(0).Values[0].ToString();
 
 			try {
@@ -19,10 +19,11 @@ namespace PixelPet.CLI.Commands {
 				}
 			} catch (IOException) {
 				logger?.Log("Could not save binary file " + Path.GetFileName(path) + ".", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			logger?.Log("Exported " + workbench.Stream.Length + " bytes to " + Path.GetFileName(path) + '.', LogLevel.Information);
+			return true;
 		}
 	}
 }

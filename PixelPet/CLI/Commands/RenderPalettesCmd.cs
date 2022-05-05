@@ -11,11 +11,11 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("colors-per-row", "cw", false, new ParameterValue("count", "0"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			int maxTilesPerRow = FindNamedParameter("--colors-per-row").Values[0].ToInt32();
 			if (maxTilesPerRow < 0) {
 				logger?.Log("Invalid colors per row.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			int tw = 8;
@@ -33,7 +33,7 @@ namespace PixelPet.CLI.Commands {
 
 			if (w <= 0 || h <= 0) {
 				logger?.Log("Cannot render empty palette set.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			int count = 0;
@@ -67,6 +67,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Graphics.Flush();
 
 			logger?.Log("Rendered " + w + "x" + h + " palette set containing " + count + " colors.", LogLevel.Information);
+			return true;
 		}
 	}
 }

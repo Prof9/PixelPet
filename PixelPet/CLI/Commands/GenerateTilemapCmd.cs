@@ -16,7 +16,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "-1"), new ParameterValue("height", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].Value;
 			bool append = FindNamedParameter("--append").IsPresent;
 			bool noReduce = FindNamedParameter("--no-reduce").IsPresent;
@@ -30,15 +30,15 @@ namespace PixelPet.CLI.Commands {
 
 			if (!(TilemapFormat.GetFormat(fmtName) is TilemapFormat fmt)) {
 				logger?.Log("Unknown tilemap format \"" + fmtName + "\".", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && tw <= 0) {
 				logger?.Log("Invalid tile width.", LogLevel.Error);
-				return;
+				return false;
 			}
 			if (ts.IsPresent && th <= 0) {
 				logger?.Log("Invalid tile height.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			if (!append) {
@@ -50,7 +50,7 @@ namespace PixelPet.CLI.Commands {
 				if (ts.IsPresent && (tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
 					logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
 						workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
-					return;
+					return false;
 				}
 			}
 
@@ -72,7 +72,7 @@ namespace PixelPet.CLI.Commands {
 					if (fmt.IsIndexed) {
 						if (workbench.PaletteSet.Count <= 0) {
 							logger?.Log("Cannot generate indexed tiles: no palettes loaded.", LogLevel.Error);
-							return;
+							return false;
 						}
 						workbench.Tilemap.AddBitmapIndexed(bmp, workbench.Tileset, workbench.PaletteSet, fmt, !noReduce);
 					} else {
@@ -80,7 +80,7 @@ namespace PixelPet.CLI.Commands {
 					}
 				} catch (Exception ex) {
 					logger?.Log(ex.Message, LogLevel.Error);
-					return;
+					return false;
 				}
 			}
 
@@ -88,6 +88,7 @@ namespace PixelPet.CLI.Commands {
 
 			int addedCount = workbench.Tilemap.Count - beforeCount;
 			logger?.Log("Generated " + addedCount + " tilemap entries.");
+			return true;
 		}
 	}
 }

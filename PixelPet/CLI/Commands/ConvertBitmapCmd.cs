@@ -12,13 +12,13 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("sloppy", "s", false)
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			string fmtName = FindUnnamedParameter(0).Values[0].ToString();
 			bool sloppy = FindNamedParameter("--sloppy").IsPresent;
 
 			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
 				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			BitmapData bmpData = workbench.Bitmap.LockBits(
@@ -58,6 +58,7 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("This bitmap appears to be improperly scaled. The --sloppy flag may be required.", LogLevel.Warning);
 			}
 			logger?.Log("Converted bitmap to color format " + fmtName + ".");
+			return true;
 		}
 	}
 }

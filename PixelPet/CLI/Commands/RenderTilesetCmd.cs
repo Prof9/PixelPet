@@ -9,7 +9,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("format", "f", false, new ParameterValue("format"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			Parameter format = FindNamedParameter("--format");
 			int maxTilesPerRow = FindNamedParameter("--tiles-per-row").Values[0].ToInt32();
 
@@ -19,7 +19,7 @@ namespace PixelPet.CLI.Commands {
 				ColorFormat? fmt2 = ColorFormat.GetFormat(fmtName);
 				if (fmt2 == null) { 
 					logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
-					return;
+					return false;
 				} else {
 					fmt = (ColorFormat)fmt2;
 				}
@@ -27,7 +27,7 @@ namespace PixelPet.CLI.Commands {
 
 			if (maxTilesPerRow < 0) {
 				logger?.Log("Invalid tile count per row.", LogLevel.Error);
-				return;
+				return false;
 			}
 
 			workbench.SetBitmap(workbench.Tileset.IsIndexed
@@ -35,6 +35,7 @@ namespace PixelPet.CLI.Commands {
 				: workbench.Tileset.ToBitmap(maxTilesPerRow, fmt),
 				fmt
 			);
+			return true;
 		}
 	}
 }

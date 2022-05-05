@@ -10,7 +10,7 @@ namespace PixelPet.CLI.Commands {
 				new Parameter("first-tile", "ft", false, new ParameterValue("tilemap-entry", "-1"))
 			) { }
 
-		protected override void Run(Workbench workbench, ILogger logger) {
+		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
 			bool append = FindNamedParameter("--append").IsPresent;
 			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
 			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
@@ -46,6 +46,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			logger?.Log("Serialized tilemap of length " + workbench.Tilemap.Count + ".", LogLevel.Information);
+			return true;
 		}
 	}
 }
