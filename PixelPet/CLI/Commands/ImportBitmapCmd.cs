@@ -1,9 +1,8 @@
 ﻿using LibPixelPet;
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using SkiaSharp;
+using System.Buffers;
 using System.IO;
-using System.Security;
+using System.Text;
 
 namespace PixelPet.CLI.Commands {
 	internal class ImportBitmapCmd : CliCommand {
@@ -34,17 +33,19 @@ namespace PixelPet.CLI.Commands {
 					logger?.Log("File not found: " + Path.GetFileName(path), LogLevel.Error);
 					return false;
 				}
-				using (Bitmap bmp = new Bitmap(path)) {
-					workbench.ClearBitmap(bmp.Width, bmp.Height);
-					workbench.Graphics.CompositingMode = CompositingMode.SourceCopy;
-					workbench.Graphics.DrawImage(bmp, 0, 0, bmp.Width, bmp.Height);
+				using (SKBitmap bmp = SKBitmap.Decode(path)) {
+					workbench.Bitmap = new Bitmap(bmp.Width, bmp.Height);
+					SKColor[] pixels = bmp.Pixels;
+
+					for (int i = 0; i < pixels.Length; i++) {
+						workbench.Bitmap[i] = (int)(uint)pixels[i];
+					}
 				}
 				workbench.BitmapFormat = fmt;
 			} catch {
 				logger?.Log("Could not import " + Path.GetFileName(path), LogLevel.Error);
 				return false;
 			}
-			workbench.Graphics.Flush();
 
 			logger?.Log("Imported bitmap " + Path.GetFileName(path) + ".", LogLevel.Information);
 			return true;

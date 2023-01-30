@@ -1,8 +1,4 @@
 ﻿using LibPixelPet;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
 namespace PixelPet.CLI.Commands {
 	internal class ConvertBitmapCmd : CliCommand {
@@ -21,18 +17,10 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
-			BitmapData bmpData = workbench.Bitmap.LockBits(
-				new Rectangle(0, 0, workbench.Bitmap.Width, workbench.Bitmap.Height),
-				ImageLockMode.ReadWrite,
-				workbench.Bitmap.PixelFormat
-			);
-			byte[] buffer = new byte[bmpData.Stride * workbench.Bitmap.Height];
-			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
-
 			int mayNeedSloppy = 0;
 
-			for (int i = 0; i < buffer.Length; i += 4) {
-				int cb = BitConverter.ToInt32(buffer, i);
+			for (int i = 0; i < workbench.Bitmap.PixelCount; i++) {
+				int cb = workbench.Bitmap.Pixels[i];
 				int ca = fmt.Convert(cb, workbench.BitmapFormat, sloppy);
 				if (!sloppy && fmt.Bits < workbench.BitmapFormat.Bits) {
 					// Convert sloppy and back.
@@ -43,14 +31,8 @@ namespace PixelPet.CLI.Commands {
 						mayNeedSloppy++;
 					}
 				}
-				buffer[i + 0] = (byte)(ca >>  0);
-				buffer[i + 1] = (byte)(ca >>  8);
-				buffer[i + 2] = (byte)(ca >> 16);
-				buffer[i + 3] = (byte)(ca >> 24);
+				workbench.Bitmap.Pixels[i] = ca;
 			}
-
-			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-			workbench.Bitmap.UnlockBits(bmpData);
 
 			workbench.BitmapFormat = fmt;
 

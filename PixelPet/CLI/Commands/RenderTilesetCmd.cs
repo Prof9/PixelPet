@@ -30,11 +30,10 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
-			workbench.SetBitmap(workbench.Tileset.IsIndexed
+			workbench.Bitmap = workbench.Tileset.IsIndexed
 				? workbench.Tileset.ToBitmapIndexed(maxTilesPerRow, workbench.PaletteSet, fmt)
-				: workbench.Tileset.ToBitmap(maxTilesPerRow, fmt),
-				fmt
-			);
+				: workbench.Tileset.ToBitmap(maxTilesPerRow, fmt);
+			workbench.BitmapFormat = fmt;
 			return true;
 		}
 	}

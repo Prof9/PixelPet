@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace LibPixelPet {
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
@@ -171,64 +167,44 @@ namespace LibPixelPet {
 
 			ColorFormat bgra8888 = ColorFormat.ARGB8888;
 
-			Bitmap bmp = null;
-			try {
-				bmp = new Bitmap(
-					tileset.TileWidth * tilesPerRow,
-					tileset.TileHeight * tilesPerColumn,
-					PixelFormat.Format32bppArgb
-				);
-				BitmapData bmpData = bmp.LockBits(
-					new Rectangle(0, 0, bmp.Width, bmp.Height),
-					ImageLockMode.ReadWrite,
-					bmp.PixelFormat
-				);
-				int[] buffer = new int[(bmpData.Stride * bmp.Height) / 4];
+			Bitmap bmp = new Bitmap(tileset.TileWidth * tilesPerRow, tileset.TileHeight * tilesPerColumn);
 
-				// Draw all the tile entries in the tilemap.
-				for (int t = 0; t < this.Count; t++) {
-					TileEntry te = this[t];
-					int ti = t % tilesPerRow;
-					int tj = t / tilesPerRow;
+			// Draw all the tile entries in the tilemap.
+			for (int t = 0; t < this.Count; t++) {
+				TileEntry te = this[t];
+				int ti = t % tilesPerRow;
+				int tj = t / tilesPerRow;
 
-					// Stop if height exceeded.
-					if (tj >= tilesPerColumn) {
-						break;
-					}
-
-					// Skip if invalid tile number.
-					if (te.TileNumber >= tileset.Count) {
-						continue;
-					}
-
-					// Draw the tile for this tile entry.
-					Tile tile = tileset[te.TileNumber];
-					int palNum = this.TilemapFormat.BitmapEncoding switch {
-						BitmapEncoding.NintendoDSTexture => 0,
-						_ => te.PaletteNumber
-					};
-					Palette pal = palettes?.FindPalette(palNum);
-					int pi = 0;
-					foreach (int p in tile.EnumerateTile(te.HFlip, te.VFlip)) {
-						int px = pi % tileset.TileWidth + ti * tileset.TileWidth;
-						int py = pi / tileset.TileWidth + tj * tileset.TileHeight;
-						int ptr = (py * bmpData.Stride + px * 4) / 4;
-
-						GetColor(te, pal, p, out int c, out ColorFormat fmt);
-
-						buffer[ptr] = bgra8888.Convert(c, fmt);
-						pi++;
-					}
+				// Stop if height exceeded.
+				if (tj >= tilesPerColumn) {
+					break;
 				}
 
-				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-				bmp.UnlockBits(bmpData);
+				// Skip if invalid tile number.
+				if (te.TileNumber >= tileset.Count) {
+					continue;
+				}
 
-				return bmp;
-			} catch {
-				bmp?.Dispose();
-				throw;
+				// Draw the tile for this tile entry.
+				Tile tile = tileset[te.TileNumber];
+				int palNum = this.TilemapFormat.BitmapEncoding switch {
+					BitmapEncoding.NintendoDSTexture => 0,
+					_ => te.PaletteNumber
+				};
+				Palette pal = palettes?.FindPalette(palNum);
+				int pi = 0;
+				foreach (int p in tile.EnumerateTile(te.HFlip, te.VFlip)) {
+					int px = pi % tileset.TileWidth + ti * tileset.TileWidth;
+					int py = pi / tileset.TileWidth + tj * tileset.TileHeight;
+
+					GetColor(te, pal, p, out int c, out ColorFormat fmt);
+
+					bmp[px, py] = bgra8888.Convert(c, fmt);
+					pi++;
+				}
 			}
+
+			return bmp;
 
 			void GetColor(TileEntry te, Palette pal, int p, out int c, out ColorFormat fmt) {
 				if (this.TilemapFormat.BitmapEncoding == BitmapEncoding.NintendoDSTexture) {

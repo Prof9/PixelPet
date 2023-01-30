@@ -1,15 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<DebugType>none</DebugType>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PixelPet\PixelPet.csproj" />
-		<Content Include="TestsIn\**\*.*" CopyToOutputDirectory="PreserveNewest"/>
+		<Content Include="TestsIn\**\*.*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 </Project>

@@ -1,6 +1,4 @@
 ﻿using LibPixelPet;
-using System;
-using System.Drawing;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
@@ -43,43 +41,44 @@ namespace PixelPet.CLI.Commands {
 			int addedColors = 0;
 			int addedPalettes = 0;
 			Palette pal = null;
-			using (Bitmap bmp = workbench.GetCroppedBitmap(x, y, w, h, logger)) {
-				foreach (Tile tile in cutter.CutTiles(bmp)) {
-					// Grab color from tile.
-					int color = tile[0, 0];
-					foreach (int otherColor in tile.EnumerateTile().Skip(1)) {
-						if (otherColor != color) {
-							logger?.Log("Palette tile " + ti + " is not a single color.", LogLevel.Error);
-							return false;
-						}
+			Bitmap bmp = workbench.Bitmap.GetCroppedBitmap(x, y, w, h);
+
+			foreach (Tile tile in cutter.CutTiles(bmp)) {
+				// Grab color from tile.
+				int color = tile[0, 0];
+				foreach (int otherColor in tile.EnumerateTile().Skip(1)) {
+					if (otherColor != color) {
+						logger?.Log("Palette tile " + ti + " is not a single color.", LogLevel.Error);
+						return false;
 					}
-
-					// Create new palette if needed.
-					if (pal == null) {
-						pal = new Palette(workbench.BitmapFormat, palSize);
-					}
-
-					// Add finished palette to palette set.
-					pal.Add(color, workbench.BitmapFormat);
-					addedColors++;
-
-					// Add finished palette to palette set.
-					if (palSize != -1 && pal.Count >= palSize) {
-						if (palNum >= 0) {
-							while (workbench.PaletteSet.ContainsPalette(palNum)) {
-								palNum++;
-							}
-							workbench.PaletteSet.Add(pal, palNum++);
-						} else {
-							workbench.PaletteSet.Add(pal);
-						}
-						addedPalettes++;
-						pal = null;
-					}
-
-					ti++;
 				}
+
+				// Create new palette if needed.
+				if (pal == null) {
+					pal = new Palette(workbench.BitmapFormat, palSize);
+				}
+
+				// Add finished palette to palette set.
+				pal.Add(color, workbench.BitmapFormat);
+				addedColors++;
+
+				// Add finished palette to palette set.
+				if (palSize != -1 && pal.Count >= palSize) {
+					if (palNum >= 0) {
+						while (workbench.PaletteSet.ContainsPalette(palNum)) {
+							palNum++;
+						}
+						workbench.PaletteSet.Add(pal, palNum++);
+					} else {
+						workbench.PaletteSet.Add(pal);
+					}
+					addedPalettes++;
+					pal = null;
+				}
+
+				ti++;
 			}
+
 			// Finish up remaining palette
 			if (pal != null) {
 				if (palNum >= 0) {

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace LibPixelPet {
 	/// <summary>
@@ -82,20 +79,10 @@ namespace LibPixelPet {
 		/// <param name="tw">The amount of horizontal tiles to cut.</param>
 		/// <param name="th">The amount of vertical tiles to cut.</param>
 		/// <returns>The tiles.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "tw")]
 		public IEnumerable<Tile> CutTiles(Bitmap bmp, int tx, int ty, int tw, int th) {
-			BitmapData bmpData = bmp.LockBits(
-				new Rectangle(0, 0, bmp.Width, bmp.Height),
-				ImageLockMode.ReadOnly,
-				bmp.PixelFormat
-			);
-			int[] bmpBuffer = new int[(bmpData.Stride * bmp.Height) / 4];
-			Marshal.Copy(bmpData.Scan0, bmpBuffer, 0, bmpBuffer.Length);
-			bmp.UnlockBits(bmpData);
-
 			for (int tj = 0; tj < th; tj++) {
 				for (int ti = 0; ti < tw; ti++) {
-					yield return CutTile(bmp, bmpData, bmpBuffer, tx + ti, ty + tj);
+					yield return CutTile(bmp, tx + ti, ty + tj);
 				}
 			}
 		}
@@ -108,25 +95,20 @@ namespace LibPixelPet {
 		/// <param name="ty">The row of the tile.</param>
 		/// <returns>The tile.</returns>
 		public Tile CutTile(Bitmap bmp, in int tx, in int ty) {
-			return this.CutTiles(bmp, tx, ty, 1, 1).First();
-		}
-
-		private Tile CutTile(in Bitmap bmp, in BitmapData bmpData, in int[] bmpBuffer, in int ti, in int tj) {
-			Tile tile = new Tile(this.TileWidth, this.TileHeight, ti * this.TileWidth, tj * this.TileHeight);
+			Tile tile = new Tile(this.TileWidth, this.TileHeight, tx * this.TileWidth, ty * this.TileHeight);
 			int[] pixels = new int[tile.Count];
 
 			int p = 0;
-			for (int ty = 0; ty < this.TileHeight; ty++) {
-				for (int tx = 0; tx < this.TileWidth; tx++) {
-					int px = ti * this.TileWidth + tx;
-					int py = tj * this.TileHeight + ty;
-					int ptr = (py * bmpData.Stride + px * 4) / 4;
+			for (int y = 0; y < this.TileHeight; y++) {
+				for (int x = 0; x < this.TileWidth; x++) {
+					int px = tx * this.TileWidth + x;
+					int py = ty * this.TileHeight + y;
 
 					int pixel;
 					if (px < 0 || py < 0 || px >= bmp.Width || py >= bmp.Height) {
 						pixel = this.EmptyColor.ToArgb();
 					} else {
-						pixel = bmpBuffer[ptr];
+						pixel = bmp[px, py];
 					}
 
 					pixels[p++] = pixel;

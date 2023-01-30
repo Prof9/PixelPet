@@ -1,8 +1,4 @@
 ﻿using LibPixelPet;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
 namespace PixelPet.CLI.Commands {
 	internal class DeserializeBitmapCmd : CliCommand {
@@ -37,23 +33,14 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
-			workbench.ClearBitmap(w, h);
+			workbench.Bitmap = new Bitmap(w, h);
 			workbench.Stream.Position = offset;
 
-			BitmapData bmpData = workbench.Bitmap.LockBits(
-				new Rectangle(0, 0, w, h),
-				ImageLockMode.WriteOnly,
-				workbench.Bitmap.PixelFormat
-			);
-			int[] buffer = new int[(bmpData.Stride * h) / 4];
-
 			using (PixelReader pixelReader = new PixelReader(workbench.Stream, fmt, true)) {
-				pixelReader.ReadPixels(buffer, 0, w * h);
+				pixelReader.ReadPixels(workbench.Bitmap.Pixels, 0, w * h);
 			}
-			workbench.BitmapFormat = fmt;
 
-			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-			workbench.Bitmap.UnlockBits(bmpData);
+			workbench.BitmapFormat = fmt;
 
 			logger?.Log("Deserialized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.", LogLevel.Information);
 			return true;

@@ -19,13 +19,10 @@ jobs:
         os: [windows-latest, ubuntu-latest, macOS-latest]
     steps:
       - uses: actions/checkout@v3
-      - name: Install libgdiplus (macOS)
-        if: startsWith(matrix.os, 'macOS')
-        run: brew install mono-libgdiplus
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
       - name: Install dependencies
         run: dotnet restore
       - name: Build
@@ -43,6 +40,9 @@ jobs:
       - name: Publish (macOS)
         if: startsWith(matrix.os, 'macOS')
         run: dotnet publish PixelPet --configuration Release -p:PublishProfile=FolderProfile --runtime osx-x64 --no-self-contained -o publish
+      - run: cp README.md publish/README.md
+      - run: cp LICENSE.txt publish/LICENSE.txt
+      - run: cp LICENSE-third-party.txt publish/LICENSE-third-party.txt
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -52,4 +52,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tests-${{matrix.os}}
-          path: Tests/bin/Release/net6.0-windows/TestsOut/
+          path: Tests/bin/Release/net7.0/TestsOut/

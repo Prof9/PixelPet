@@ -5,21 +5,28 @@
 		<Copyright>Copyright © $(Authors) $([System.DateTime]::Now.Year)</Copyright>
 		<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<LangVersion>latest</LangVersion>
 		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+		<Nullable>disable</Nullable>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<DebugType>none</DebugType>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
 	<ItemGroup>
 		<CodeAnalysisDictionary Include="CustomDictionary.xml" />
 		<ProjectReference Include="..\LibPixelPet\LibPixelPet.csproj" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="SkiaSharp" Version="2.88.3" />
 	</ItemGroup>
 	<Target Name="GetBuildInfo">
 		<Exec Command="git describe --abbrev --exclude=* --always --dirty --broken" ConsoleToMSBuild="true" IgnoreExitCode="true">

@@ -22,11 +22,10 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
-			workbench.SetBitmap(workbench.Tileset.IsIndexed
+			workbench.Bitmap = workbench.Tileset.IsIndexed
 				? workbench.Tilemap.ToBitmapIndexed(workbench.Tileset, workbench.PaletteSet, tpr, tpc)
-				: workbench.Tilemap.ToBitmap(workbench.Tileset, tpr, tpc),
-				ColorFormat.ARGB8888
-			);
+				: workbench.Tilemap.ToBitmap(workbench.Tileset, tpr, tpc);
+			workbench.BitmapFormat = ColorFormat.ARGB8888;
 			return true;
 		}
 	}

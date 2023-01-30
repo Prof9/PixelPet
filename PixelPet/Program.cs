@@ -34,8 +34,11 @@ namespace PixelPet {
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
 		private void RunCli(string[] args) {
-			string consoleTitle = Console.Title;
-			Console.Title = "PixelPet";
+			string consoleTitle = null;
+			if (OperatingSystem.IsWindows()) {
+				consoleTitle = Console.Title;
+				Console.Title = "PixelPet";
+			}
 			Console.WriteLine($"PixelPet {Version} by Prof. 9 ({BuildInfo.CommitID} @ {BuildInfo.Timestamp})");
 			Console.WriteLine();
 
@@ -56,7 +59,9 @@ namespace PixelPet {
 #if DEBUG
 			Console.ReadKey();
 #endif
-			Console.Title = consoleTitle;
+			if (consoleTitle is not null) {
+				Console.Title = consoleTitle;
+			}
 		}
 	}
 }

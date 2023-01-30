@@ -1,7 +1,4 @@
 ﻿using LibPixelPet;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
 namespace PixelPet.CLI.Commands {
 	internal class SerializeBitmapCmd : CliCommand {
@@ -19,19 +16,9 @@ namespace PixelPet.CLI.Commands {
 				workbench.Stream.SetLength(0);
 			}
 
-			BitmapData bmpData = workbench.Bitmap.LockBits(
-				new Rectangle(0, 0, workbench.Bitmap.Width, workbench.Bitmap.Height),
-				ImageLockMode.ReadWrite,
-				workbench.Bitmap.PixelFormat
-			);
-			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height / 4];
-			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
-
 			using (PixelWriter pixelWriter = new PixelWriter(workbench.Stream, workbench.BitmapFormat, true)) {
-				pixelWriter.WritePixels(buffer, 0, workbench.Bitmap.Width * workbench.Bitmap.Height);
+				pixelWriter.WritePixels(workbench.Bitmap.Pixels, 0, workbench.Bitmap.Width * workbench.Bitmap.Height);
 			}
-
-			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Serialized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.", LogLevel.Information);
 			return true;

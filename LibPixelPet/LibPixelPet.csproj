@@ -3,18 +3,24 @@
 		<Authors>Prof. 9</Authors>
 	<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<LangVersion>latest</LangVersion>
 		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+		<Nullable>disable</Nullable>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<DebugType>none</DebugType>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
 	<ItemGroup>
 		<CodeAnalysisDictionary Include="CustomDictionary.xml" />
-		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	</ItemGroup>
 </Project>

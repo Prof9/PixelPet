@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
 namespace LibPixelPet {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public class Tileset : IEnumerable<Tile>, ICloneable {
 		private List<Tile> Tiles { get; }
 		private MultiValueDictionary<int, TileEntry> TileDictionary { get; }
@@ -157,46 +153,26 @@ namespace LibPixelPet {
 			}
 			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
 
-			Bitmap bmp = null;
-			try {
-				bmp = new Bitmap(
-					this.TileWidth * hTileCount,
-					this.TileHeight * vTileCount,
-					PixelFormat.Format32bppArgb
-				);
-				BitmapData bmpData = bmp.LockBits(
-					new Rectangle(0, 0, bmp.Width, bmp.Height),
-					ImageLockMode.WriteOnly,
-					bmp.PixelFormat
-				);
-				int[] buffer = new int[(bmpData.Stride * bmp.Height) / 4];
+			Bitmap bmp = new Bitmap(this.TileWidth * hTileCount, this.TileHeight * vTileCount);
 
-				// Draw all tiles in the tileset.
-				for (int t = 0; t < this.Count; t++) {
-					Tile tile = this[t];
-					int ti = t % hTileCount;
-					int tj = t / hTileCount;
+			// Draw all tiles in the tileset.
+			for (int t = 0; t < this.Count; t++) {
+				Tile tile = this[t];
+				int ti = t % hTileCount;
+				int tj = t / hTileCount;
 
-					for (int ty = 0; ty < this.TileHeight; ty++) {
-						for (int tx = 0; tx < this.TileWidth; tx++) {
-							int px = ti * this.TileWidth + tx;
-							int py = tj * this.TileHeight + ty;
-							int ptr = (py * bmpData.Stride + px * 4) / 4;
+				for (int ty = 0; ty < this.TileHeight; ty++) {
+					for (int tx = 0; tx < this.TileWidth; tx++) {
+						int px = ti * this.TileWidth + tx;
+						int py = tj * this.TileHeight + ty;
 
-							int c = tile[tx, ty];
-							buffer[ptr] = targetFmt.Convert(c, this.ColorFormat);
-						}
+						int c = tile[tx, ty];
+						bmp[px, py] = targetFmt.Convert(c, this.ColorFormat);
 					}
 				}
-
-				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-				bmp.UnlockBits(bmpData);
-
-				return bmp;
-			} catch {
-				bmp?.Dispose();
-				throw;
 			}
+
+			return bmp;
 		}
 
 		/// <summary>
@@ -218,61 +194,37 @@ namespace LibPixelPet {
 			}
 			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
 
-			Bitmap bmp = null;
-#if !DEBUG
-			try {
-#endif
-				bmp = new Bitmap(
-					this.TileWidth * hTileCount,
-					this.TileHeight * vTileCount,
-					PixelFormat.Format32bppArgb
-				);
-				BitmapData bmpData = bmp.LockBits(
-					new Rectangle(0, 0, bmp.Width, bmp.Height),
-					ImageLockMode.WriteOnly,
-					bmp.PixelFormat
-				);
-				int[] buffer = new int[(bmpData.Stride * bmp.Height) / 4];
-
-				// Draw all tiles in the tileset.
-				for (int t = 0; t < this.Count; t++) {
-					Tile tile = this[t];
-					int ti = t % hTileCount;
-					int tj = t / hTileCount;
-					Palette pal = palettes.FindPalette(tile.PaletteNumber);
-					if (pal == null && palettes.Count > 0) {
-						// Don't have the palette used to index this tile anymore.
-						// Just get any palette.
-						pal = palettes[0].Palette;
-					}
-
-					for (int ty = 0; ty < this.TileHeight; ty++) {
-						for (int tx = 0; tx < this.TileWidth; tx++) {
-							int px = ti * this.TileWidth + tx;
-							int py = tj * this.TileHeight + ty;
-							int ptr = (py * bmpData.Stride + px * 4) / 4;
-
-							int c = tile[tx, ty];
-							if (pal != null && c < pal.Count) {
-								c = targetFmt.Convert(pal[c], pal.Format);
-							} else {
-								c = targetFmt.Convert(c, this.ColorFormat);
-							}
-							buffer[ptr] = c;
-						}
-					}
+			Bitmap bmp = new Bitmap(this.TileWidth * hTileCount, this.TileHeight * vTileCount);
+				
+			// Draw all tiles in the tileset.
+			for (int t = 0; t < this.Count; t++) {
+				Tile tile = this[t];
+				int ti = t % hTileCount;
+				int tj = t / hTileCount;
+				Palette pal = palettes.FindPalette(tile.PaletteNumber);
+				if (pal == null && palettes.Count > 0) {
+					// Don't have the palette used to index this tile anymore.
+					// Just get any palette.
+					pal = palettes[0].Palette;
 				}
 
-				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-				bmp.UnlockBits(bmpData);
+				for (int ty = 0; ty < this.TileHeight; ty++) {
+					for (int tx = 0; tx < this.TileWidth; tx++) {
+						int px = ti * this.TileWidth + tx;
+						int py = tj * this.TileHeight + ty;
 
-				return bmp;
-#if !DEBUG
-			} catch {
-				bmp?.Dispose();
-				throw;
+						int c = tile[tx, ty];
+						if (pal != null && c < pal.Count) {
+							c = targetFmt.Convert(pal[c], pal.Format);
+						} else {
+							c = targetFmt.Convert(c, this.ColorFormat);
+						}
+						bmp[px, py] = c;
+					}
+				}
 			}
-#endif
+
+			return bmp;
 		}
 
 		public Tileset Clone() {

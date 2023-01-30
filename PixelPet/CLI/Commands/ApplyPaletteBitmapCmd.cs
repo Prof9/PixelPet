@@ -1,8 +1,5 @@
 ﻿using LibPixelPet;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace PixelPet.CLI.Commands {
 	internal class ApplyPaletteBitmapCmd : CliCommand {
@@ -24,16 +21,8 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			BitmapData bmpData = workbench.Bitmap.LockBits(
-				new Rectangle(0, 0, workbench.Bitmap.Width, workbench.Bitmap.Height),
-				ImageLockMode.ReadWrite,
-				workbench.Bitmap.PixelFormat
-			);
-			int[] buffer = new int[bmpData.Stride * workbench.Bitmap.Height / 4];
-			Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
-
 			// Check if there is a suitable palette
-			uint maxCol = buffer.Max(a => (uint)a);
+			uint maxCol = workbench.Bitmap.Pixels.Max(a => (uint)a);
 			if (maxCol > int.MaxValue) {
 				pal = null;
 				logger?.Log("The current bitmap is not indexed.", LogLevel.Error);
@@ -64,18 +53,14 @@ namespace PixelPet.CLI.Commands {
 			// Do we have a suitable palette?
 			if (pal == null) {
 				logger?.Log("The current bitmap requires a palette with at least " + (maxCol + 1) + " colors.", LogLevel.Error);
-				workbench.Bitmap.UnlockBits(bmpData);
 				return false;
 			}
 
 			// Apply the palette
-			for (int i = 0; i < buffer.Length; i++) {
-				buffer[i] = pal[buffer[i]];
+			for (int i = 0; i < workbench.Bitmap.PixelCount; i++) {
+				workbench.Bitmap[i] = pal[workbench.Bitmap[i]];
 			}
-
 			workbench.BitmapFormat = pal.Format;
-			Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-			workbench.Bitmap.UnlockBits(bmpData);
 
 			logger?.Log("Applied palette " + palNum + " to " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.");
 			return true;

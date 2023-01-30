@@ -1,9 +1,7 @@
 ﻿using LibPixelPet;
+using SkiaSharp;
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 
 namespace PixelPet.CLI.Commands {
 	internal class ExportBitmapCmd : CliCommand {
@@ -29,35 +27,31 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			Bitmap bmp = null;
+			SKBitmap bmp = null;
 			bool setAlpha = workbench.BitmapFormat.AlphaBits == 0;
 			try {
-				bmp = workbench.GetCroppedBitmap(0, 0, workbench.Bitmap.Width, workbench.Bitmap.Height, logger);
-				BitmapData bmpData = bmp.LockBits(
-					new Rectangle(0, 0, bmp.Width, bmp.Height),
-					ImageLockMode.ReadWrite,
-					workbench.Bitmap.PixelFormat
-				);
-				int[] buffer = new int[bmpData.Stride * bmp.Height / 4];
-				Marshal.Copy(bmpData.Scan0, buffer, 0, buffer.Length);
+				bmp = new SKBitmap(workbench.Bitmap.Width, workbench.Bitmap.Height, SKColorType.Bgra8888, SKAlphaType.Unpremul);
+				SKColor[] pixels = new SKColor[bmp.Width * bmp.Height];
 
-				for (int i = 0; i < buffer.Length; i++) {
-					buffer[i] = fmt.Convert(buffer[i], workbench.BitmapFormat);
+				for (int i = 0; i < workbench.Bitmap.PixelCount; i++) {
+					pixels[i] = new SKColor((uint)fmt.Convert(workbench.Bitmap[i], workbench.BitmapFormat));
 				}
 
-				if (workbench.BitmapFormat.AlphaBits == 0) {
-					for (int i = 0; i < buffer.Length; i++) {
-						buffer[i] = (int)(buffer[i] | 0xFF000000);
+				if (setAlpha) {
+					for (int i = 0; i < pixels.Length; i++) {
+						pixels[i] = pixels[i].WithAlpha(0xFF);
 					}
-					setAlpha = true;
 				}
 
-				Marshal.Copy(buffer, 0, bmpData.Scan0, buffer.Length);
-				bmp.UnlockBits(bmpData);
+				bmp.Pixels = pixels;
 
 				Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
-				bmp.Save(path);
-			} catch (IOException) {
+				using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write)) {
+					if (!bmp.Encode(fs, SKEncodedImageFormat.Png, 100)) {
+						throw new Exception("Could not encode bitmap");
+					}
+				}
+			} catch (Exception) {
 				logger?.Log("Could not save bitmap " + Path.GetFileName(path) + ".", LogLevel.Error);
 				return false;
 			} finally {

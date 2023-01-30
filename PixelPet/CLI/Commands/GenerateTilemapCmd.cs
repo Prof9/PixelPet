@@ -1,6 +1,5 @@
 ﻿using LibPixelPet;
 using System;
-using System.Drawing;
 
 namespace PixelPet.CLI.Commands {
 	internal class GenerateTilemapCmd : CliCommand {
@@ -67,21 +66,20 @@ namespace PixelPet.CLI.Commands {
 
 			int beforeCount = workbench.Tilemap.Count;
 
-			using (Bitmap bmp = workbench.GetCroppedBitmap(x, y, w, h, logger)) {
-				try {
-					if (fmt.IsIndexed) {
-						if (workbench.PaletteSet.Count <= 0) {
-							logger?.Log("Cannot generate indexed tiles: no palettes loaded.", LogLevel.Error);
-							return false;
-						}
-						workbench.Tilemap.AddBitmapIndexed(bmp, workbench.Tileset, workbench.PaletteSet, fmt, !noReduce);
-					} else {
-						workbench.Tilemap.AddBitmap(bmp, workbench.Tileset, fmt, !noReduce);
+			Bitmap bmp = workbench.Bitmap.GetCroppedBitmap(x, y, w, h);
+			try {
+				if (fmt.IsIndexed) {
+					if (workbench.PaletteSet.Count <= 0) {
+						logger?.Log("Cannot generate indexed tiles: no palettes loaded.", LogLevel.Error);
+						return false;
 					}
-				} catch (Exception ex) {
-					logger?.Log(ex.Message, LogLevel.Error);
-					return false;
+					workbench.Tilemap.AddBitmapIndexed(bmp, workbench.Tileset, workbench.PaletteSet, fmt, !noReduce);
+				} else {
+					workbench.Tilemap.AddBitmap(bmp, workbench.Tileset, fmt, !noReduce);
 				}
+			} catch (Exception ex) {
+				logger?.Log(ex.Message, LogLevel.Error);
+				return false;
 			}
 
 			workbench.Tilemap.TilemapFormat = fmt;

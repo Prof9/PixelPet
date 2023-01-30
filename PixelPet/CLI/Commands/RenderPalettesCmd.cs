@@ -1,7 +1,4 @@
 ﻿using LibPixelPet;
-using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
@@ -40,31 +37,33 @@ namespace PixelPet.CLI.Commands {
 
 			ColorFormat fmt = ColorFormat.ARGB8888;
 
-			workbench.ClearBitmap(w * tw, h * th);
-			workbench.Graphics.CompositingMode = CompositingMode.SourceCopy;
-			using (SolidBrush brush = new SolidBrush(Color.Black)) {
-				int p = 0;
-				int c = 0;
-				for (int j = 0; j < h; j++) {
-					Palette pal = workbench.PaletteSet[p].Palette;
-					for (int i = 0; i < w; i++) {
-						// Draw transparent if we ran out of colors.
-						if (c >= pal.Count) {
-							brush.Color = Color.Transparent;
-						} else {
-							brush.Color = Color.FromArgb(fmt.Convert(pal[c++], pal.Format));
-						}
-						workbench.Graphics.FillRectangle(brush, i * tw, j * th, tw, th);
-						count++;
-					}
-					// Go to next palette.
+			workbench.Bitmap = new Bitmap(w * tw, h * th);
+
+			int p = 0;
+			int c = 0;
+			for (int j = 0; j < h; j++) {
+				Palette pal = workbench.PaletteSet[p].Palette;
+				for (int i = 0; i < w; i++) {
+					// Draw transparent if we ran out of colors.
 					if (c >= pal.Count) {
-						p++;
 						c = 0;
+					} else {
+						c = fmt.Convert(pal[c++], pal.Format);
 					}
+					// Draw rectangle
+					for (int y = 0; y < th; y++) {
+						for (int x = 0; x < tw; x++) {
+							workbench.Bitmap[i * tw + x, j * th + y] = c;
+						}
+					}
+					count++;
+				}
+				// Go to next palette.
+				if (c >= pal.Count) {
+					p++;
+					c = 0;
 				}
 			}
-			workbench.Graphics.Flush();
 
 			logger?.Log("Rendered " + w + "x" + h + " palette set containing " + count + " colors.", LogLevel.Information);
 			return true;
