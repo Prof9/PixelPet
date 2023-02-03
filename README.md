@@ -30,7 +30,7 @@ A palette can hold any number of colors, but a palette may have a maximum number
 
 ### Bitmap
 
-The bitmap is simply a full image that is being operated on. This uses .NET's Bitmap class internally, and thus can be in any format that .NET's Bitmap class supports. The bitmap can be imported from various file formats; this has not been extensively tested, however, so using standard PNG images in 24-bit RGB or 32-bit RGBA format is advised. You can also export the bitmap to a standard PNG image file.
+The bitmap is simply a full image that is being operated on. Internally this is an array of integers, one per pixel. The bitmap can be imported from various file formats; this has not been extensively tested, however, so using standard PNG images in 24-bit RGB or 32-bit RGBA format is advised. You can also export the bitmap to a standard PNG image file.
 
 ### Bytestream
 
