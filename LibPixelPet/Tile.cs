@@ -125,7 +125,7 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="pixels">The new pixels. The length of the list must match the number of pixels exactly.</param>
 		public void SetAllPixels(in IList<int> pixels) {
-			if (pixels == null)
+			if (pixels is null)
 				throw new ArgumentNullException(nameof(pixels));
 			if (pixels.Count != this.Count)
 				throw new ArgumentException("Amount of new pixels must equal the amount of pixels in the tile.", nameof(pixels));
@@ -205,7 +205,7 @@ namespace LibPixelPet {
 		/// <param name="indexedTiles">The list where the resulting indexed tiles will be written to.</param>
 		/// <returns>The number of successfully indexed tiles.</returns>
 		public int GenerateIndexedTiles(PaletteSet palettes, IList<Tile> indexedTiles) {
-			if (palettes == null)
+			if (palettes is null)
 				throw new ArgumentNullException(nameof(palettes));
 			if (indexedTiles.Count < palettes.Count)
 				throw new ArgumentException("Indexed tiles list is not large enough to hold all possible indexed tiles", nameof(indexedTiles));
@@ -214,7 +214,7 @@ namespace LibPixelPet {
 			int maxFailPixel = -1;
 			Tile indexedTile = indexedTiles[0];
 			foreach (PaletteEntry pe in palettes) {
-				if (indexedTile == null) {
+				if (indexedTile is null) {
 					indexedTile = new Tile(this.Width, this.Height, this.OriginX, this.OriginY);
 				}
 				int failPixel = this.TryIndexTile(pe.Palette, ref indexedTile);

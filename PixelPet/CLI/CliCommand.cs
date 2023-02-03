@@ -16,13 +16,13 @@ namespace PixelPet.CLI {
 		public bool IsPrepared { get; private set; }
 
 		protected CliCommand(in string name, params Parameter[] parameters) {
-			if (name == null)
+			if (name is null)
 				throw new ArgumentNullException(nameof(name));
 			if (name.Any(c => char.IsWhiteSpace(c)))
 				throw new ArgumentException("Name cannot contain white-space characters.", nameof(name));
 			if (name[0] == '-')
 				throw new ArgumentException("Name cannot start with a dash.");
-			if (parameters == null)
+			if (parameters is null)
 				throw new ArgumentNullException(nameof(parameters));
 
 			this.Name = name;
@@ -83,7 +83,7 @@ namespace PixelPet.CLI {
 		private bool ReadParameter(IEnumerator<string> args) {
 			// Find parameter to read.
 			Parameter par = FindUnpreparedParameter(args.Current);
-			if (par == null) {
+			if (par is null) {
 				// Did not find a suitable parameter.
 				return false;
 			}
@@ -149,7 +149,7 @@ namespace PixelPet.CLI {
 			=> this.FindNamedParameter(str) ?? this.FindUnnamedParameter(0, true);
 
 		protected Parameter FindNamedParameter(string str) {
-			if (str == null) {
+			if (str is null) {
 				return null;
 			} else if (str.StartsWith("--", StringComparison.Ordinal)) {
 				return this.Parameters.FirstOrDefault(

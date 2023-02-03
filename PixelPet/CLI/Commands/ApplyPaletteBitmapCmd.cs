@@ -27,7 +27,7 @@ namespace PixelPet.CLI.Commands {
 				pal = null;
 				logger?.Log("The current bitmap is not indexed.", LogLevel.Error);
 				return false;
-			} else if (pal == null) {
+			} else if (pal is null) {
 				if (workbench.PaletteSet.Count == 1) {
 					// When there is only one palette, skip the check to improve speed
 					pal = workbench.PaletteSet[0].Palette;
@@ -40,7 +40,7 @@ namespace PixelPet.CLI.Commands {
 							break;
 						}
 					}
-					if (pal == null) {
+					if (pal is null) {
 						logger?.Log("No suitable palette loaded.", LogLevel.Error);
 					}
 				}
@@ -51,7 +51,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			// Do we have a suitable palette?
-			if (pal == null) {
+			if (pal is null) {
 				logger?.Log("The current bitmap requires a palette with at least " + (maxCol + 1) + " colors.", LogLevel.Error);
 				return false;
 			}

@@ -19,7 +19,7 @@ namespace PixelPet.CLI.Commands {
 			if (format.IsPresent) {
 				string fmtName = format.Values[0].ToString();
 				ColorFormat? fmt2 = ColorFormat.GetFormat(fmtName);
-				if (fmt2 == null) {
+				if (fmt2 is null) {
 					logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
 					return false;
 				} else {

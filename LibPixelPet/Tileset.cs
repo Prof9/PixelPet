@@ -185,7 +185,7 @@ namespace LibPixelPet {
 		public Bitmap ToBitmapIndexed(in int maxTilesPerRow, PaletteSet palettes, ColorFormat targetFmt) {
 			if (maxTilesPerRow < 0)
 				throw new ArgumentOutOfRangeException(nameof(maxTilesPerRow));
-			if (palettes == null)
+			if (palettes is null)
 				throw new ArgumentNullException(nameof(palettes));
 
 			int hTileCount = this.Count;
@@ -202,7 +202,7 @@ namespace LibPixelPet {
 				int ti = t % hTileCount;
 				int tj = t / hTileCount;
 				Palette pal = palettes.FindPalette(tile.PaletteNumber);
-				if (pal == null && palettes.Count > 0) {
+				if (pal is null && palettes.Count > 0) {
 					// Don't have the palette used to index this tile anymore.
 					// Just get any palette.
 					pal = palettes[0].Palette;
@@ -214,7 +214,7 @@ namespace LibPixelPet {
 						int py = tj * this.TileHeight + ty;
 
 						int c = tile[tx, ty];
-						if (pal != null && c < pal.Count) {
+						if (pal is not null && c < pal.Count) {
 							c = targetFmt.Convert(pal[c], pal.Format);
 						} else {
 							c = targetFmt.Convert(c, this.ColorFormat);

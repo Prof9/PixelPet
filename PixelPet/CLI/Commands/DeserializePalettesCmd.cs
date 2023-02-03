@@ -58,7 +58,7 @@ namespace PixelPet.CLI.Commands {
 			bool formatWarning = false;
 			while (palCount > 0 && workbench.Stream.Read(buffer, 0, bpc) == bpc) {
 				// Create new palette if needed.
-				if (pal == null) {
+				if (pal is null) {
 					pal = new Palette(fmt, palSize);
 				}
 
@@ -87,7 +87,7 @@ namespace PixelPet.CLI.Commands {
 					}
 				}
 			}
-			if (pal != null) {
+			if (pal is not null) {
 				if (palNum < 0) {
 					workbench.PaletteSet.Add(pal);
 				} else {

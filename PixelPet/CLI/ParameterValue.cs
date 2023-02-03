@@ -7,8 +7,8 @@ namespace PixelPet.CLI {
 		public string DefaultValue { get; }
 		public string CurrentValue { get; private set; }
 
-		public bool HasDefaultValue => this.DefaultValue != null;
-		public bool HasCurrentValue => this.CurrentValue != null;
+		public bool HasDefaultValue => this.DefaultValue is not null;
+		public bool HasCurrentValue => this.CurrentValue is not null;
 		public bool HasValue => this.HasCurrentValue || this.HasDefaultValue;
 		public string Value {
 			get => this.CurrentValue ?? this.DefaultValue;
@@ -18,7 +18,7 @@ namespace PixelPet.CLI {
 		public ParameterValue(in string name)
 			: this(name, null) { }
 		public ParameterValue(in string name, in string defaultValue) {
-			if (name == null)
+			if (name is null)
 				throw new ArgumentNullException(nameof(name));
 			if (string.IsNullOrWhiteSpace(name))
 				throw new ArgumentException("Name cannot consist of only white-space characters.", nameof(name));

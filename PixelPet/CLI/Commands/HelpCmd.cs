@@ -25,13 +25,13 @@ namespace PixelPet.CLI.Commands {
 					}
 
 					if (param.IsNamed) {
-						if (param.LongName != null) {
+						if (param.LongName is not null) {
 							Console.Write("--" + param.LongName);
 						}
-						if (param.LongName != null && param.ShortName != null) {
+						if (param.LongName is not null && param.ShortName is not null) {
 							Console.Write('/');
 						}
-						if (param.ShortName != null) {
+						if (param.ShortName is not null) {
 							Console.Write('-' + param.ShortName);
 						}
 					}

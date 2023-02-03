@@ -14,7 +14,7 @@ namespace LibPixelPet {
 		public PaletteEntry(int number, Palette palette) {
 			if (number < 0)
 				throw new ArgumentOutOfRangeException(nameof(number));
-			if (palette == null)
+			if (palette is null)
 				throw new ArgumentNullException(nameof(palette));
 
 			this.Number = number;
@@ -23,7 +23,7 @@ namespace LibPixelPet {
 
 		public bool IsValid()
 			=> this.Number >= 0
-			&& this.Palette != null;
+			&& this.Palette is not null;
 
 		public override bool Equals(object obj)
 			=> obj is PaletteEntry pe

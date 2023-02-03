@@ -52,7 +52,7 @@ namespace LibPixelPet {
 		/// <param name="palette">The palette to add.</param>
 		/// <param name="number">The palette number to use.</param>
 		public void Add(Palette palette, in int number) {
-			if (palette == null)
+			if (palette is null)
 				throw new ArgumentNullException(nameof(palette));
 			if (number < 0)
 				throw new ArgumentOutOfRangeException(nameof(number));

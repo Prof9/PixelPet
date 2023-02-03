@@ -91,7 +91,7 @@ namespace PixelPet.CLI {
 		public void Run(IEnumerable<string> args) => Run(args.GetEnumerator());
 
 		internal void Run(IEnumerator<string> args) {
-			if (args == null)
+			if (args is null)
 				throw new ArgumentNullException(nameof(args));
 
 #if !DEBUG
@@ -126,7 +126,7 @@ namespace PixelPet.CLI {
 			CliCommand cmd = Commands
 				.FirstOrDefault(c => c.Name.Equals(cmdName, StringComparison.OrdinalIgnoreCase));
 
-			if (cmd == null) {
+			if (cmd is null) {
 				this.Log("Unrecognized command \"" + cmdName + "\".", LogLevel.Error);
 				return false;
 			}

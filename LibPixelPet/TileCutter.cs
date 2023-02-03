@@ -61,7 +61,7 @@ namespace LibPixelPet {
 		/// <param name="bmp">The bitmap.</param>
 		/// <returns>The tiles.</returns>
 		public IEnumerable<Tile> CutTiles(Bitmap bmp) {
-			if (bmp == null)
+			if (bmp is null)
 				throw new ArgumentNullException(nameof(bmp));
 
 			int hTileCount = (bmp.Width + this.TileWidth - 1) / this.TileWidth;

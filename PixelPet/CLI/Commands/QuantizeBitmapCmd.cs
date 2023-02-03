@@ -28,7 +28,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			if (pal == null) {
+			if (pal is null) {
 				// Find first palette that contains all colors in the bitmap
 				foreach (PaletteEntry palEntry in workbench.PaletteSet) {
 					bool canUsePal = true;
@@ -47,7 +47,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			// Do we have a suitable palette?
-			if (pal == null) {
+			if (pal is null) {
 				logger?.Log("No suitable palette loaded.", LogLevel.Error);
 				return false;
 			}

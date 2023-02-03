@@ -63,9 +63,9 @@ namespace LibPixelPet {
 		/// <param name="format">The tilemap format to use.</param>
 		/// <param name="reduce">If true, reduces the tilemap; otherwise, does not reduce.</param>
 		public void AddBitmap(Bitmap bmp, Tileset tileset, TilemapFormat format, bool reduce) {
-			if (bmp == null)
+			if (bmp is null)
 				throw new ArgumentNullException(nameof(bmp));
-			if (tileset == null)
+			if (tileset is null)
 				throw new ArgumentNullException(nameof(tileset));
 
 			TileCutter cutter = new TileCutter(tileset.TileWidth, tileset.TileHeight);
@@ -86,11 +86,11 @@ namespace LibPixelPet {
 		}
 
 		public void AddBitmapIndexed(Bitmap bmp, Tileset tileset, PaletteSet palettes, TilemapFormat format, bool reduce) {
-			if (bmp == null)
+			if (bmp is null)
 				throw new ArgumentNullException(nameof(bmp));
-			if (tileset == null)
+			if (tileset is null)
 				throw new ArgumentNullException(nameof(tileset));
-			if (palettes == null)
+			if (palettes is null)
 				throw new ArgumentNullException(nameof(palettes));
 
 			TileCutter cutter = new TileCutter(tileset.TileWidth, tileset.TileHeight);
@@ -111,12 +111,12 @@ namespace LibPixelPet {
 						}
 					}
 				}
-				if (te == null && indexedCount > 0) {
+				if (te is null && indexedCount > 0) {
 					Tile indexedTile = indexedTiles[0].Clone();
 					TileEntry newEntry = tileset.AddTile(indexedTile);
 					te = new TileEntry(newEntry.TileNumber, newEntry.HFlip, newEntry.VFlip, indexedTile.PaletteNumber);
 				}
-				if (te == null) {
+				if (te is null) {
 					// Could not index tile.
 					te = default(TileEntry);
 				}
@@ -156,13 +156,13 @@ namespace LibPixelPet {
 			=> this.ToBitmapInternal(tileset, palettes, tilesPerRow, tilesPerColumn, true);
 
 		private Bitmap ToBitmapInternal(Tileset tileset, PaletteSet palettes, in int tilesPerRow, in int tilesPerColumn, bool indexed) {
-			if (tileset == null)
+			if (tileset is null)
 				throw new ArgumentNullException(nameof(tileset));
 			if (tilesPerRow <= 0)
 				throw new ArgumentOutOfRangeException(nameof(tilesPerRow));
 			if (tilesPerColumn <= 0)
 				throw new ArgumentOutOfRangeException(nameof(tilesPerColumn));
-			if (indexed && palettes == null)
+			if (indexed && palettes is null)
 				throw new ArgumentNullException(nameof(palettes));
 
 			ColorFormat bgra8888 = ColorFormat.ARGB8888;
@@ -289,7 +289,7 @@ namespace LibPixelPet {
 				return (r3 << bgra8888.RedShift) | (g3 << bgra8888.GreenShift) | (b3 << bgra8888.BlueShift) | (a3 << bgra8888.AlphaShift);
 			}
 			void GetColorFromPalette(Palette pal, int p, out int c, out ColorFormat fmt) {
-				if (pal != null && p < pal.Count) {
+				if (pal is not null && p < pal.Count) {
 					c = pal[p];
 					fmt = pal.Format;
 				} else {

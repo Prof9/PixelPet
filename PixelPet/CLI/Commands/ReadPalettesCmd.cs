@@ -54,7 +54,7 @@ namespace PixelPet.CLI.Commands {
 				}
 
 				// Create new palette if needed.
-				if (pal == null) {
+				if (pal is null) {
 					pal = new Palette(workbench.BitmapFormat, palSize);
 				}
 
@@ -80,7 +80,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			// Finish up remaining palette
-			if (pal != null) {
+			if (pal is not null) {
 				if (palNum >= 0) {
 					while (workbench.PaletteSet.ContainsPalette(palNum)) {
 						palNum++;
