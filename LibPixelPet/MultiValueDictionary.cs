@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace LibPixelPet {
 	/// <summary>
@@ -13,7 +12,7 @@ namespace LibPixelPet {
 		/// <summary>
 		/// A read-only list that is always empty, and therefore, Clear() does not need to throw an exception.
 		/// </summary>
-		private class ReadOnlyEmptyList : IList<TValue> {
+		private sealed class ReadOnlyEmptyList : IList<TValue> {
 			public TValue this[int index] {
 				get => throw new ArgumentOutOfRangeException(nameof(index));
 				set => throw new ArgumentOutOfRangeException(nameof(index));
@@ -44,7 +43,7 @@ namespace LibPixelPet {
 			}
 		}
 
-		private static ReadOnlyEmptyList EmptySet = new ReadOnlyEmptyList();
+		private static readonly ReadOnlyEmptyList EmptySet = new();
 
 		private Dictionary<TKey, IList<TValue>> BaseDictionary { get; }
 
@@ -52,7 +51,7 @@ namespace LibPixelPet {
 		/// Creates a new empty multi-valued dictionary.
 		/// </summary>
 		public MultiValueDictionary() {
-			this.BaseDictionary = new Dictionary<TKey, IList<TValue>>();
+			BaseDictionary = new Dictionary<TKey, IList<TValue>>();
 		}
 
 		/// <summary>
@@ -62,7 +61,7 @@ namespace LibPixelPet {
 		/// <returns>The values associated with the key, or an empty set if no values were found.</returns>
 		public IList<TValue> this[TKey key] {
 			get {
-				if (this.BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
+				if (BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
 					return list;
 				} else {
 					return MultiValueDictionary<TKey, TValue>.EmptySet;
@@ -78,58 +77,58 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="key">The key to add a value for.</param>
 		public void Add(in TKey key, in TValue value) {
-			if (this.BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
+			if (BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
 				list.Add(value);
 			} else {
-				this.BaseDictionary[key] = new List<TValue>() { value };
+				BaseDictionary[key] = new List<TValue>() { value };
 			}
 		}
 
 		public void Add(in KeyValuePair<TKey, TValue> item)
-			=> this.Add(item.Key, item.Value);
+			=> Add(item.Key, item.Value);
 
-		public ICollection<TKey> Keys => ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Keys;
+		public ICollection<TKey> Keys => ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Keys;
 
-		public ICollection<IList<TValue>> Values => ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Values;
+		public ICollection<IList<TValue>> Values => ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Values;
 
 		public int Count
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Count;
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Count;
 
 		public bool IsReadOnly
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).IsReadOnly;
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).IsReadOnly;
 
 		public void Add(TKey key, IList<TValue> value)
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Add(key, value);
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Add(key, value);
 
 		public void Add(KeyValuePair<TKey, IList<TValue>> item)
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Add(item);
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Add(item);
 
 		public void Clear()
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Clear();
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Clear();
 
 		public bool Contains(KeyValuePair<TKey, IList<TValue>> item)
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Contains(item);
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Contains(item);
 
 		public bool ContainsKey(TKey key)
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).ContainsKey(key);
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).ContainsKey(key);
 
 		public void CopyTo(KeyValuePair<TKey, IList<TValue>>[] array, int arrayIndex) {
-			((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).CopyTo(array, arrayIndex);
+			((IDictionary<TKey, IList<TValue>>)BaseDictionary).CopyTo(array, arrayIndex);
 		}
 
 		public IEnumerator<KeyValuePair<TKey, IList<TValue>>> GetEnumerator()
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).GetEnumerator();
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).GetEnumerator();
 
 		public bool Remove(TKey key)
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Remove(key);
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Remove(key);
 
 		public bool Remove(KeyValuePair<TKey, IList<TValue>> item)
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).Remove(item);
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Remove(item);
 
 		public bool TryGetValue(TKey key, out IList<TValue> value)
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).TryGetValue(key, out value);
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).TryGetValue(key, out value);
 
 		IEnumerator IEnumerable.GetEnumerator()
-			=> ((IDictionary<TKey, IList<TValue>>)this.BaseDictionary).GetEnumerator();
+			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).GetEnumerator();
 	}
 }

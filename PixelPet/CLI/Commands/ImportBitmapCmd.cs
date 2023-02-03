@@ -1,11 +1,9 @@
 ﻿using LibPixelPet;
 using SkiaSharp;
-using System.Buffers;
 using System.IO;
-using System.Text;
 
 namespace PixelPet.CLI.Commands {
-	internal class ImportBitmapCmd : CliCommand {
+	internal sealed class ImportBitmapCmd : CliCommand {
 		public ImportBitmapCmd()
 			: base("Import-Bitmap",
 				new Parameter(true, new ParameterValue("path")),
@@ -21,7 +19,7 @@ namespace PixelPet.CLI.Commands {
 				string fmtName = format.Values[0].ToString();
 				ColorFormat? fmt2 = ColorFormat.GetFormat(fmtName);
 				if (fmt2 is null) {
-					logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
+					logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);
 					return false;
 				} else {
 					fmt = (ColorFormat)fmt2;
@@ -30,7 +28,7 @@ namespace PixelPet.CLI.Commands {
 
 			try {
 				if (!File.Exists(path)) {
-					logger?.Log("File not found: " + Path.GetFileName(path), LogLevel.Error);
+					logger?.Log($"File not found: {Path.GetFileName(path)}", LogLevel.Error);
 					return false;
 				}
 				using (SKBitmap bmp = SKBitmap.Decode(path)) {
@@ -42,12 +40,14 @@ namespace PixelPet.CLI.Commands {
 					}
 				}
 				workbench.BitmapFormat = fmt;
+#pragma warning disable CA1031 // Do not catch general exception types
 			} catch {
-				logger?.Log("Could not import " + Path.GetFileName(path), LogLevel.Error);
+#pragma warning restore CA1031 // Do not catch general exception types
+				logger?.Log($"Could not import {Path.GetFileName(path)}", LogLevel.Error);
 				return false;
 			}
 
-			logger?.Log("Imported bitmap " + Path.GetFileName(path) + ".", LogLevel.Information);
+			logger?.Log($"Imported bitmap {Path.GetFileName(path)}", LogLevel.Information);
 			return true;
 		}
 	}

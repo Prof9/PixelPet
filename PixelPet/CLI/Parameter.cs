@@ -12,32 +12,32 @@ namespace PixelPet.CLI {
 		public bool IsPresent { get; set; }
 
 		public bool IsNamed
-			=> this.LongName is not null || this.ShortName is not null;
+			=> LongName is not null || ShortName is not null;
 		public string PrimaryName
-			=> this.LongName ?? this.ShortName;
+			=> LongName ?? ShortName;
 		public bool HasAllValues
-			=> this.Values.All(v => v.HasValue);
+			=> Values.All(v => v.HasValue);
 		public bool IsLoaded
-			=> this.IsPresent && this.HasAllValues;
+			=> IsPresent && HasAllValues;
 
 		public override string ToString() {
-			StringBuilder builder = new StringBuilder();
+			StringBuilder builder = new();
 
-			if (this.LongName is not null) {
-				builder.Append("--" + this.LongName + ' ');
-			} else if (this.ShortName is not null) {
-				builder.Append('-' + this.ShortName + ' ');
+			if (LongName is not null) {
+				builder.Append("--" + LongName + ' ');
+			} else if (ShortName is not null) {
+				builder.Append('-' + ShortName + ' ');
 			}
 
-			if (this.Values.Any()) {
-				builder.Append(this.IsRequired ? '<' : '[');
+			if (Values.Any()) {
+				builder.Append(IsRequired ? '<' : '[');
 
-				foreach (ParameterValue val in this.Values) {
+				foreach (ParameterValue val in Values) {
 					builder.Append(val.Name + ' ');
 				}
 				builder.Length--;
 
-				builder.Append(this.IsRequired ? '>' : ']');
+				builder.Append(IsRequired ? '>' : ']');
 			}
 
 			return builder.ToString();
@@ -46,6 +46,8 @@ namespace PixelPet.CLI {
 		public Parameter(bool required, params ParameterValue[] values)
 			: this(null, null, required, values) { }
 		public Parameter(in string longName, in string shortName, in bool required, params ParameterValue[] values) {
+			if (values is null)
+				throw new ArgumentNullException(nameof(values));
 			if (longName is null && shortName is null && values.Length == 0)
 				throw new ArgumentException("Parameter cannot be unnamed and also have no values.");
 			if (longName is null && shortName is null && !required)
@@ -58,13 +60,11 @@ namespace PixelPet.CLI {
 				throw new ArgumentException("Short name cannot contain white-space characters.", nameof(shortName));
 			if (shortName?[0] == '-')
 				throw new ArgumentException("Short name cannot start with a dash.");
-			if (values is null)
-				throw new ArgumentNullException(nameof(values));
 
-			this.LongName = longName;
-			this.ShortName = shortName;
-			this.IsRequired = required;
-			this.Values = Array.AsReadOnly(values);
+			LongName = longName;
+			ShortName = shortName;
+			IsRequired = required;
+			Values = Array.AsReadOnly(values);
 		}
 	}
 }

@@ -50,9 +50,9 @@ namespace LibPixelPet {
 			if (tileHeight < 1)
 				throw new ArgumentOutOfRangeException(nameof(tileHeight));
 
-			this.TileWidth = tileWidth;
-			this.TileHeight = tileHeight;
-			this.EmptyColor = emptyColor;
+			TileWidth = tileWidth;
+			TileHeight = tileHeight;
+			EmptyColor = emptyColor;
 		}
 
 		/// <summary>
@@ -64,10 +64,10 @@ namespace LibPixelPet {
 			if (bmp is null)
 				throw new ArgumentNullException(nameof(bmp));
 
-			int hTileCount = (bmp.Width + this.TileWidth - 1) / this.TileWidth;
-			int vTileCount = (bmp.Height + this.TileHeight - 1) / this.TileHeight;
+			int hTileCount = (bmp.Width + TileWidth - 1) / TileWidth;
+			int vTileCount = (bmp.Height + TileHeight - 1) / TileHeight;
 
-			return this.CutTiles(bmp, 0, 0, hTileCount, vTileCount);
+			return CutTiles(bmp, 0, 0, hTileCount, vTileCount);
 		}
 
 		/// <summary>
@@ -95,18 +95,21 @@ namespace LibPixelPet {
 		/// <param name="ty">The row of the tile.</param>
 		/// <returns>The tile.</returns>
 		public Tile CutTile(Bitmap bmp, in int tx, in int ty) {
-			Tile tile = new Tile(this.TileWidth, this.TileHeight, tx * this.TileWidth, ty * this.TileHeight);
+			if (bmp is null)
+				throw new ArgumentNullException(nameof(bmp));
+
+			Tile tile = new(TileWidth, TileHeight, tx * TileWidth, ty * TileHeight);
 			int[] pixels = new int[tile.Count];
 
 			int p = 0;
-			for (int y = 0; y < this.TileHeight; y++) {
-				for (int x = 0; x < this.TileWidth; x++) {
-					int px = tx * this.TileWidth + x;
-					int py = ty * this.TileHeight + y;
+			for (int y = 0; y < TileHeight; y++) {
+				for (int x = 0; x < TileWidth; x++) {
+					int px = tx * TileWidth + x;
+					int py = ty * TileHeight + y;
 
 					int pixel;
 					if (px < 0 || py < 0 || px >= bmp.Width || py >= bmp.Height) {
-						pixel = this.EmptyColor.ToArgb();
+						pixel = EmptyColor.ToArgb();
 					} else {
 						pixel = bmp[px, py];
 					}

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 
 namespace LibPixelPet {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
 	public class Palette : IEnumerable<int>, ICloneable {
 		/// <summary>
 		/// Gets the color values currently in the palette.
@@ -19,7 +18,7 @@ namespace LibPixelPet {
 		/// <summary>
 		/// Gets the number of colors currently in the palette.
 		/// </summary>
-		public int Count => this.Colors.Count;
+		public int Count => Colors.Count;
 		/// <summary>
 		/// Gets or sets the color format used by the palette.
 		/// </summary>
@@ -47,30 +46,30 @@ namespace LibPixelPet {
 				initialCapacity = 256;
 			}
 
-			this.Colors = new List<int>(initialCapacity);
-			this.ColorIndexMap = new Dictionary<int, int>(initialCapacity);
-			this.Format = format;
-			this.MaximumSize = maxSize;
+			Colors = new List<int>(initialCapacity);
+			ColorIndexMap = new Dictionary<int, int>(initialCapacity);
+			Format = format;
+			MaximumSize = maxSize;
 		}
 
 		public int this[int index] {
 			get {
-				if (index < 0 || index >= this.Count)
+				if (index < 0 || index >= Count)
 					throw new ArgumentOutOfRangeException(nameof(index));
 
-				return this.Colors[index];
+				return Colors[index];
 			}
 			set {
-				if (index < 0 || index >= this.Count)
+				if (index < 0 || index >= Count)
 					throw new ArgumentOutOfRangeException(nameof(index));
 
 				// Remove old mapping, add new one.
-				this.ColorIndexMap.Remove(this.Colors[index]);
-				if (!this.ColorIndexMap.ContainsKey(value)) {
-					this.ColorIndexMap[value] = index;
+				ColorIndexMap.Remove(Colors[index]);
+				if (!ColorIndexMap.ContainsKey(value)) {
+					ColorIndexMap[value] = index;
 				}
 
-				this.Colors[index] = value;
+				Colors[index] = value;
 			}
 		}
 
@@ -78,8 +77,8 @@ namespace LibPixelPet {
 		/// Clears the palette.
 		/// </summary>
 		public void Clear() {
-			this.Colors.Clear();
-			this.ColorIndexMap.Clear();
+			Colors.Clear();
+			ColorIndexMap.Clear();
 		}
 
 		/// <summary>
@@ -87,12 +86,12 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="color">The color value to add.</param>
 		public void Add(int color) {
-			if (this.MaximumSize >= 0 && this.Colors.Count >= this.MaximumSize)
+			if (MaximumSize >= 0 && Colors.Count >= MaximumSize)
 				throw new InvalidOperationException("The maximum palette size has been reached.");
 
-			this.Colors.Add(color);
-			if (!this.ColorIndexMap.ContainsKey(color)) {
-				this.ColorIndexMap[color] = this.Colors.Count - 1;
+			Colors.Add(color);
+			if (!ColorIndexMap.ContainsKey(color)) {
+				ColorIndexMap[color] = Colors.Count - 1;
 			}
 		}
 
@@ -102,7 +101,7 @@ namespace LibPixelPet {
 		/// <param name="color">The color value to add.</param>
 		/// <param name="format">The color format that the color value is currently in.</param>
 		public void Add(int color, in ColorFormat format)
-			=> this.Add(this.Format.Convert(color, format));
+			=> Add(Format.Convert(color, format));
 
 		/// <summary>
 		/// Finds the index of the specified color in this palette.
@@ -111,7 +110,7 @@ namespace LibPixelPet {
 		/// <param name="from">The color format that the color value is currently in.</param>
 		/// <returns>The index of the color, or -1 if it was not found.</returns>
 		public int IndexOfColor(in int color, in ColorFormat from) {
-			return this.IndexOfColor(this.Format.Convert(color, from));
+			return IndexOfColor(Format.Convert(color, from));
 		}
 
 		/// <summary>
@@ -120,7 +119,7 @@ namespace LibPixelPet {
 		/// <param name="color">The color value to find.</param>
 		/// <returns>The index of the color, or -1 if it was not found.</returns>
 		public int IndexOfColor(in int color) {
-			if (this.ColorIndexMap.TryGetValue(color, out int index)) {
+			if (ColorIndexMap.TryGetValue(color, out int index)) {
 				return index;
 			} else {
 				return -1;
@@ -128,12 +127,12 @@ namespace LibPixelPet {
 		}
 
 		public IEnumerator<int> GetEnumerator() 
-			=> ((IEnumerable<int>)this.Colors).GetEnumerator();
+			=> ((IEnumerable<int>)Colors).GetEnumerator();
 		IEnumerator IEnumerable.GetEnumerator() 
-			=> ((IEnumerable<int>)this.Colors).GetEnumerator();
+			=> ((IEnumerable<int>)Colors).GetEnumerator();
 
 		public Palette Clone() {
-			Palette clone = new Palette(this.Format, this.MaximumSize);
+			Palette clone = new(Format, MaximumSize);
 
 			foreach (int c in this) {
 				clone.Add(c);
@@ -141,6 +140,6 @@ namespace LibPixelPet {
 
 			return clone;
 		}
-		object ICloneable.Clone() => this.Clone();
+		object ICloneable.Clone() => Clone();
 	}
 }

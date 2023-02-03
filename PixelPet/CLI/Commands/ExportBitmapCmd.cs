@@ -4,7 +4,7 @@ using System;
 using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal class ExportBitmapCmd : CliCommand {
+	internal sealed class ExportBitmapCmd : CliCommand {
 		public ExportBitmapCmd()
 			: base ("Export-Bitmap",
 				new Parameter(true, new ParameterValue("path")),
@@ -12,7 +12,7 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string path = this.FindUnnamedParameter(0).Values[0].ToString();
+			string path = FindUnnamedParameter(0).Values[0].ToString();
 			Parameter format = FindNamedParameter("--format");
 
 			ColorFormat fmt = ColorFormat.ARGB8888;
@@ -20,7 +20,7 @@ namespace PixelPet.CLI.Commands {
 				string fmtName = format.Values[0].ToString();
 				ColorFormat? fmt2 = ColorFormat.GetFormat(fmtName);
 				if (fmt2 is null) {
-					logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
+					logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);
 					return false;
 				} else {
 					fmt = (ColorFormat)fmt2;
@@ -46,19 +46,21 @@ namespace PixelPet.CLI.Commands {
 				bmp.Pixels = pixels;
 
 				Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
-				using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write)) {
-					if (!bmp.Encode(fs, SKEncodedImageFormat.Png, 100)) {
-						throw new Exception("Could not encode bitmap");
-					}
+				using FileStream fs = new(path, FileMode.Create, FileAccess.Write);
+				if (!bmp.Encode(fs, SKEncodedImageFormat.Png, 100)) {
+					throw new IOException("Could not encode bitmap");
 				}
-			} catch (Exception) {
-				logger?.Log("Could not save bitmap " + Path.GetFileName(path) + ".", LogLevel.Error);
+#pragma warning disable CA1031 // Do not catch general exception types
+			} catch {
+#pragma warning restore CA1031 // Do not catch general exception types
+				logger?.Log($"Could not save bitmap {Path.GetFileName(path)}", LogLevel.Error);
 				return false;
 			} finally {
-				bmp?.Dispose();
+				bmp.Dispose();
 			}
 
-			logger?.Log("Exported bitmap " + Path.GetFileName(path) + (setAlpha ? " (added alpha)" : "") + '.');
+			string addedAlphaStr = setAlpha ? " (added alpha)" : "";
+			logger?.Log($"Exported bitmap {Path.GetFileName(path)}{addedAlphaStr}.");
 			return true;
 		}
 	}

@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class DeserializeTilesetCmd : CliCommand {
+	internal sealed class DeserializeTilesetCmd : CliCommand {
 		public DeserializeTilesetCmd()
 			: base("Deserialize-Tileset",
 				new Parameter(true, new ParameterValue("tilemap-format")),
@@ -21,8 +21,8 @@ namespace PixelPet.CLI.Commands {
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 
-			if (!(TilemapFormat.GetFormat(mapFmtName) is TilemapFormat mapFmt)) {
-				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
+			if (TilemapFormat.GetFormat(mapFmtName) is not TilemapFormat mapFmt) {
+				logger?.Log($"Unknown tilemap format {mapFmtName}.", LogLevel.Error);
 				return false;
 			}
 			if (tc < 0) {
@@ -44,8 +44,7 @@ namespace PixelPet.CLI.Commands {
 
 			if (workbench.Tileset.Count > 0) {
 				if (ts.IsPresent && (tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
-					logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
-						workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
+					logger?.Log($"Specified tile size {tw}x{th} does not match tile size {workbench.Tileset.TileWidth}x{workbench.Tileset.TileHeight} of nonempty tileset.", LogLevel.Error);
 					return false;
 				}
 			}
@@ -65,14 +64,14 @@ namespace PixelPet.CLI.Commands {
 
 			int[] pixels = new int[tw * th];
 			int added = 0;
-			using (PixelReader pixelReader = new PixelReader(workbench.Stream, mapFmt.ColorFormat, true)) {
+			using (PixelReader pixelReader = new(workbench.Stream, mapFmt.ColorFormat, true)) {
 				while (tc-- > 0) {
 					if (pixelReader.ReadPixels(pixels, 0, pixels.Length) != pixels.Length) {
 						break;
 					}
 
 					// Add tile to the tileset.
-					Tile tile = new Tile(tw, th);
+					Tile tile = new(tw, th);
 					tile.SetAllPixels(pixels);
 					workbench.Tileset.AddTile(tile);
 					added++;
@@ -82,7 +81,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Tileset.ColorFormat = mapFmt.ColorFormat;
 			workbench.Tileset.IsIndexed = mapFmt.IsIndexed;
 
-			logger?.Log("Deserialized " + added + " tiles.", LogLevel.Information);
+			logger?.Log($"Deserialized {added} tiles.", LogLevel.Information);
 			return true;
 		}
 	}

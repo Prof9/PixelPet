@@ -7,12 +7,12 @@ namespace PixelPet.CLI {
 		public string DefaultValue { get; }
 		public string CurrentValue { get; private set; }
 
-		public bool HasDefaultValue => this.DefaultValue is not null;
-		public bool HasCurrentValue => this.CurrentValue is not null;
-		public bool HasValue => this.HasCurrentValue || this.HasDefaultValue;
+		public bool HasDefaultValue => DefaultValue is not null;
+		public bool HasCurrentValue => CurrentValue is not null;
+		public bool HasValue => HasCurrentValue || HasDefaultValue;
 		public string Value {
-			get => this.CurrentValue ?? this.DefaultValue;
-			set => this.CurrentValue = value;
+			get => CurrentValue ?? DefaultValue;
+			set => CurrentValue = value;
 		}
 
 		public ParameterValue(in string name)
@@ -23,29 +23,29 @@ namespace PixelPet.CLI {
 			if (string.IsNullOrWhiteSpace(name))
 				throw new ArgumentException("Name cannot consist of only white-space characters.", nameof(name));
 
-			this.Name = name;
-			this.DefaultValue = defaultValue;
-			this.CurrentValue = null;
+			Name = name;
+			DefaultValue = defaultValue;
+			CurrentValue = null;
 		}
 
 		public void Clear()
-			=> this.CurrentValue = null;
+			=> CurrentValue = null;
 
 		public int ToInt32() {
-			if (this.Value is not null && NumberParser.TryParseInt32(this.Value, out int r)) {
+			if (Value is not null && NumberParser.TryParseInt32(Value, out int r)) {
 				return r;
 			} else {
 				return 0;
 			}
 		}
 		public long ToInt64() {
-			if (NumberParser.TryParseInt64(this.Value, out long r)) {
+			if (NumberParser.TryParseInt64(Value, out long r)) {
 				return r;
 			} else {
 				return 0;
 			}
 		}
 		public override string ToString()
-			=> this.Value ?? "";
+			=> Value ?? "";
 	}
 }

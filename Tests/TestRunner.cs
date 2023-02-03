@@ -1,10 +1,11 @@
-﻿
-using PixelPet;
+﻿using PixelPet;
 using PixelPet.CLI;
+using System;
+using System.IO;
 using Tests.Commands;
 
 namespace Tests {
-	internal class TestRunner {
+	internal sealed class TestRunner {
 		/// <summary>
 		/// Gets the test configuration.
 		/// </summary>
@@ -33,49 +34,51 @@ namespace Tests {
 		/// <summary>
 		/// Gets the CLI being run.
 		/// </summary>
-		private Cli Cli { get; }
+		private CommandRunner Cli { get; }
 
 		/// <summary>
 		/// Creates a new test runner with the given configuration.
 		/// </summary>
 		/// <param name="testConfig">Test configuration.</param>
 		public TestRunner(TestConfig testConfig) {
-			this.Config = testConfig;
-			this.Passed = false;
+			Config = testConfig;
+			Passed = false;
 
-			this.CapturedConsoleCombined = new StringWriter();
-			this.CapturedConsoleOut = new PassThroughBufferTextWriter(this.CapturedConsoleCombined);
-			this.CapturedConsoleError = new PassThroughBufferTextWriter(this.CapturedConsoleCombined);
+			CapturedConsoleCombined = new StringWriter();
+			CapturedConsoleOut = new PassThroughBufferTextWriter(CapturedConsoleCombined);
+			CapturedConsoleError = new PassThroughBufferTextWriter(CapturedConsoleCombined);
 
-			this.Workbench = new();
-			this.Cli = new(this.Workbench) {
-				ConsoleOut = this.CapturedConsoleOut,
-				ConsoleError = this.CapturedConsoleError,
+			Workbench = new();
+			Cli = new(Workbench) {
+				ConsoleOut = CapturedConsoleOut,
+				ConsoleError = CapturedConsoleError,
 			};
-			this.Cli.RegisterCommand(new CheckFileEqualCmd());
+			Cli.RegisterCommand(new CheckFileEqualCmd());
 		}
 
 		/// <summary>
-		/// Runs the 
+		/// Runs the test.
 		/// </summary>
 		public void Run() {
-			this.Passed = false;
+			Passed = false;
 
 			// Run test script
-			Directory.SetCurrentDirectory(this.Config.Directory); ///TODO: Not thread safe
+			Directory.SetCurrentDirectory(Config.Directory); ///TODO: Not thread safe
 			try {
-				this.Cli.Run(new string[] { "run-script", Config.ScriptToRun });
+				Cli.Run(new string[] { "run-script", Config.ScriptToRun });
 
-				if (this.Cli.MaximumLogLevel < LogLevel.Error) {
-					this.Passed = true;
+				if (Cli.MaximumLogLevel < LogLevel.Error) {
+					Passed = true;
 				}
+#pragma warning disable CA1031 // Do not catch general exception types
 			} catch (Exception ex) {
-				this.CapturedConsoleError.WriteLine(ex.ToString());
+#pragma warning restore CA1031 // Do not catch general exception types
+				CapturedConsoleError.WriteLine(ex.ToString());
 			}
 
-			this.CapturedConsoleOut.Flush();
-			this.CapturedConsoleError.Flush();
-			this.CapturedConsoleCombined.Flush();
+			CapturedConsoleOut.Flush();
+			CapturedConsoleError.Flush();
+			CapturedConsoleCombined.Flush();
 		}
 	}
 }

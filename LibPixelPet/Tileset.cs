@@ -15,12 +15,12 @@ namespace LibPixelPet {
 		/// The width can only be modified if the tileset is empty.
 		/// </summary>
 		public int TileWidth {
-			get => this.tileWidth;
+			get => tileWidth;
 			set {
-				if (this.Tiles.Count > 0 && this.tileWidth != value) {
+				if (Tiles.Count > 0 && tileWidth != value) {
 					throw new InvalidOperationException("Cannot change tile width for a nonempty tileset");
 				}
-				this.tileWidth = value;
+				tileWidth = value;
 			}
 		}
 		/// <summary>
@@ -28,18 +28,18 @@ namespace LibPixelPet {
 		/// The height can only be modified if the tileset is empty.
 		/// </summary>
 		public int TileHeight {
-			get => this.tileHeight;
+			get => tileHeight;
 			set {
-				if (this.Tiles.Count > 0 && this.tileHeight != value) {
+				if (Tiles.Count > 0 && tileHeight != value) {
 					throw new InvalidOperationException("Cannot change tile height for a nonempty tileset");
 				}
-				this.tileHeight = value;
+				tileHeight = value;
 			}
 		}
 		/// <summary>
 		/// Gets the number of tiles in the tileset.
 		/// </summary>
-		public int Count => this.Tiles.Count;
+		public int Count => Tiles.Count;
 		/// <summary>
 		/// Gets or sets the color format used for tiles in the tileset.
 		/// </summary>
@@ -62,19 +62,19 @@ namespace LibPixelPet {
 
 			this.tileWidth = tileWidth;
 			this.tileHeight = tileHeight;
-			this.ColorFormat = ColorFormat.ARGB8888;
-			this.IsIndexed = false;
+			ColorFormat = ColorFormat.ARGB8888;
+			IsIndexed = false;
 
-			this.Tiles = new List<Tile>();
-			this.TileDictionary = new MultiValueDictionary<int, TileEntry>();
+			Tiles = new List<Tile>();
+			TileDictionary = new MultiValueDictionary<int, TileEntry>();
 		}
 
 		public Tile this[int index] {
 			get {
-				if (index < 0 || index >= this.Count)
+				if (index < 0 || index >= Count)
 					throw new ArgumentOutOfRangeException(nameof(index));
 
-				return this.Tiles[index];
+				return Tiles[index];
 			}
 		}
 
@@ -82,8 +82,8 @@ namespace LibPixelPet {
 		/// Clears the tileset.
 		/// </summary>
 		public void Clear() {
-			this.Tiles.Clear();
-			this.TileDictionary.Clear();
+			Tiles.Clear();
+			TileDictionary.Clear();
 		}
 
 		/// <summary>
@@ -92,21 +92,24 @@ namespace LibPixelPet {
 		/// <param name="tile">The tile to add.</param>
 		/// <returns>The created tile entry for the tile.</returns>
 		public TileEntry AddTile(Tile tile) {
-			int tileNum = this.Count;
-			this.Tiles.Add(tile);
+			if (tile is null)
+				throw new ArgumentNullException(nameof(tile));
 
-			TileEntry entry = this.AddTileEntry(tile, tileNum, false, false);
-			this.AddTileEntry(tile, tileNum, true,  false);
-			this.AddTileEntry(tile, tileNum, false, true);
-			this.AddTileEntry(tile, tileNum, true,  true);
+			int tileNum = Count;
+			Tiles.Add(tile);
+
+			TileEntry entry = AddTileEntry(tile, tileNum, false, false);
+			AddTileEntry(tile, tileNum, true,  false);
+			AddTileEntry(tile, tileNum, false, true);
+			AddTileEntry(tile, tileNum, true,  true);
 
 			return entry;
 		}
 		private TileEntry AddTileEntry(Tile tile, int tileNumber, bool hFlip, bool vFlip) {
 			int hash = tile.GetHashCode(hFlip, vFlip);
-			TileEntry entry = new TileEntry(tileNumber, hFlip, vFlip);
+			TileEntry entry = new(tileNumber, hFlip, vFlip);
 
-			this.TileDictionary.Add(hash, entry);
+			TileDictionary.Add(hash, entry);
 			return entry;
 		}
 
@@ -119,12 +122,15 @@ namespace LibPixelPet {
 		/// <param name="entry">The found tile entry, or null if no suitable tile entry was found.</param>
 		/// <returns>true if a tile entry was found; otherwise, false.</returns>
 		public bool TryFindTileEntry(in Tile tile, bool canHFlip, bool canVFlip, out TileEntry entry) {
-			foreach (TileEntry candidate in this.TileDictionary[tile.GetHashCode()]) {
+			if (tile is null)
+				throw new ArgumentNullException(nameof(tile));
+
+			foreach (TileEntry candidate in TileDictionary[tile.GetHashCode()]) {
 				if ((candidate.HFlip && !canHFlip) || (candidate.VFlip && !canVFlip)) {
 					continue;
 				}
 
-				Tile candidateTile = this.Tiles[candidate.TileNumber];
+				Tile candidateTile = Tiles[candidate.TileNumber];
 				if (tile.Equals(candidateTile, candidate.HFlip, candidate.VFlip)) {
 					entry = candidate;
 					return true;
@@ -134,8 +140,8 @@ namespace LibPixelPet {
 			return false;
 		}
 
-		public IEnumerator<Tile> GetEnumerator() => this.Tiles.GetEnumerator();
-		IEnumerator IEnumerable.GetEnumerator() => this.Tiles.GetEnumerator();
+		public IEnumerator<Tile> GetEnumerator() => Tiles.GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => Tiles.GetEnumerator();
 
 		/// <summary>
 		/// Converts this tileset to a bitmap.
@@ -147,27 +153,27 @@ namespace LibPixelPet {
 			if (maxTilesPerRow < 0)
 				throw new ArgumentOutOfRangeException(nameof(maxTilesPerRow));
 
-			int hTileCount = this.Count;
+			int hTileCount = Count;
 			if (maxTilesPerRow > 0 && hTileCount > maxTilesPerRow) {
 				hTileCount = maxTilesPerRow;
 			}
-			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
+			int vTileCount = (Count + hTileCount - 1) / hTileCount;
 
-			Bitmap bmp = new Bitmap(this.TileWidth * hTileCount, this.TileHeight * vTileCount);
+			Bitmap bmp = new(TileWidth * hTileCount, TileHeight * vTileCount);
 
 			// Draw all tiles in the tileset.
-			for (int t = 0; t < this.Count; t++) {
+			for (int t = 0; t < Count; t++) {
 				Tile tile = this[t];
 				int ti = t % hTileCount;
 				int tj = t / hTileCount;
 
-				for (int ty = 0; ty < this.TileHeight; ty++) {
-					for (int tx = 0; tx < this.TileWidth; tx++) {
-						int px = ti * this.TileWidth + tx;
-						int py = tj * this.TileHeight + ty;
+				for (int ty = 0; ty < TileHeight; ty++) {
+					for (int tx = 0; tx < TileWidth; tx++) {
+						int px = ti * TileWidth + tx;
+						int py = tj * TileHeight + ty;
 
 						int c = tile[tx, ty];
-						bmp[px, py] = targetFmt.Convert(c, this.ColorFormat);
+						bmp[px, py] = targetFmt.Convert(c, ColorFormat);
 					}
 				}
 			}
@@ -188,16 +194,16 @@ namespace LibPixelPet {
 			if (palettes is null)
 				throw new ArgumentNullException(nameof(palettes));
 
-			int hTileCount = this.Count;
+			int hTileCount = Count;
 			if (maxTilesPerRow > 0 && hTileCount > maxTilesPerRow) {
 				hTileCount = maxTilesPerRow;
 			}
-			int vTileCount = (this.Count + hTileCount - 1) / hTileCount;
+			int vTileCount = (Count + hTileCount - 1) / hTileCount;
 
-			Bitmap bmp = new Bitmap(this.TileWidth * hTileCount, this.TileHeight * vTileCount);
+			Bitmap bmp = new(TileWidth * hTileCount, TileHeight * vTileCount);
 				
 			// Draw all tiles in the tileset.
-			for (int t = 0; t < this.Count; t++) {
+			for (int t = 0; t < Count; t++) {
 				Tile tile = this[t];
 				int ti = t % hTileCount;
 				int tj = t / hTileCount;
@@ -208,16 +214,16 @@ namespace LibPixelPet {
 					pal = palettes[0].Palette;
 				}
 
-				for (int ty = 0; ty < this.TileHeight; ty++) {
-					for (int tx = 0; tx < this.TileWidth; tx++) {
-						int px = ti * this.TileWidth + tx;
-						int py = tj * this.TileHeight + ty;
+				for (int ty = 0; ty < TileHeight; ty++) {
+					for (int tx = 0; tx < TileWidth; tx++) {
+						int px = ti * TileWidth + tx;
+						int py = tj * TileHeight + ty;
 
 						int c = tile[tx, ty];
 						if (pal is not null && c < pal.Count) {
 							c = targetFmt.Convert(pal[c], pal.Format);
 						} else {
-							c = targetFmt.Convert(c, this.ColorFormat);
+							c = targetFmt.Convert(c, ColorFormat);
 						}
 						bmp[px, py] = c;
 					}
@@ -228,19 +234,19 @@ namespace LibPixelPet {
 		}
 
 		public Tileset Clone() {
-			Tileset clone = new Tileset(this.TileWidth, this.TileHeight);
-			foreach (Tile tile in this.Tiles) {
+			Tileset clone = new(TileWidth, TileHeight);
+			foreach (Tile tile in Tiles) {
 				clone.Tiles.Add(tile.Clone());
 			}
-			foreach (KeyValuePair<int, IList<TileEntry>> kvp in this.TileDictionary) {
+			foreach (KeyValuePair<int, IList<TileEntry>> kvp in TileDictionary) {
 				foreach (TileEntry te in kvp.Value) {
 					clone.TileDictionary.Add(kvp.Key, te);
 				}
 			}
-			clone.ColorFormat = this.ColorFormat;
-			clone.IsIndexed = this.IsIndexed;
+			clone.ColorFormat = ColorFormat;
+			clone.IsIndexed = IsIndexed;
 			return clone;
 		}
-		object ICloneable.Clone() => this.Clone();
+		object ICloneable.Clone() => Clone();
 	}
 }

@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class PadTilesetCmd : CliCommand {
+	internal sealed class PadTilesetCmd : CliCommand {
 		public PadTilesetCmd()
 			: base("Pad-Tileset",
 				new Parameter(true, new ParameterValue("width")),
@@ -31,8 +31,7 @@ namespace PixelPet.CLI.Commands {
 			}
 			if (ts.IsPresent && workbench.Tileset.Count > 0 &&
 				(tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
-				logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
-					workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
+				logger?.Log($"Specified tile size {tw}x{th} does not match tile size {workbench.Tileset.TileWidth}x{workbench.Tileset.TileHeight} of nonempty tileset.", LogLevel.Error);
 				return false;
 			}
 
@@ -54,13 +53,13 @@ namespace PixelPet.CLI.Commands {
 
 			int addedTiles = 0;
 			while (workbench.Tileset.Count < width) {
-				Tile tile = new Tile(tw, th);
+				Tile tile = new(tw, th);
 				tile.SetAllPixels(pixels);
 				workbench.Tileset.AddTile(tile);
 				addedTiles++;
 			}
 
-			logger?.Log("Padded tileset to width " + width + " (added " + addedTiles + " tiles).", LogLevel.Information);
+			logger?.Log($"Padded tileset to width {width} (added {addedTiles} tiles).", LogLevel.Information);
 			return true;
 		}
 	}

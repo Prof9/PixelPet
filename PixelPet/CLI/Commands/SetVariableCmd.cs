@@ -1,7 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI.Commands {
-	internal class SetVariableCmd : CliCommand {
+	internal sealed partial class SetVariableCmd : CliCommand {
+		[GeneratedRegex("^[\\w]+$")]
+		private static partial Regex VariableNameRegex();
+		[GeneratedRegex("^[^<>]+$")]
+		private static partial Regex VariableValueRegex();
+
 		public SetVariableCmd()
 			: base("Set-Variable",
 				new Parameter(true, new ParameterValue("name")),
@@ -12,16 +17,16 @@ namespace PixelPet.CLI.Commands {
 			string name  = FindUnnamedParameter(0).Values[0].ToString();
 			string value = FindUnnamedParameter(1).Values[0].ToString();
 
-			if (!Regex.IsMatch(name, @"^[\w]+$")) {
+			if (!VariableNameRegex().IsMatch(name)) {
 				logger.Log($"Variable name may only contains alphanumerical characters and underscores; got: {name}", LogLevel.Error);
 				return false;
 			}
-			if (!Regex.IsMatch(value, @"^[^<>]+$")) {
+			if (!VariableValueRegex().IsMatch(value)) {
 				logger.Log($"Variable value may not contain <>; got: {value}", LogLevel.Error);
 				return false;
 			}
 
-			this.CLI.Variables[name] = value;
+			CLI.Variables[name] = value;
 
 			logger?.Log($"{name} := {value}", LogLevel.VerboseInformation);
 			return true;

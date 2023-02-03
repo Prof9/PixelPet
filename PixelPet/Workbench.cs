@@ -14,11 +14,11 @@ namespace PixelPet {
 		public ColorFormat BitmapFormat { get; set; }
 
 		public Workbench() {
-			this.PaletteSet = new PaletteSet();
-			this.Bitmap = new Bitmap(0, 0);
-			this.Stream = new MemoryStream();
-			this.Tileset = new Tileset(8, 8);
-			this.Tilemap = new Tilemap(TilemapFormat.GBA4BPP);
+			PaletteSet = new();
+			Bitmap = new(0, 0);
+			Stream = new();
+			Tileset = new(8, 8);
+			Tilemap = new(TilemapFormat.GBA4BPP);
 		}
 	}
 }

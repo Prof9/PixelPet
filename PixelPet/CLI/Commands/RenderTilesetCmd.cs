@@ -1,8 +1,7 @@
 ﻿using LibPixelPet;
-using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class RenderTilesetCmd : CliCommand {
+	internal sealed class RenderTilesetCmd : CliCommand {
 		public RenderTilesetCmd()
 			: base("Render-Tileset",
 				new Parameter("tiles-per-row", "tw", false, new ParameterValue("count", "32")),
@@ -18,7 +17,7 @@ namespace PixelPet.CLI.Commands {
 				string fmtName = format.Values[0].ToString();
 				ColorFormat? fmt2 = ColorFormat.GetFormat(fmtName);
 				if (fmt2 is null) { 
-					logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
+					logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);
 					return false;
 				} else {
 					fmt = (ColorFormat)fmt2;

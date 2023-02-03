@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace LibPixelPet {
-	public static class NumberParser {
+	public static partial class NumberParser {
 		private static readonly IList<char> posSignChars = new char[] { '+' };
 		private static readonly IList<char> negSignChars = new char[] { '−', '-' };
+
+		[GeneratedRegex("[\\s-]")]
+		private static partial Regex HexTrimRegex();
 
 		private record struct NumberInfo(int ParseStart, int ParseEnd, int Radix, int Sign) {
 			public int ParseLength => ParseEnd - ParseStart;
@@ -16,12 +19,11 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="number">A string representing the number.</param>
 		/// <returns>NumberInfo containing the sign, radix and substring boundaries. If the radix is -1, the radix could not be determined.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
 		private static NumberInfo GetNumberInfo(in string number) {
 			if (number is null)
 				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
 
-			NumberInfo info = new NumberInfo(0, number.Length, 10, 1);
+			NumberInfo info = new(0, number.Length, 10, 1);
 			if (number.Length <= 0) {
 				return info;
 			}
@@ -35,13 +37,13 @@ namespace LibPixelPet {
 			}
 
 			char pos0 = char.ToUpperInvariant(number[info.ParseStart]);
-			char? pos1 = (info.ParseEnd - info.ParseStart) > 1 ? (char?)char.ToUpperInvariant(number[info.ParseStart + 1]) : (char?)null;
+			char? pos1 = info.ParseEnd - info.ParseStart > 1 ? char.ToUpperInvariant(number[info.ParseStart + 1]) : null;
 			char end1 = char.ToUpperInvariant(number[info.ParseEnd - 1]);
 			string start3 = null;
 			string end3 = null;
 			if (info.ParseEnd - info.ParseStart >= 3) {
 				start3 = number.Substring(info.ParseStart, 3).ToUpperInvariant();
-				end3 = number.Substring(info.ParseEnd - 3).ToUpperInvariant();
+				end3 = number[(info.ParseEnd - 3)..].ToUpperInvariant();
 			}
 
 			if (pos0 == 'X' || pos0 == '$' || pos0 == '#') {
@@ -118,8 +120,8 @@ namespace LibPixelPet {
 			char c;
 			while (i < info.ParseEnd) {
 				c = number[i++];
-				if (!((c >= '0' && c <= '9' && c <= numberMax)
-					|| (info.Radix > 10 && (c >= 'A' && c <= 'Z' && c <= upperMax) || (c >= 'a' && c <= 'z' && c <= lowerMax))
+				if (!(c >= '0' && c <= '9' && c <= numberMax
+					|| info.Radix > 10 && c >= 'A' && c <= 'Z' && c <= upperMax || c >= 'a' && c <= 'z' && c <= lowerMax
 				)) {
 					info.Radix = -1;
 					break;
@@ -325,7 +327,7 @@ namespace LibPixelPet {
 			if (hex is null)
 				throw new ArgumentNullException(nameof(hex), "The hex string cannot be null.");
 
-			string trimmed = Regex.Replace(hex, @"[\s-]", "");
+			string trimmed = HexTrimRegex().Replace(hex, "");
 			if (trimmed.Length % 2 != 0)
 				throw new ArgumentException("The length of the hex string is not a multiple of two.", nameof(hex));
 
@@ -352,7 +354,7 @@ namespace LibPixelPet {
 				return true;
 			} catch (Exception ex) {
 				if (ex is ArgumentException || ex is FormatException || ex is OverflowException) {
-					output = new byte[0];
+					output = Array.Empty<byte>();
 					return false;
 				} else {
 					throw;

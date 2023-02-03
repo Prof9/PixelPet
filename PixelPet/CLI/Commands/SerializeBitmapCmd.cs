@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal class SerializeBitmapCmd : CliCommand {
+	internal sealed class SerializeBitmapCmd : CliCommand {
 		public SerializeBitmapCmd()
 			: base("Serialize-Bitmap",
 				new Parameter("append", "a", false)
@@ -16,11 +16,11 @@ namespace PixelPet.CLI.Commands {
 				workbench.Stream.SetLength(0);
 			}
 
-			using (PixelWriter pixelWriter = new PixelWriter(workbench.Stream, workbench.BitmapFormat, true)) {
+			using (PixelWriter pixelWriter = new(workbench.Stream, workbench.BitmapFormat, true)) {
 				pixelWriter.WritePixels(workbench.Bitmap.Pixels, 0, workbench.Bitmap.Width * workbench.Bitmap.Height);
 			}
 
-			logger?.Log("Serialized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.", LogLevel.Information);
+			logger?.Log($"Serialized {workbench.Bitmap.Width}x{workbench.Bitmap.Height} bitmap.", LogLevel.Information);
 			return true;
 		}
 	}

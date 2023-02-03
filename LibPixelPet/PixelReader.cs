@@ -49,15 +49,15 @@ namespace LibPixelPet {
 			if (stream is null)
 				throw new ArgumentNullException(nameof(stream));
 			
-			this.BaseStream  = stream;
-			this.ColorFormat = colFmt;
-			this.IsReading   = false;
-			this.BitsLeft    = 0;
-			this.BitShift    = 0;
-			this.LeaveOpen   = leaveOpen;
+			BaseStream  = stream;
+			ColorFormat = colFmt;
+			IsReading   = false;
+			BitsLeft    = 0;
+			BitShift    = 0;
+			LeaveOpen   = leaveOpen;
 
 			// Add 1 byte to account for bad alignment
-			this.PixelBuffer = new byte[colFmt.Bytes + 1];
+			PixelBuffer = new byte[colFmt.Bytes + 1];
 		}
 
 		/// <summary>
@@ -68,24 +68,26 @@ namespace LibPixelPet {
 		/// <param name="pixelCount">Number of pixels to read.</param>
 		/// <returns>The number of pixels that were read.</returns>
 		public int ReadPixels(IList<int> destination, int offset, int pixelCount) {
+			if (destination is null)
+				throw new ArgumentNullException(nameof(destination));
 			if (offset < 0 || offset > destination.Count)
 				throw new ArgumentOutOfRangeException(nameof(offset));
 			if (pixelCount < 0 || offset + pixelCount > destination.Count)
 				throw new ArgumentOutOfRangeException(nameof(pixelCount));
 			
-			this.BeginRead();
+			BeginRead();
 
 			int pixelsRead = 0;
 			while (pixelsRead < pixelCount) {
-				if (!this.FeedData()) {
+				if (!FeedData()) {
 					break;
 				}
 
-				destination[offset + pixelsRead] = this.ReadNextPixel();
+				destination[offset + pixelsRead] = ReadNextPixel();
 				pixelsRead++;
 			}
 
-			this.EndRead();
+			EndRead();
 			return pixelsRead;
 		}
 
@@ -93,22 +95,22 @@ namespace LibPixelPet {
 		/// Starts a new read operation.
 		/// </summary>
 		public void BeginRead() {
-			if (this.IsReading) {
+			if (IsReading) {
 				throw new InvalidOperationException("Already performing a read operation.");
 			}
-			this.BitsLeft  = 0;
-			this.BitShift  = 0;
-			this.IsReading = true;
+			BitsLeft  = 0;
+			BitShift  = 0;
+			IsReading = true;
 		}
 
 		/// <summary>
 		/// Ends a read operation.
 		/// </summary>
 		public void EndRead() {
-			if (!this.IsReading) {
+			if (!IsReading) {
 				throw new InvalidOperationException("Not performing a read operation.");
 			}
-			this.IsReading = false;
+			IsReading = false;
 		}
 
 		/// <summary>
@@ -117,32 +119,32 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <returns>The pixel that was read.</returns>
 		public int ReadNextPixel() {
-			if (!this.IsReading) {
+			if (!IsReading) {
 				throw new InvalidOperationException("BeginRead must be called first.");
 			}
-			if (!this.FeedData()) {
+			if (!FeedData()) {
 				throw new IOException("Read past the end of the stream");
 			}
 
 			int pixel     = 0;
 			int bitsRead  = 0;
 			int byteIndex = 0;
-			while (bitsRead < this.ColorFormat.Bits) {
-				int bitsToRead = this.ColorFormat.Encoding switch {
+			while (bitsRead < ColorFormat.Bits) {
+				int bitsToRead = ColorFormat.Encoding switch {
 					// Game Boy reads 1 bit per byte
 					PixelEncoding.GameBoy => 1,
 					// Read all bits for this pixel that are in this byte
-					_ => Math.Min(this.ColorFormat.Bits, 8 - this.BitShift),
+					_ => Math.Min(ColorFormat.Bits, 8 - BitShift),
 				};
 
-				int x = this.PixelBuffer[byteIndex];
+				int x = PixelBuffer[byteIndex];
 
-				if (this.ColorFormat.Encoding == PixelEncoding.GameBoy) {
-					x >>= 8 - bitsToRead - this.BitShift;
+				if (ColorFormat.Encoding == PixelEncoding.GameBoy) {
+					x >>= 8 - bitsToRead - BitShift;
 					// Game Boy updates bit shift after reading all bytes
 				} else {
-					x >>= this.BitShift;
-					this.BitShift = (this.BitShift + bitsToRead) % 8;
+					x >>= BitShift;
+					BitShift = (BitShift + bitsToRead) % 8;
 				}
 
 				x &= (1 << bitsToRead) - 1;
@@ -151,10 +153,10 @@ namespace LibPixelPet {
 				bitsRead += bitsToRead;
 				byteIndex++;
 			}
-			this.BitsLeft -= bitsRead;
+			BitsLeft -= bitsRead;
 
-			if (this.ColorFormat.Encoding == PixelEncoding.GameBoy) {
-				this.BitShift = (this.BitShift + 1) % 8;
+			if (ColorFormat.Encoding == PixelEncoding.GameBoy) {
+				BitShift = (BitShift + 1) % 8;
 			}
 
 			return pixel;
@@ -165,36 +167,36 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <returns>true if there is more data; false otherwise.</returns>
 		private bool FeedData() {
-			if (this.BitsLeft < this.ColorFormat.Bits) {
-				int bytesToRead = this.ColorFormat.Bytes;
-				int bytesLeft = (this.BitsLeft + 7) / 8;
+			if (BitsLeft < ColorFormat.Bits) {
+				int bytesToRead = ColorFormat.Bytes;
+				int bytesLeft = (BitsLeft + 7) / 8;
 
 				for (int i = 0; i < bytesLeft; i++) {
-					this.PixelBuffer[i] = this.PixelBuffer[this.PixelBuffer.Length - bytesLeft + i];
+					PixelBuffer[i] = PixelBuffer[PixelBuffer.Length - bytesLeft + i];
 				}
 
-				if (this.BaseStream.Read(this.PixelBuffer, bytesLeft, bytesToRead) != bytesToRead) {
+				if (BaseStream.Read(PixelBuffer, bytesLeft, bytesToRead) != bytesToRead) {
 					// Read past end of stream
 					return false;
 				}
 
-				this.BitsLeft += bytesToRead * 8;
+				BitsLeft += bytesToRead * 8;
 			}
 			return true;
 		}
 
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
-				if (!this.LeaveOpen) {
-					this.BaseStream?.Close();
+				if (!LeaveOpen) {
+					BaseStream?.Close();
 				}
 			}
 		}
 
-		~PixelReader() => this.Dispose(false);
+		~PixelReader() => Dispose(false);
 
 		public void Dispose() {
-			this.Dispose(true);
+			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 	}

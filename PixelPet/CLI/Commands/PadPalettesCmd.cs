@@ -1,8 +1,7 @@
 ﻿using LibPixelPet;
-using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class PadPalettesCmd : CliCommand {
+	internal sealed class PadPalettesCmd : CliCommand {
 		public PadPalettesCmd()
 			: base("Pad-Palettes",
 				new Parameter(true, new ParameterValue("width", "0")),
@@ -25,8 +24,9 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			if (workbench.PaletteSet.Count == 0) {
-				logger?.Log("No palettes to pad. Creating 1 " + (palSize == -1 ? "unbounded palette" : ("palette with max size " + palSize)) + " based on current bitmap format.", LogLevel.Information);
-				Palette pal = new Palette(workbench.BitmapFormat, palSize);
+				string palType = palSize == -1 ? "unbounded palette" : ("palette with max size " + palSize);
+				logger?.Log($"No palettes to pad. Creating 1 {palType} based on current bitmap format.", LogLevel.Information);
+				Palette pal = new(workbench.BitmapFormat, palSize);
 				workbench.PaletteSet.Add(pal);
 			}
 
@@ -38,7 +38,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			logger?.Log("Padded palettes to width " + width + " (added " + addedColors + " colors).", LogLevel.Information);
+			logger?.Log($"Padded palettes to width {width} (added {addedColors} colors).", LogLevel.Information);
 			return true;
 		}
 	}

@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace LibPixelPet {
-	public struct TileEntry : IEquatable<TileEntry> {
+	public readonly struct TileEntry : IEquatable<TileEntry> {
 		/// <summary>
 		/// Gets or sets the number of the tile.
 		/// </summary>
@@ -33,21 +33,21 @@ namespace LibPixelPet {
 			if (tileNumber < 0)
 				throw new ArgumentOutOfRangeException(nameof(tileNumber));
 
-			this.TileNumber = tileNumber;
-			this.HFlip = hFlip;
-			this.VFlip = vFlip;
-			this.PaletteNumber = paletteNumber;
-			this.TextureMode = mode;
+			TileNumber = tileNumber;
+			HFlip = hFlip;
+			VFlip = vFlip;
+			PaletteNumber = paletteNumber;
+			TextureMode = mode;
 		}
 
 		public override int GetHashCode() {
 			unchecked {
 				// Pretty crappy hash.
-				int hash = (this.TileNumber + this.PaletteNumber << 16);
-				if (this.HFlip) {
+				int hash = (TileNumber + PaletteNumber << 16);
+				if (HFlip) {
 					hash ^= 0x55555555;
 				}
-				if (this.VFlip) {
+				if (VFlip) {
 					hash ^= (int)0xAAAAAAAA;
 				}
 				return hash;
@@ -56,12 +56,12 @@ namespace LibPixelPet {
 
 		public override bool Equals(object obj)
 			=> obj is TileEntry entry
-			&& this.Equals(entry);
-		public bool Equals(TileEntry entry)
-			=> this.TileNumber    == entry.TileNumber
-			&& this.HFlip         == entry.HFlip
-			&& this.VFlip         == entry.VFlip
-			&& this.PaletteNumber == entry.PaletteNumber;
+			&& Equals(entry);
+		public bool Equals(TileEntry other)
+			=> TileNumber    == other.TileNumber
+			&& HFlip         == other.HFlip
+			&& VFlip         == other.VFlip
+			&& PaletteNumber == other.PaletteNumber;
 
 		public static bool operator ==(TileEntry entry1, TileEntry entry2)
 			=> entry1.Equals(entry2);

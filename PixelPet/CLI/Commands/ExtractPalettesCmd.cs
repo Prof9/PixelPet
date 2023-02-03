@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal class ExtractPalettesCmd : CliCommand {
+	internal sealed class ExtractPalettesCmd : CliCommand {
 		public ExtractPalettesCmd()
 			: base("Extract-Palettes",
 				new Parameter("append", "a", false),
@@ -75,14 +75,14 @@ namespace PixelPet.CLI.Commands {
 			if (th == 0) {
 				th = bmp.Height;
 			}
-			TileCutter cutter = new TileCutter(tw, th);
+			TileCutter cutter = new(tw, th);
 
 			foreach (Tile tile in cutter.CutTiles(bmp)) {
 				// Get all the unique colors in the tile.
 				List<int> tileColors = tile.EnumerateTile().Distinct().ToList();
 
 				if (palSize != -1 && tileColors.Count > palSize) {
-					logger?.Log("Tile " + ti + " has " + tileColors.Count + " colors, which is more than the " + palSize + " colors allowed by the palette.", LogLevel.Error);
+					logger?.Log($"Tile {ti} has {tileColors.Count} colors, which is more than the {palSize} colors allowed by the palette.", LogLevel.Error);
 					return false;
 				}
 
@@ -126,7 +126,7 @@ namespace PixelPet.CLI.Commands {
 						bestPal = workbench.PaletteSet.Count - 1;
 						bestAdd = tileColors.Count;
 					} else {
-						logger?.Log("Cannot create a new palette for tile " + ti + " with " + tileColors.Count + " colors.", LogLevel.Error);
+						logger?.Log($"Cannot create a new palette for tile {ti} with {tileColors.Count} colors.", LogLevel.Error);
 						return false;
 					}
 				} else {
@@ -142,7 +142,7 @@ namespace PixelPet.CLI.Commands {
 				ti++;
 			}
 
-			logger?.Log("Added " + addedPalettes + " new palettes, " + addedColors + " colors total.");
+			logger?.Log($"Added {addedPalettes} new palettes, {addedColors} colors.");
 			return true;
 		}
 	}

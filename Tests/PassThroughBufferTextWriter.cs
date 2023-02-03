@@ -1,10 +1,12 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Tests {
 	/// <summary>
 	/// A text writer that buffers and passes through text to an underlying writer.
 	/// </summary>
-	internal class PassThroughBufferTextWriter : TextWriter {
+	internal sealed class PassThroughBufferTextWriter : TextWriter {
 		/// <summary>
 		/// Gets the underlying text writer.
 		/// </summary>

@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class GenerateTilemapCmd : CliCommand {
+	internal sealed class GenerateTilemapCmd : CliCommand {
 		public GenerateTilemapCmd()
 			: base("Generate-Tilemap",
 				new Parameter(true, new ParameterValue("format")),
@@ -27,8 +27,8 @@ namespace PixelPet.CLI.Commands {
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 
-			if (!(TilemapFormat.GetFormat(fmtName) is TilemapFormat fmt)) {
-				logger?.Log("Unknown tilemap format \"" + fmtName + "\".", LogLevel.Error);
+			if (TilemapFormat.GetFormat(fmtName) is not TilemapFormat fmt) {
+				logger?.Log($"Unknown tilemap format {fmtName}.", LogLevel.Error);
 				return false;
 			}
 			if (ts.IsPresent && tw <= 0) {
@@ -47,8 +47,7 @@ namespace PixelPet.CLI.Commands {
 
 			if (workbench.Tileset.Count > 0) {
 				if (ts.IsPresent && (tw != workbench.Tileset.TileWidth || th != workbench.Tileset.TileHeight)) {
-					logger?.Log("Specified tile size " + tw + "x" + th + " does not match tile size " +
-						workbench.Tileset.TileWidth + "x" + workbench.Tileset.TileHeight + " of nonempty tileset.", LogLevel.Error);
+					logger?.Log($"Specified tile size {tw}x{th} does not match tile size {workbench.Tileset.TileWidth}x{workbench.Tileset.TileHeight} of nonempty tileset.", LogLevel.Error);
 					return false;
 				}
 			}
@@ -77,7 +76,9 @@ namespace PixelPet.CLI.Commands {
 				} else {
 					workbench.Tilemap.AddBitmap(bmp, workbench.Tileset, fmt, !noReduce);
 				}
+#pragma warning disable CA1031 // Do not catch general exception types
 			} catch (Exception ex) {
+#pragma warning restore CA1031 // Do not catch general exception types
 				logger?.Log(ex.Message, LogLevel.Error);
 				return false;
 			}
@@ -85,7 +86,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Tilemap.TilemapFormat = fmt;
 
 			int addedCount = workbench.Tilemap.Count - beforeCount;
-			logger?.Log("Generated " + addedCount + " tilemap entries.");
+			logger?.Log($"Generated {addedCount} tilemap entries.");
 			return true;
 		}
 	}

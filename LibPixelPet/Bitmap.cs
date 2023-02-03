@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LibPixelPet {
 	public class Bitmap {
 		/// <summary>
 		/// Gets the pixels in the bitmap.
 		/// </summary>
-		public int[] Pixels { get; private set; }
+		public IList<int> Pixels { get; private set; }
 		/// <summary>
 		/// Gets the width of the bitmap.
 		/// </summary>
@@ -17,7 +18,7 @@ namespace LibPixelPet {
 		/// <summary>
 		/// Gets the number of pixels in the bitmap.
 		/// </summary>
-		public int PixelCount => Pixels.Length;
+		public int PixelCount => Pixels.Count;
 
 		/// <summary>
 		/// Get or set a pixel by index.
@@ -40,10 +41,10 @@ namespace LibPixelPet {
 		/// <returns>Pixel at specified coordinates.</returns>
 		public int this[int x, int y] {
 			get {
-				return this.Pixels[y * this.Width + x];
+				return Pixels[y * Width + x];
 			}
 			set {
-				this.Pixels[y * this.Width + x] = value;
+				Pixels[y * Width + x] = value;
 			}
 		}
 
@@ -68,6 +69,8 @@ namespace LibPixelPet {
 		/// <exception cref="ArgumentOutOfRangeException">If the width or height is negative.</exception>
 		/// <exception cref="ArgumentException">If the number of pixels does not match the width and height.</exception>
 		public Bitmap(int[] pixels, int width, int height) {
+			if (pixels is null)
+				throw new ArgumentNullException(nameof(pixels));
 			if (width < 0)
 				throw new ArgumentOutOfRangeException(nameof(width), width, "The width cannot be negative.");
 			if (height < 0)
@@ -92,32 +95,32 @@ namespace LibPixelPet {
 			// Range checks to make sure at least a 1x1 bitmap is cropped.
 			if (x < 0) {
 				x = 0;
-			} else if (x >= this.Width) {
-				x = this.Width - 1;
+			} else if (x >= Width) {
+				x = Width - 1;
 			}
 			if (y < 0) {
 				y = 0;
-			} else if (y >= this.Height) {
-				y = this.Height - 1;
+			} else if (y >= Height) {
+				y = Height - 1;
 			}
 			if (width < 0) {
-				width = this.Width - x;
+				width = Width - x;
 			}
 			if (height < 0) {
-				height = this.Height - y;
+				height = Height - y;
 			}
 			if (width < 1) {
 				width = 1;
-			} else if (x + width > this.Width) {
-				width = this.Width - x;
+			} else if (x + width > Width) {
+				width = Width - x;
 			}
 			if (height < 1) {
 				height = 1;
-			} else if (y + height > this.Height) {
-				height = this.Height - y;
+			} else if (y + height > Height) {
+				height = Height - y;
 			}
 
-			Bitmap bmp = new Bitmap(width, height);
+			Bitmap bmp = new(width, height);
 			
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {

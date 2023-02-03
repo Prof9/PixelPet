@@ -1,8 +1,5 @@
-﻿using LibPixelPet;
-using System;
-
-namespace PixelPet.CLI.Commands {
-	internal class ClearPalettesCmd : CliCommand {
+﻿namespace PixelPet.CLI.Commands {
+	internal sealed class ClearPalettesCmd : CliCommand {
 		public ClearPalettesCmd()
 			: base("Clear-Palettes") { }
 

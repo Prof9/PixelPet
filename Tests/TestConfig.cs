@@ -1,5 +1,9 @@
-﻿namespace Tests {
-	internal record TestConfig {
+﻿using System;
+using System.IO;
+using System.Linq;
+
+namespace Tests {
+	internal sealed record TestConfig {
 		/// <summary>
 		/// Gets directory where the test is stored.
 		/// </summary>
@@ -16,9 +20,9 @@
 		public TestConfig(string directory) {
 			ArgumentNullException.ThrowIfNull(directory);
 
-			this.Directory = Path.GetFullPath(directory);
-			this.Name = directory.Split(Path.DirectorySeparatorChar).Last();
-			this.ScriptToRun = Path.Combine(this.Directory, "script.txt");
+			Directory = Path.GetFullPath(directory);
+			Name = directory.Split(Path.DirectorySeparatorChar).Last();
+			ScriptToRun = Path.Combine(Directory, "script.txt");
 		}
 	}
 }

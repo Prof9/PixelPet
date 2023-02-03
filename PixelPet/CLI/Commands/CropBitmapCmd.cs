@@ -1,8 +1,5 @@
-﻿using LibPixelPet;
-using System;
-
-namespace PixelPet.CLI.Commands {
-	internal class CropBitmapCmd : CliCommand {
+﻿namespace PixelPet.CLI.Commands {
+	internal sealed class CropBitmapCmd : CliCommand {
 		public CropBitmapCmd()
 			: base("Crop-Bitmap",
 				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
@@ -19,7 +16,7 @@ namespace PixelPet.CLI.Commands {
 
 			workbench.Bitmap = workbench.Bitmap.GetCroppedBitmap(x, y, w, h);
 
-			logger?.Log("Cropped " + workbench.Bitmap.Width + 'x' + workbench.Bitmap.Height + " bitmap.");
+			logger?.Log($"Cropped {workbench.Bitmap.Width}x{workbench.Bitmap.Height} bitmap.");
 			return true;
 		}
 	}

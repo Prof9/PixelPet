@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal class ConvertBitmapCmd : CliCommand {
+	internal sealed class ConvertBitmapCmd : CliCommand {
 		public ConvertBitmapCmd()
 			: base("Convert-Bitmap",
 				new Parameter(true, new ParameterValue("format")),
@@ -12,8 +12,8 @@ namespace PixelPet.CLI.Commands {
 			string fmtName = FindUnnamedParameter(0).Values[0].ToString();
 			bool sloppy = FindNamedParameter("--sloppy").IsPresent;
 
-			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
-				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
+			if (ColorFormat.GetFormat(fmtName) is not ColorFormat fmt) {
+				logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);
 				return false;
 			}
 
@@ -39,7 +39,7 @@ namespace PixelPet.CLI.Commands {
 			if (mayNeedSloppy >= workbench.Bitmap.Width * workbench.Bitmap.Height) {
 				logger?.Log("This bitmap appears to be improperly scaled. The --sloppy flag may be required.", LogLevel.Warning);
 			}
-			logger?.Log("Converted bitmap to color format " + fmtName + ".");
+			logger?.Log($"Converted bitmap to color format {fmtName}.");
 			return true;
 		}
 	}

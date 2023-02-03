@@ -1,11 +1,10 @@
 ﻿using PixelPet.CLI;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace PixelPet {
 	[AttributeUsage(AttributeTargets.Assembly)]
-	internal class AssemblyBuildInfoAttribute : Attribute
+	internal sealed class AssemblyBuildInfoAttribute : Attribute
 	{
 		public string Timestamp { get; }
 		public string CommitID { get; }
@@ -16,13 +15,12 @@ namespace PixelPet {
 		}
 	}
 
-	internal class Program {
+	internal sealed class Program {
 		public static string Version => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 		public static AssemblyBuildInfoAttribute BuildInfo => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyBuildInfoAttribute>();
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
 		static int Main(string[] args) {
-			Program program = new Program();
+			Program program = new();
 			program.Run(args);
 			return program.ErrorLevel;
 		}
@@ -30,9 +28,8 @@ namespace PixelPet {
 		public int ErrorLevel { get; private set; }
 
 		public void Run(string[] args)
-			=> this.RunCli(args ?? new string[0]);
+			=> RunCli(args ?? Array.Empty<string>());
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String)")]
 		private void RunCli(string[] args) {
 			string consoleTitle = null;
 			if (OperatingSystem.IsWindows()) {
@@ -42,16 +39,16 @@ namespace PixelPet {
 			Console.WriteLine($"PixelPet {Version} by Prof. 9 ({BuildInfo.CommitID} @ {BuildInfo.Timestamp})");
 			Console.WriteLine();
 
-			Workbench workbench = new Workbench();
-			Cli cli = new Cli(workbench);
+			Workbench workbench = new();
+			CommandRunner cli = new(workbench);
 
 			cli.Run(args);
 
-			if ((int)cli.MaximumLogLevel > this.ErrorLevel) {
-				this.ErrorLevel = (int)cli.MaximumLogLevel;
+			if ((int)cli.MaximumLogLevel > ErrorLevel) {
+				ErrorLevel = (int)cli.MaximumLogLevel;
 			}
 
-			if (this.ErrorLevel <= (int)LogLevel.Warning) {
+			if (ErrorLevel <= (int)LogLevel.Warning) {
 				Console.WriteLine("Done.");
 			} else {
 				Console.WriteLine("Aborted.");

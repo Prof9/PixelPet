@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal class SerializeTilesetCmd : CliCommand {
+	internal sealed class SerializeTilesetCmd : CliCommand {
 		public SerializeTilesetCmd()
 			: base("Serialize-Tileset",
 				new Parameter("append", "a", false),
@@ -18,7 +18,7 @@ namespace PixelPet.CLI.Commands {
 				workbench.Stream.SetLength(0);
 			}
 
-			using (PixelWriter pixelWriter = new PixelWriter(workbench.Stream, workbench.Tileset.ColorFormat, true)) {
+			using (PixelWriter pixelWriter = new(workbench.Stream, workbench.Tileset.ColorFormat, true)) {
 				foreach (Tile tile in workbench.Tileset) {
 					pixelWriter.BeginWrite();
 					foreach (int c in tile.EnumerateTile()) {
@@ -28,7 +28,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			logger?.Log("Serialized " + workbench.Tileset.Count + " tiles.", LogLevel.Information);
+			logger?.Log($"Serialized {workbench.Tileset.Count} tiles.", LogLevel.Information);
 			return true;
 		}
 	}

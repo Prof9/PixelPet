@@ -49,15 +49,15 @@ namespace LibPixelPet {
 			if (stream is null)
 				throw new ArgumentNullException(nameof(stream));
 
-			this.BaseStream  = stream;
-			this.ColorFormat = colFmt;
-			this.IsWriting   = false;
-			this.BitsWritten = 0;
-			this.BitShift    = 0;
-			this.LeaveOpen   = leaveOpen;
+			BaseStream  = stream;
+			ColorFormat = colFmt;
+			IsWriting   = false;
+			BitsWritten = 0;
+			BitShift    = 0;
+			LeaveOpen   = leaveOpen;
 
 			// Add 1 byte to account for bad alignment
-			this.PixelBuffer = new byte[colFmt.Bytes + 1];
+			PixelBuffer = new byte[colFmt.Bytes + 1];
 		}
 
 		/// <summary>
@@ -67,46 +67,48 @@ namespace LibPixelPet {
 		/// <param name="offset">Offset in array to start reading.</param>
 		/// <param name="pixelCount">Number of pixels to write.</param>
 		public void WritePixels(IList<int> source, int offset, int pixelCount) {
+			if (source is null)
+				throw new ArgumentNullException(nameof(source));
 			if (offset < 0 || offset > source.Count)
 				throw new ArgumentOutOfRangeException(nameof(offset));
 			if (pixelCount < 0 || offset + pixelCount > source.Count)
 				throw new ArgumentOutOfRangeException(nameof(pixelCount));
 			
-			this.BeginWrite();
+			BeginWrite();
 
 			for (int i = 0; i < pixelCount; i++) {
-				this.WriteNextPixel(source[offset + i]);
+				WriteNextPixel(source[offset + i]);
 			}
 
-			this.EndWrite();
+			EndWrite();
 		}
 
 		/// <summary>
 		/// Starts a new write operation.
 		/// </summary>
 		public void BeginWrite() {
-			if (this.IsWriting) {
+			if (IsWriting) {
 				throw new InvalidOperationException("Already performing a write operation.");
 			}
 
-			for (int i = 0; i < this.PixelBuffer.Length; i++) {
-				this.PixelBuffer[i] = 0;
+			for (int i = 0; i < PixelBuffer.Length; i++) {
+				PixelBuffer[i] = 0;
 			}
-			this.BitsWritten = 0;
-			this.BitShift    = 0;
-			this.IsWriting   = true;
+			BitsWritten = 0;
+			BitShift    = 0;
+			IsWriting   = true;
 		}
 
 		/// <summary>
 		/// Ends a write operation.
 		/// </summary>
 		public void EndWrite() {
-			if (!this.IsWriting) {
+			if (!IsWriting) {
 				throw new InvalidOperationException("Not performing a write operation.");
 			}
 
-			this.FlushData(true);
-			this.IsWriting = false;
+			FlushData(true);
+			IsWriting = false;
 		}
 
 		/// <summary>
@@ -115,43 +117,43 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="pixel">The pixel to write.</param>
 		public void WriteNextPixel(int pixel) {
-			if (!this.IsWriting) {
+			if (!IsWriting) {
 				throw new InvalidOperationException("BeginWrite must be called first.");
 			}
 
 			int bitsWrote = 0;
 			int byteIndex = 0;
-			while (bitsWrote < this.ColorFormat.Bits) {
-				int bitsToWrite = this.ColorFormat.Encoding switch {
+			while (bitsWrote < ColorFormat.Bits) {
+				int bitsToWrite = ColorFormat.Encoding switch {
 					// Game Boy writes 1 bit per byte
 					PixelEncoding.GameBoy => 1,
 					// Write all bits for this pixel that are in this byte
-					_ => Math.Min(this.ColorFormat.Bits, 8 - this.BitShift),
+					_ => Math.Min(ColorFormat.Bits, 8 - BitShift),
 				};
 
 				int x = pixel & ((1 << bitsToWrite) - 1);
 
-				if (this.ColorFormat.Encoding == PixelEncoding.GameBoy) {
-					x <<= 8 - bitsToWrite - this.BitShift;
+				if (ColorFormat.Encoding == PixelEncoding.GameBoy) {
+					x <<= 8 - bitsToWrite - BitShift;
 					// Game Boy updates bit shift after writing all bytes
 				} else {
-					x <<= this.BitShift;
-					this.BitShift = (this.BitShift + bitsToWrite) % 8;
+					x <<= BitShift;
+					BitShift = (BitShift + bitsToWrite) % 8;
 				}
 
-				this.PixelBuffer[byteIndex] |= (byte)x;
+				PixelBuffer[byteIndex] |= (byte)x;
 				pixel >>= bitsToWrite;
 
 				bitsWrote += bitsToWrite;
 				byteIndex++;
 			}
-			this.BitsWritten += bitsWrote;
+			BitsWritten += bitsWrote;
 
-			if (this.ColorFormat.Encoding == PixelEncoding.GameBoy) {
-				this.BitShift = (this.BitShift + 1) % 8;
+			if (ColorFormat.Encoding == PixelEncoding.GameBoy) {
+				BitShift = (BitShift + 1) % 8;
 			}
 
-			this.FlushData(false);
+			FlushData(false);
 		}
 
 		/// <summary>
@@ -159,38 +161,38 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="force">If true, also flush data even when not all bits have been written.</param>
 		private void FlushData(bool force) {
-			if (this.BitsWritten >= this.ColorFormat.Bytes * 8) {
+			if (BitsWritten >= ColorFormat.Bytes * 8) {
 				int bytesToWrite = force switch {
-					true => (this.BitsWritten + 7) / 8,
-					false => this.BitsWritten / 8,
+					true => (BitsWritten + 7) / 8,
+					false => BitsWritten / 8,
 				};
-				int bytesLeft = this.PixelBuffer.Length - bytesToWrite;
+				int bytesLeft = PixelBuffer.Length - bytesToWrite;
 
-				this.BaseStream.Write(this.PixelBuffer, 0, bytesToWrite);
+				BaseStream.Write(PixelBuffer, 0, bytesToWrite);
 
 				for (int i = 0; i < bytesLeft; i++) {
-					this.PixelBuffer[i] = this.PixelBuffer[this.PixelBuffer.Length - bytesLeft + i];
+					PixelBuffer[i] = PixelBuffer[PixelBuffer.Length - bytesLeft + i];
 				}
-				for (int i = this.PixelBuffer.Length - bytesToWrite; i < this.PixelBuffer.Length; i++) {
-					this.PixelBuffer[i] = 0;
+				for (int i = PixelBuffer.Length - bytesToWrite; i < PixelBuffer.Length; i++) {
+					PixelBuffer[i] = 0;
 				}
 
-				this.BitsWritten -= bytesToWrite * 8;
+				BitsWritten -= bytesToWrite * 8;
 			}
 		}
 
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
-				if (!this.LeaveOpen) {
-					this.BaseStream?.Close();
+				if (!LeaveOpen) {
+					BaseStream?.Close();
 				}
 			}
 		}
 
-		~PixelWriter() => this.Dispose(false);
+		~PixelWriter() => Dispose(false);
 
 		public void Dispose() {
-			this.Dispose(true);
+			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 	}

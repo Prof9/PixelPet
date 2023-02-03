@@ -1,8 +1,5 @@
-﻿using LibPixelPet;
-using System;
-
-namespace PixelPet.CLI.Commands {
-	internal class ClearTilesetCmd : CliCommand {
+﻿namespace PixelPet.CLI.Commands {
+	internal sealed class ClearTilesetCmd : CliCommand {
 		public ClearTilesetCmd()
 			: base("Clear-Tileset",
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "8"), new ParameterValue("height", "8"))
@@ -26,7 +23,7 @@ namespace PixelPet.CLI.Commands {
 			workbench.Tileset.TileWidth = tw;
 			workbench.Tileset.TileHeight = th;
 
-			logger?.Log("Created new " + tw + 'x' + th + " tileset.");
+			logger?.Log($"Created new {tw}x{th} tileset.");
 			return true;
 		}
 	}

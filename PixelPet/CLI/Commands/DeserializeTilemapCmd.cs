@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class DeserializeTilemapCmd : CliCommand {
+	internal sealed class DeserializeTilemapCmd : CliCommand {
 		public DeserializeTilemapCmd()
 			: base("Deserialize-Tilemap",
 				new Parameter(true, new ParameterValue("tilemap-format")),
@@ -19,8 +19,8 @@ namespace PixelPet.CLI.Commands {
 			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
 			int tileCount = FindNamedParameter("--tile-count").Values[0].ToInt32();
 
-			if (!(TilemapFormat.GetFormat(mapFmtName) is TilemapFormat mapFmt)) {
-				logger?.Log("Unknown tilemap format \"" + mapFmtName + "\".", LogLevel.Error);
+			if (TilemapFormat.GetFormat(mapFmtName) is not TilemapFormat mapFmt) {
+				logger?.Log($"Unknown tilemap format {mapFmtName}.", LogLevel.Error);
 				return false;
 			}
 			if (offset < 0) {
@@ -57,7 +57,7 @@ namespace PixelPet.CLI.Commands {
 					tileNum = int.MaxValue;
 				}
 
-				TileEntry te = new TileEntry(
+				TileEntry te = new(
 					tileNumber: tileNum,
 					hFlip: mapFmt.CanFlipHorizontal && (scrn & mapFmt.FlipHorizontalMask) != 0,
 					vFlip: mapFmt.CanFlipVertical && (scrn & mapFmt.FlipVerticalMask) != 0,

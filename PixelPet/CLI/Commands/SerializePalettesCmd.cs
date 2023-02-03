@@ -1,9 +1,8 @@
 ﻿using LibPixelPet;
-using System;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal class SerializePalettesCmd : CliCommand {
+	internal sealed class SerializePalettesCmd : CliCommand {
 		public SerializePalettesCmd()
 			: base("Serialize-Palettes",
 				new Parameter("append", "a", false)
@@ -36,7 +35,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			logger?.Log("Serialized " + width + "x" + workbench.PaletteSet.Count + " palette set (" + colors + " colors).", LogLevel.Information);
+			logger?.Log($"Serialized {width}x{workbench.PaletteSet.Count} palette set ({colors} colors).", LogLevel.Information);
 			return true;
 		}
 	}

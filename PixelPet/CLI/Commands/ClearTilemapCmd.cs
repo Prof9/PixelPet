@@ -1,8 +1,5 @@
-﻿using LibPixelPet;
-using System;
-
-namespace PixelPet.CLI.Commands {
-	internal class ClearTilemapCmd : CliCommand {
+﻿namespace PixelPet.CLI.Commands {
+	internal sealed class ClearTilemapCmd : CliCommand {
 		public ClearTilemapCmd()
 			: base("Clear-Tilemap") { }
 

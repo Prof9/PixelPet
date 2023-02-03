@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal class RenderPalettesCmd : CliCommand {
+	internal sealed class RenderPalettesCmd : CliCommand {
 		public RenderPalettesCmd()
 			: base("Render-Palettes",
 				new Parameter("colors-per-row", "cw", false, new ParameterValue("count", "0"))
@@ -65,7 +65,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			logger?.Log("Rendered " + w + "x" + h + " palette set containing " + count + " colors.", LogLevel.Information);
+			logger?.Log($"Rendered {w}x{h} palette set containing {count} colors.", LogLevel.Information);
 			return true;
 		}
 	}

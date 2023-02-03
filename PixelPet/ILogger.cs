@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PixelPet {
+﻿namespace PixelPet {
 	public interface ILogger {
 		void Log(string logString, LogLevel logLevel = 0);
 

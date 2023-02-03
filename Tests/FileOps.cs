@@ -1,4 +1,6 @@
-﻿namespace Tests {
+﻿using System.IO;
+
+namespace Tests {
 	public static class FileOps {
 		/// <summary>
 		/// Copy a directory.

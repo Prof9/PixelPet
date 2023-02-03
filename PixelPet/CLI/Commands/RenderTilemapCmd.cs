@@ -1,8 +1,7 @@
 ﻿using LibPixelPet;
-using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class RenderTilemapCmd : CliCommand {
+	internal sealed class RenderTilemapCmd : CliCommand {
 		public RenderTilemapCmd()
 			: base("Render-Tilemap",
 				new Parameter(true, new ParameterValue("tiles-per-row")),

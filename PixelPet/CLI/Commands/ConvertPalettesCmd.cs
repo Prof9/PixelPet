@@ -1,9 +1,8 @@
 ﻿using LibPixelPet;
-using System;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal class ConvertPalettesCmd : CliCommand {
+	internal sealed class ConvertPalettesCmd : CliCommand {
 		public ConvertPalettesCmd()
 			: base("Convert-Palettes",
 				new Parameter(true, new ParameterValue("format")),
@@ -14,8 +13,8 @@ namespace PixelPet.CLI.Commands {
 			string fmtName = FindUnnamedParameter(0).Values[0].ToString();
 			bool sloppy = FindNamedParameter("--sloppy").IsPresent;
 
-			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
-				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
+			if (ColorFormat.GetFormat(fmtName) is not ColorFormat fmt) {
+				logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);
 				return false;
 			}
 
@@ -26,7 +25,7 @@ namespace PixelPet.CLI.Commands {
 				pal.Format = fmt;
 			}
 
-			logger?.Log("Converted palettes to " + fmtName + ".", LogLevel.Information);
+			logger?.Log($"Converted palettes to {fmtName}.", LogLevel.Information);
 			return true;
 		}
 	}

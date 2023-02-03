@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PixelPet {
+﻿namespace PixelPet {
 	public enum LogLevel {
 		VerboseInformation = -1,
 		Information = 0,

@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal class ReadPalettesCmd : CliCommand {
+	internal sealed class ReadPalettesCmd : CliCommand {
 		public ReadPalettesCmd()
 			: base("Read-Palettes",
 				new Parameter("append", "a", false),
@@ -36,7 +36,7 @@ namespace PixelPet.CLI.Commands {
 				workbench.PaletteSet.Clear();
 			}
 
-			TileCutter cutter = new TileCutter(8, 8);
+			TileCutter cutter = new(8, 8);
 			int ti = 0;
 			int addedColors = 0;
 			int addedPalettes = 0;
@@ -48,15 +48,13 @@ namespace PixelPet.CLI.Commands {
 				int color = tile[0, 0];
 				foreach (int otherColor in tile.EnumerateTile().Skip(1)) {
 					if (otherColor != color) {
-						logger?.Log("Palette tile " + ti + " is not a single color.", LogLevel.Error);
+						logger?.Log($"Palette tile {ti} is not a single color.", LogLevel.Error);
 						return false;
 					}
 				}
 
 				// Create new palette if needed.
-				if (pal is null) {
-					pal = new Palette(workbench.BitmapFormat, palSize);
-				}
+				pal ??= new Palette(workbench.BitmapFormat, palSize);
 
 				// Add finished palette to palette set.
 				pal.Add(color, workbench.BitmapFormat);
@@ -92,7 +90,7 @@ namespace PixelPet.CLI.Commands {
 				addedPalettes++;
 			}
 
-			logger?.Log("Read " + addedPalettes + " palettes with " + addedColors + " colors total.");
+			logger?.Log($"Read {addedPalettes} palettes with {addedColors} colors total.");
 			return true;
 		}
 	}

@@ -1,8 +1,7 @@
 ﻿using LibPixelPet;
-using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class SerializeTilemapCmd : CliCommand {
+	internal sealed class SerializeTilemapCmd : CliCommand {
 		public SerializeTilemapCmd()
 			: base("Serialize-Tilemap",
 				new Parameter("append", "a", false),
@@ -45,7 +44,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			logger?.Log("Serialized tilemap of length " + workbench.Tilemap.Count + ".", LogLevel.Information);
+			logger?.Log($"Serialized tilemap of length {workbench.Tilemap.Count}.", LogLevel.Information);
 			return true;
 		}
 	}

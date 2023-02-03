@@ -15,14 +15,14 @@ namespace LibPixelPet {
 		public static readonly ColorFormat Grayscale2BPP = Grayscale(2);
 		public static readonly ColorFormat Grayscale4BPP = Grayscale(4);
 		public static readonly ColorFormat Grayscale8BPP = Grayscale(8);
-		public static readonly ColorFormat GameBoy       = new ColorFormat(PixelEncoding.GameBoy, 0, 2, 0, 2, 0, 2, 0, 0, 0, true);
+		public static readonly ColorFormat GameBoy       = new(PixelEncoding.GameBoy, 0, 2, 0, 2, 0, 2, 0, 0, 0, true);
 
 		public static ColorFormat SequentialABGR(in int rBits, in int gBits, in int bBits, in int aBits, in int padBits)
-			=> new ColorFormat(PixelEncoding.Normal, 0, rBits, rBits, gBits, rBits + gBits, bBits, rBits + gBits + bBits, aBits, padBits, false);
+			=> new(PixelEncoding.Normal, 0, rBits, rBits, gBits, rBits + gBits, bBits, rBits + gBits + bBits, aBits, padBits, false);
 		public static ColorFormat SequentialARGB(in int rBits, in int gBits, in int bBits, in int aBits, in int padBits)
-			=> new ColorFormat(PixelEncoding.Normal, bBits + gBits, rBits, bBits, gBits, 0, bBits, bBits + gBits + rBits, aBits, padBits, false);
+			=> new(PixelEncoding.Normal, bBits + gBits, rBits, bBits, gBits, 0, bBits, bBits + gBits + rBits, aBits, padBits, false);
 		public static ColorFormat Grayscale(in int bits)
-			=> new ColorFormat(PixelEncoding.Normal, 0, bits, 0, bits, 0, bits, 0, 0, 0, false);
+			=> new(PixelEncoding.Normal, 0, bits, 0, bits, 0, bits, 0, 0, 0, false);
 
 		/// <summary>
 		/// Gets a color format with the specified name, or null if no such color format exists.
@@ -30,30 +30,17 @@ namespace LibPixelPet {
 		/// <param name="formatName">The name of the color format.</param>
 		/// <returns>The color format matching the specified name.</returns>
 		public static ColorFormat? GetFormat(in string formatName) {
-			switch (formatName?.ToUpperInvariant()) {
-			case "2BPP":
-				return ColorFormat.Grayscale2BPP;
-			case "4BPP":
-				return ColorFormat.Grayscale4BPP;
-			case "8BPP":
-				return ColorFormat.Grayscale8BPP;
-			case "BGR555":
-			case "GBA":
-				return ColorFormat.BGR555;
-			case "ABGR1555":
-			case "NDS":
-				return ColorFormat.ABGR1555;
-			case "RGB888":
-			case "24BPP":
-				return ColorFormat.RGB888;
-			case "ARGB8888":
-			case "32BPP":
-				return ColorFormat.ARGB8888;
-			case "GB":
-				return ColorFormat.GameBoy;
-			default:
-				return null;
-			}
+			return formatName?.ToUpperInvariant() switch {
+				"2BPP"                => Grayscale2BPP,
+				"4BPP"                => Grayscale4BPP,
+				"8BPP"                => Grayscale8BPP,
+				"BGR555"   or "GBA"   => BGR555,
+				"ABGR1555" or "NDS"   => ABGR1555,
+				"RGB888"   or "24BPP" => RGB888,
+				"ARGB8888" or "32BPP" => ARGB8888,
+				"GB"                  => GameBoy,
+				_                     => null,
+			};
 		}
 
 		/// <summary>
@@ -63,7 +50,7 @@ namespace LibPixelPet {
 		/// <param name="from">The color format that the color value is currently in.</param>
 		/// <returns>The converted color value.</returns>
 		public int Convert(in int color, in ColorFormat from)
-			=> this.Convert(color, from, false);
+			=> Convert(color, from, false);
 
 		/// <summary>
 		/// Converts a color value to this color format.
@@ -81,7 +68,7 @@ namespace LibPixelPet {
 		/// <param name="color">The color to convert.</param>
 		/// <returns>The converted color value.</returns>
 		public int Convert(in Color color)
-			=> this.Convert(color, false);
+			=> Convert(color, false);
 
 		/// <summary>
 		/// Converts a color to this color format.
@@ -90,7 +77,7 @@ namespace LibPixelPet {
 		/// <param name="sloppy">If true, uses 'sloppy' conversion consisting only of bit-shifts; otherwise, uses accurate conversion.</param>
 		/// <returns>The converted color value.</returns>
 		public int Convert(in Color color, bool sloppy)
-			=> this.Convert(color.ToArgb(), ColorFormat.ARGB8888, sloppy);
+			=> Convert(color.ToArgb(), ColorFormat.ARGB8888, sloppy);
 
 		private static int Convert(in int color, in ColorFormat from, in ColorFormat to, bool sloppy) {
 			int r = (int)((uint)(color & from.  RedMask) >> from.rShift);
@@ -221,13 +208,13 @@ namespace LibPixelPet {
 		/// Gets the mask for the color channel.
 		/// </summary>
 		public int ColorMask
-			=> this.RedMask | this.GreenMask | this.BlueMask;
+			=> RedMask | GreenMask | BlueMask;
 
 		/// <summary>
 		/// Gets the mask for the color and alpha channels.
 		/// </summary>
 		public int Mask
-			=> this.ColorMask | this.AlphaMask;
+			=> ColorMask | AlphaMask;
 
 		private readonly byte padBits;
 		/// <summary>
@@ -246,16 +233,16 @@ namespace LibPixelPet {
 		/// Depending on the encoding, this may differ from the number of bits used.
 		/// </summary>
 		public int Bytes
-			=> this.Encoding switch {
-				PixelEncoding.GameBoy     => this.Bits,
-				PixelEncoding.Normal or _ => (this.Bits + 7) / 8,
+			=> Encoding switch {
+				PixelEncoding.GameBoy     => Bits,
+				PixelEncoding.Normal or _ => (Bits + 7) / 8,
 			};
 
 		/// <summary>
 		/// Gets the maximum value this color can take.
 		/// </summary>
 		public int MaxValue
-			=> ((1 << this.Bits) - 1) & this.Mask;
+			=> ((1 << Bits) - 1) & Mask;
 
 		/// <summary>
 		/// Checks that the specified color value is a valid color value for this color format.
@@ -263,7 +250,7 @@ namespace LibPixelPet {
 		/// <param name="color">The color value to check.</param>
 		/// <returns>true if the color value is valid; otherwise, false.</returns>
 		public bool IsValid(int color)
-			=> (color & this.Mask) == color;
+			=> (color & Mask) == color;
 
 		private ColorFormat(
 			in PixelEncoding encoding,
@@ -287,37 +274,35 @@ namespace LibPixelPet {
 		}
 
 		public bool Equals(ColorFormat other)
-			=> this.encoding == other.encoding
-			&& this.rBits    == other.rBits
-			&& this.gBits    == other.gBits
-			&& this.bBits    == other.bBits
-			&& this.aBits    == other.aBits
-			&& this.rShift   == other.rShift
-			&& this.gShift   == other.gShift
-			&& this.bShift   == other.bShift
-			&& this.aShift   == other.aShift
-			&& this.padBits  == other.padBits
-			&& this.invert   == other.invert;
+			=> encoding == other.encoding
+			&& rBits    == other.rBits
+			&& gBits    == other.gBits
+			&& bBits    == other.bBits
+			&& aBits    == other.aBits
+			&& rShift   == other.rShift
+			&& gShift   == other.gShift
+			&& bShift   == other.bShift
+			&& aShift   == other.aShift
+			&& padBits  == other.padBits
+			&& invert   == other.invert;
 
 		public override bool Equals(object obj)
-			=> obj is ColorFormat pf ? this.Equals(pf) : false;
+			=> obj is ColorFormat pf && Equals(pf);
 
 		public override int GetHashCode() {
-			unchecked {
-				int hash = -490236692;
-				hash = hash * -1521134295 + this.encoding.GetHashCode();
-				hash = hash * -1521134295 + this.rBits;
-				hash = hash * -1521134295 + this.gBits;
-				hash = hash * -1521134295 + this.bBits;
-				hash = hash * -1521134295 + this.aBits;
-				hash = hash * -1521134295 + this.rShift;
-				hash = hash * -1521134295 + this.gShift;
-				hash = hash * -1521134295 + this.bShift;
-				hash = hash * -1521134295 + this.aShift;
-				hash = hash * -1521134295 + this.padBits;
-				hash = hash * -1521134295 + this.invert.GetHashCode();
-				return hash;
-			}
+			HashCode hash = new();
+			hash.Add(encoding);
+			hash.Add(rBits);
+			hash.Add(gBits);
+			hash.Add(bBits);
+			hash.Add(aBits);
+			hash.Add(rShift);
+			hash.Add(gShift);
+			hash.Add(bShift);
+			hash.Add(aShift);
+			hash.Add(padBits);
+			hash.Add(invert);
+			return hash.ToHashCode();
 		}
 
 		public static bool operator ==(ColorFormat format1, ColorFormat format2)

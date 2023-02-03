@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal class ApplyPaletteBitmapCmd : CliCommand {
+	internal sealed class ApplyPaletteBitmapCmd : CliCommand {
 		public ApplyPaletteBitmapCmd()
 			: base("Apply-Palette-Bitmap",
 				new Parameter("palette-number", "pn", false, new ParameterValue("number"))
@@ -16,7 +16,7 @@ namespace PixelPet.CLI.Commands {
 			Palette pal = null;
 			if (palNumP.IsPresent) {
 				if (!workbench.PaletteSet.TryFindPalette(palNum, out pal)) {
-					logger?.Log("Palette number " + palNum + " not loaded.", LogLevel.Error);
+					logger?.Log($"Palette number {palNum} not loaded.", LogLevel.Error);
 					return false;
 				}
 			}
@@ -47,12 +47,12 @@ namespace PixelPet.CLI.Commands {
 			} else if ((int)maxCol >= pal.Count) {
 				// Can't use this palette; too small
 				pal = null;
-				logger?.Log("Palette " + palNum + " contains " + pal.Count + " colors.", LogLevel.Error);
+				logger?.Log($"Palette {palNum} contains {pal.Count} colors.", LogLevel.Error);
 			}
 
 			// Do we have a suitable palette?
 			if (pal is null) {
-				logger?.Log("The current bitmap requires a palette with at least " + (maxCol + 1) + " colors.", LogLevel.Error);
+				logger?.Log($"The current bitmap requires a palette with at least {maxCol + 1} colors.", LogLevel.Error);
 				return false;
 			}
 
@@ -62,7 +62,7 @@ namespace PixelPet.CLI.Commands {
 			}
 			workbench.BitmapFormat = pal.Format;
 
-			logger?.Log("Applied palette " + palNum + " to " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.");
+			logger?.Log($"Applied palette {palNum} to {workbench.Bitmap.Width}x{workbench.Bitmap.Height} bitmap.");
 			return true;
 		}
 	}

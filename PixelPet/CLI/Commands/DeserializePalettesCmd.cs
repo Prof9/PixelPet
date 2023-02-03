@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal class DeserializePalettesCmd : CliCommand {
+	internal sealed class DeserializePalettesCmd : CliCommand {
 		public DeserializePalettesCmd()
 			: base("Deserialize-Palettes",
 				new Parameter(true, new ParameterValue("format")),
@@ -37,8 +37,8 @@ namespace PixelPet.CLI.Commands {
 				logger?.Log("Invalid offset.", LogLevel.Error);
 				return false;
 			}
-			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
-				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
+			if (ColorFormat.GetFormat(fmtName) is not ColorFormat fmt) {
+				logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);
 				return false;
 			}
 
@@ -58,9 +58,7 @@ namespace PixelPet.CLI.Commands {
 			bool formatWarning = false;
 			while (palCount > 0 && workbench.Stream.Read(buffer, 0, bpc) == bpc) {
 				// Create new palette if needed.
-				if (pal is null) {
-					pal = new Palette(fmt, palSize);
-				}
+				pal ??= new Palette(fmt, palSize);
 
 				// Add color to palette.
 				int c = BitConverter.ToInt32(buffer, 0);
@@ -97,9 +95,9 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			if (FindNamedParameter("--palette-size").IsPresent) {
-				logger?.Log("Deserialized " + addedPalettes + " palettes with " + palSize + " colors each (" + addedColors + " colors total).");
+				logger?.Log($"Deserialized {addedPalettes} palettes with {palSize} colors each ({addedColors} colors total).");
 			} else {
-				logger?.Log("Deserialized " + addedPalettes + " palettes with " + addedColors + " colors total.");
+				logger?.Log($"Deserialized {addedPalettes} palettes with {addedColors} colors total.");
 			}
 			return true;
 		}

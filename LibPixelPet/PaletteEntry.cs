@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace LibPixelPet {
-	public struct PaletteEntry : IEquatable<PaletteEntry> {
+	public readonly struct PaletteEntry : IEquatable<PaletteEntry> {
 		/// <summary>
 		/// Gets the palette number.
 		/// </summary>
@@ -17,31 +17,27 @@ namespace LibPixelPet {
 			if (palette is null)
 				throw new ArgumentNullException(nameof(palette));
 
-			this.Number = number;
-			this.Palette = palette;
+			Number = number;
+			Palette = palette;
 		}
 
 		public bool IsValid()
-			=> this.Number >= 0
-			&& this.Palette is not null;
+			=> Number >= 0
+			&& Palette is not null;
 
 		public override bool Equals(object obj)
 			=> obj is PaletteEntry pe
-			&& this.Equals(pe);
+			&& Equals(pe);
 		public bool Equals(PaletteEntry other)
-			=> this.Number == other.Number
-			&& this.Palette == other.Palette;
+			=> Number == other.Number
+			&& Palette == other.Palette;
 
-		public override int GetHashCode() {
-			unchecked {
-				int hash = -2093347853;
-				hash = hash * -1521134295 + this.Number.GetHashCode();
-				hash = hash * -1521134295 + this.Palette.GetHashCode();
-				return hash;
-			}
-		}
+		public override int GetHashCode()
+			=> HashCode.Combine(Number, Palette);
 
-		public static bool operator ==(PaletteEntry entry1, PaletteEntry entry2) => entry1.Equals(entry2);
-		public static bool operator !=(PaletteEntry entry1, PaletteEntry entry2) => !entry1.Equals(entry2);
+		public static bool operator ==(PaletteEntry entry1, PaletteEntry entry2)
+			=> entry1.Equals(entry2);
+		public static bool operator !=(PaletteEntry entry1, PaletteEntry entry2)
+			=> !entry1.Equals(entry2);
 	}
 }

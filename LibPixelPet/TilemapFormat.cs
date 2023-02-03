@@ -1,11 +1,11 @@
 ﻿using System;
 
 namespace LibPixelPet {
-	public struct TilemapFormat : IEquatable<TilemapFormat> {
-		public static readonly TilemapFormat GB      = new TilemapFormat(8, 8, 0,  8,  0, false,  0, false,  0,  0,  0, 0,  true, false, ColorFormat.GameBoy,       BitmapEncoding.GameBoy);
-		public static readonly TilemapFormat GBA4BPP = new TilemapFormat(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale4BPP, BitmapEncoding.GameBoyAdvance);
-		public static readonly TilemapFormat GBA8BPP = new TilemapFormat(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale8BPP, BitmapEncoding.GameBoyAdvance);
-		public static readonly TilemapFormat NDSTEX5 = new TilemapFormat(4, 4, 0,  0,  0, false,  0, false,  0, 14, 14, 2, false,  true, ColorFormat.Grayscale2BPP, BitmapEncoding.NintendoDSTexture);
+	public readonly struct TilemapFormat : IEquatable<TilemapFormat> {
+		public static readonly TilemapFormat GB      = new(8, 8, 0,  8,  0, false,  0, false,  0,  0,  0, 0,  true, false, ColorFormat.GameBoy,       BitmapEncoding.GameBoy);
+		public static readonly TilemapFormat GBA4BPP = new(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale4BPP, BitmapEncoding.GameBoyAdvance);
+		public static readonly TilemapFormat GBA8BPP = new(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale8BPP, BitmapEncoding.GameBoyAdvance);
+		public static readonly TilemapFormat NDSTEX5 = new(4, 4, 0,  0,  0, false,  0, false,  0, 14, 14, 2, false,  true, ColorFormat.Grayscale2BPP, BitmapEncoding.NintendoDSTexture);
 
 		/// <summary>
 		/// Gets a tilemap format with the specified name, or null if no such tilemap format exists.
@@ -13,20 +13,13 @@ namespace LibPixelPet {
 		/// <param name="formatName">The name of the tilemap format.</param>
 		/// <returns>The tilemap format matching the specified name.</returns>
 		public static TilemapFormat? GetFormat(in string formatName) {
-			switch (formatName?.ToUpperInvariant()) {
-			case "GB":
-				return TilemapFormat.GB;
-			case "GBA-4BPP":
-			case "NDS-4BPP":
-				return TilemapFormat.GBA4BPP;
-			case "GBA-8BPP":
-			case "NDS-8BPP":
-				return TilemapFormat.GBA8BPP;
-			case "NDS-TEX5":
-				return TilemapFormat.NDSTEX5;
-			default:
-				return null;
-			}
+			return (formatName?.ToUpperInvariant()) switch {
+				"GB"                     => GB,
+				"GBA-4BPP" or "NDS-4BPP" => GBA4BPP,
+				"GBA-8BPP" or "NDS-8BPP" => GBA8BPP,
+				"NDS-TEX5"               => NDSTEX5,
+				_                        => null,
+			};
 		}
 
 		private readonly byte tWidth;
@@ -160,7 +153,7 @@ namespace LibPixelPet {
 		/// Gets the mask for a tilemap entry.
 		/// </summary>
 		public int Mask
-			=> this.TileNumberMask | this.FlipHorizontalMask | this.FlipVerticalMask | this.PaletteMask | this.ModeMask;
+			=> TileNumberMask | FlipHorizontalMask | FlipVerticalMask | PaletteMask | ModeMask;
 
 		/// <summary>
 		/// Gets the total number of bits used.
@@ -178,7 +171,7 @@ namespace LibPixelPet {
 		/// Gets the maximum value a tilemap entry can take.
 		/// </summary>
 		public int MaxValue
-			=> ((1 << this.Bits) - 1) & this.Mask;
+			=> ((1 << Bits) - 1) & Mask;
 
 		/// <summary>
 		/// Checks that the specified tilemap entry is a valid tilemap entry for this tilemap format.
@@ -186,7 +179,7 @@ namespace LibPixelPet {
 		/// <param name="entry">The tilemap entry to check.</param>
 		/// <returns>true if the tilemap entry is valid; otherwise, false.</returns>
 		public bool IsValid(int entry)
-			=> (entry & this.Mask) == entry;
+			=> (entry & Mask) == entry;
 
 		private TilemapFormat(
 			in int tWidth, in int tHeight,
@@ -217,47 +210,45 @@ namespace LibPixelPet {
 		}
 
 		public bool Equals(TilemapFormat other)
-			=> this.     tWidth   == other.     tWidth
-			&& this.     tHeight  == other.     tHeight
-			&& this.  tnumBits    == other.  tnumBits
-			&& this.   palBits    == other.   palBits
-			&& this.  modeBits    == other.  modeBits
-			&& this.  tnumShift   == other.  tnumShift
-			&& this. hflipShift   == other. hflipShift
-			&& this. vflipShift   == other. vflipShift
-			&& this.   palShift   == other.   palShift
-			&& this.  modeShift   == other.  modeShift
-			&& this. hflipAllowed == other. hflipAllowed
-			&& this. vflipAllowed == other. vflipAllowed
-			&& this.reduceAllowed == other.reduceAllowed
-			&& this.isIndexed     == other.isIndexed
-			&& this. colorFmt     == other.colorFmt
-			&& this.bmpEncoding   == other.bmpEncoding;
+			=>      tWidth   == other.     tWidth
+			&&      tHeight  == other.     tHeight
+			&&   tnumBits    == other.  tnumBits
+			&&    palBits    == other.   palBits
+			&&   modeBits    == other.  modeBits
+			&&   tnumShift   == other.  tnumShift
+			&&  hflipShift   == other. hflipShift
+			&&  vflipShift   == other. vflipShift
+			&&    palShift   == other.   palShift
+			&&   modeShift   == other.  modeShift
+			&&  hflipAllowed == other. hflipAllowed
+			&&  vflipAllowed == other. vflipAllowed
+			&& reduceAllowed == other.reduceAllowed
+			&& isIndexed     == other.isIndexed
+			&&  colorFmt     == other.colorFmt
+			&& bmpEncoding   == other.bmpEncoding;
 
 		public override bool Equals(object obj)
-			=> obj is TilemapFormat tf ? this.Equals(tf) : false;
+			=> obj is TilemapFormat tf && Equals(tf);
 
 		public override int GetHashCode() {
-			unchecked {
-				int hash = -490236692;
-				hash = hash * -1521134295 + this.     tWidth;
-				hash = hash * -1521134295 + this.     tHeight;
-				hash = hash * -1521134295 + this.  tnumBits;
-				hash = hash * -1521134295 + this.   palBits;
-				hash = hash * -1521134295 + this.  modeBits;
-				hash = hash * -1521134295 + this.  tnumShift;
-				hash = hash * -1521134295 + this. hflipShift;
-				hash = hash * -1521134295 + this. vflipShift;
-				hash = hash * -1521134295 + this.   palShift;
-				hash = hash * -1521134295 + this.  modeShift;
-				hash = hash * -1521134295 + this. hflipAllowed.GetHashCode();
-				hash = hash * -1521134295 + this. vflipAllowed.GetHashCode();
-				hash = hash * -1521134295 + this.reduceAllowed.GetHashCode();
-				hash = hash * -1521134295 + this.    isIndexed.GetHashCode();
-				hash = hash * -1521134295 + this.     colorFmt.GetHashCode();
-				hash = hash * -1521134295 + this.  bmpEncoding.GetHashCode();
-				return hash;
-			}
+			HashCode hash = new();
+			hash.Add(tWidth);
+			hash.Add(tHeight);
+			hash.Add(tnumBits);
+			hash.Add(palBits);
+			hash.Add(modeBits);
+			hash.Add(tnumShift);
+			hash.Add(hflipShift);
+			hash.Add(vflipShift);
+			hash.Add(palShift);
+			hash.Add(modeShift);
+			hash.Add(hflipAllowed);
+			hash.Add(vflipAllowed);
+			hash.Add(reduceAllowed);
+			hash.Add(isIndexed);
+			hash.Add(colorFmt);
+			hash.Add(bmpEncoding);
+			return hash.ToHashCode();
 		}
 
 		public static bool operator ==(TilemapFormat format1, TilemapFormat format2)

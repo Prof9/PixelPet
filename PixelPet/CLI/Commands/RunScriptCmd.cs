@@ -4,7 +4,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI.Commands {
-	internal class RunScriptCmd : CliCommand {
+	internal sealed partial class RunScriptCmd : CliCommand {
+
+		[GeneratedRegex("\\\".*?\\\"|[^\"\\s]+")]
+		private static partial Regex QuotedArgumentRegex();
+
 		private HashSet<string> ScriptPaths { get; }
 
 		public RunScriptCmd()
@@ -12,7 +16,7 @@ namespace PixelPet.CLI.Commands {
 				  new Parameter(true, new ParameterValue("path")),
 				  new Parameter("recursive", "r", false)
 			) {
-			this.ScriptPaths = new HashSet<string>();
+			ScriptPaths = new HashSet<string>();
 		}
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
@@ -22,25 +26,25 @@ namespace PixelPet.CLI.Commands {
 			// Check for recursion.
 			string fullPath = Path.GetFullPath(path);
 			if (!recursive && ScriptPaths.Contains(fullPath)) {
-				logger?.Log("Recursive script inclusion of script " + Path.GetFileName(path) + " is not allowed without --recursive option.", LogLevel.Error);
+				logger?.Log($"Recursive script inclusion of script {Path.GetFileName(path)} is not allowed without --recursive option.", LogLevel.Error);
 				return false;
 			}
 
 			// Add the script path onto the list of included scripts. Since we stay in the same CLI, these will be shared for further Run-Scripts.
-			this.ScriptPaths.Add(fullPath);
+			ScriptPaths.Add(fullPath);
 
 			string script;
 			try {
 				script = File.ReadAllText(path);
 			} catch (IOException) {
-				logger?.Log("Could not read file " + Path.GetFileName(path), LogLevel.Error);
+				logger?.Log($"Could not read file {Path.GetFileName(path)}", LogLevel.Error);
 				return false;
 			}
 
-			List<string> args = new List<string>();
-			foreach (Match match in Regex.Matches(script, @"\"".*?\""|[^""\s]+")) {
-				if (match.Value.StartsWith("\"", StringComparison.Ordinal) && match.Value.EndsWith("\"", StringComparison.Ordinal)) {
-					args.Add(match.Value.Substring(1, match.Value.Length - 2));
+			List<string> args = new();
+			foreach (Match match in (IEnumerable<Match>)QuotedArgumentRegex().Matches(script)) {
+				if (match.Value[0] == '"' && match.Value[^1] == '"') {
+					args.Add(match.Value[1..^1]);
 				} else {
 					args.Add(match.Value);
 				}
@@ -48,7 +52,7 @@ namespace PixelPet.CLI.Commands {
 
 			CLI.Run(args);
 
-			this.ScriptPaths.Remove(fullPath);
+			ScriptPaths.Remove(fullPath);
 			return true;
 		}
 	}

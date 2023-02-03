@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal class DeserializeBitmapCmd : CliCommand {
+	internal sealed class DeserializeBitmapCmd : CliCommand {
 		public DeserializeBitmapCmd()
 			: base("Deserialize-Bitmap",
 				new Parameter(true, new ParameterValue("format")),
@@ -16,8 +16,8 @@ namespace PixelPet.CLI.Commands {
 			int h = FindUnnamedParameter(2).Values[0].ToInt32();
 			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
 
-			if (!(ColorFormat.GetFormat(fmtName) is ColorFormat fmt)) {
-				logger?.Log("Unknown color format \"" + fmtName + "\".", LogLevel.Error);
+			if (ColorFormat.GetFormat(fmtName) is not ColorFormat fmt) {
+				logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);
 				return false;
 			}
 			if (w <= 0) {
@@ -29,20 +29,20 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 			if (workbench.Stream.Length * 8 < fmt.Bits * w * h) {
-				logger?.Log("Bytes stream is not long enough to hold " + w + "x" + h + " bitmap with format \"" + fmtName + "\".", LogLevel.Error);
+				logger?.Log($"Bytes stream is not long enough to hold {w}x{h} bitmap with format {fmtName}; need 0x{(fmt.Bits * w * h + 7) / 8:X} bytes, have 0x{workbench.Stream.Length:X} bytes.", LogLevel.Error);
 				return false;
 			}
 
 			workbench.Bitmap = new Bitmap(w, h);
 			workbench.Stream.Position = offset;
 
-			using (PixelReader pixelReader = new PixelReader(workbench.Stream, fmt, true)) {
+			using (PixelReader pixelReader = new(workbench.Stream, fmt, true)) {
 				pixelReader.ReadPixels(workbench.Bitmap.Pixels, 0, w * h);
 			}
 
 			workbench.BitmapFormat = fmt;
 
-			logger?.Log("Deserialized " + workbench.Bitmap.Width + "x" + workbench.Bitmap.Height + " bitmap.", LogLevel.Information);
+			logger?.Log($"Deserialized {workbench.Bitmap.Width}x{workbench.Bitmap.Height} bitmap.", LogLevel.Information);
 			return true;
 		}
 	}

@@ -1,26 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Prof. 9</Authors>
-	<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<TargetFramework>net7.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<LangVersion>latest</LangVersion>
-		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
 		<Nullable>disable</Nullable>
+		<AnalysisLevel>latest-all</AnalysisLevel>
+		<WarningLevel>9999</WarningLevel>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<DebugType>none</DebugType>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <WarningLevel>9999</WarningLevel>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <WarningLevel>9999</WarningLevel>
-	</PropertyGroup>
-	<ItemGroup>
-		<CodeAnalysisDictionary Include="CustomDictionary.xml" />
-	</ItemGroup>
 </Project>

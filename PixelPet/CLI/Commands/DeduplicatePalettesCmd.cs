@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal class DeduplicatePalettesCmd : CliCommand {
+	internal sealed class DeduplicatePalettesCmd : CliCommand {
 		public DeduplicatePalettesCmd()
 			: base("Deduplicate-Palettes",
 				new Parameter("global", "g", false)
@@ -14,7 +14,7 @@ namespace PixelPet.CLI.Commands {
 			bool global = FindNamedParameter("--global").IsPresent;
 
 			int seed = 0;
-			Random rng = new Random(seed);
+			Random rng = new(seed);
 
 			// Do all the palettes individually first, so it's consistent between global and non-global
 			int dupes = 0;
@@ -36,7 +36,7 @@ namespace PixelPet.CLI.Commands {
 				ColorFormat format = workbench.PaletteSet[0].Palette.Format;
 				
 				// Construct a global palette containing every color across all palettes
-				Palette globalPal = new Palette(format, -1);
+				Palette globalPal = new(format, -1);
 
 				foreach (PaletteEntry pe in workbench.PaletteSet) {
 					if (pe.Palette.Format != format) {
@@ -60,7 +60,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			logger?.Log("Adding " + dupes + " new colors to palettes.");
+			logger?.Log($"Adding {dupes} new colors to palettes.");
 			return true;
 		}
 
@@ -81,10 +81,10 @@ namespace PixelPet.CLI.Commands {
 
 			// Set of distinct colors with lookup O(1).
 			// Use Dictionary instead of HashSet to pre-allocate capacity.
-			Dictionary<int, int> colToIdxDict = new Dictionary<int, int>(palette.Count);
+			Dictionary<int, int> colToIdxDict = new(palette.Count);
 
 			// Put colors in the dictionary and count dupes.
-			List<int> dupes = new List<int>();
+			List<int> dupes = new();
 			for (int i = 0; i < palette.Count; i++) {
 				int c = seqFmt.Convert(palette[i], palette.Format);
 

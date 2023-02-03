@@ -30,7 +30,7 @@ namespace LibPixelPet {
 		/// <summary>
 		/// Gets the amount of pixels in the tile.
 		/// </summary>
-		public int Count => this.Width * this.Height;
+		public int Count => Width * Height;
 
 		/// <summary>
 		/// Gets the x-position of the origin of the tile.
@@ -68,16 +68,16 @@ namespace LibPixelPet {
 			if (height < 1)
 				throw new ArgumentOutOfRangeException(nameof(height));
 
-			this.PaletteNumber = 0;
+			PaletteNumber = 0;
 
-			this.Width   = width;
-			this.Height  = height;
-			this.OriginX = x;
-			this.OriginY = y;
-			this.Pixels  = new int[width * height];
+			Width   = width;
+			Height  = height;
+			OriginX = x;
+			OriginY = y;
+			Pixels  = new int[width * height];
 
-			this.hashCodes = new HashCodeTuple[1 << 2];
-			this.hashCodesCleared = true;
+			hashCodes = new HashCodeTuple[1 << 2];
+			hashCodesCleared = true;
 		}
 
 		/// <summary>
@@ -85,9 +85,9 @@ namespace LibPixelPet {
 		/// </summary>
 		private void ClearHashCodes() {
 			for (int i = 0; i < hashCodes.Length; i++) {
-				this.hashCodes[i].IsSet = false;
+				hashCodes[i].IsSet = false;
 			}
-			this.hashCodesCleared = true;
+			hashCodesCleared = true;
 		}
 
 		/// <summary>
@@ -98,23 +98,23 @@ namespace LibPixelPet {
 		/// <returns>The color value of the pixel.</returns>
 		public int this[in int x, in int y] {
 			get {
-				if (x < 0 || x >= this.Width)
+				if (x < 0 || x >= Width)
 					throw new ArgumentOutOfRangeException(nameof(x));
-				if (y < 0 || y >= this.Height)
+				if (y < 0 || y >= Height)
 					throw new ArgumentOutOfRangeException(nameof(y));
 
-				return this.Pixels[y * this.Width + x];
+				return Pixels[y * Width + x];
 			}
 			set {
-				if (x < 0 || x >= this.Width)
+				if (x < 0 || x >= Width)
 					throw new ArgumentOutOfRangeException(nameof(x));
-				if (y < 0 || y >= this.Height)
+				if (y < 0 || y >= Height)
 					throw new ArgumentOutOfRangeException(nameof(y));
 
-				this.Pixels[y * this.Width + x] = value;
+				Pixels[y * Width + x] = value;
 
-				if (!this.hashCodesCleared) {
-					this.ClearHashCodes();
+				if (!hashCodesCleared) {
+					ClearHashCodes();
 				}
 			}
 		}
@@ -127,11 +127,11 @@ namespace LibPixelPet {
 		public void SetAllPixels(in IList<int> pixels) {
 			if (pixels is null)
 				throw new ArgumentNullException(nameof(pixels));
-			if (pixels.Count != this.Count)
+			if (pixels.Count != Count)
 				throw new ArgumentException("Amount of new pixels must equal the amount of pixels in the tile.", nameof(pixels));
 
-			pixels.CopyTo(this.Pixels, 0);
-			this.ClearHashCodes();
+			pixels.CopyTo(Pixels, 0);
+			ClearHashCodes();
 		}
 
 		/// <summary>
@@ -139,7 +139,7 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <returns>The computed hash code.</returns>
 		public override int GetHashCode()
-			=> this.GetHashCode(false, false);
+			=> GetHashCode(false, false);
 		/// <summary>
 		/// Gets the hash code of the tile with the specified flips applied.
 		/// </summary>
@@ -150,21 +150,21 @@ namespace LibPixelPet {
 			int i = (hFlip ? 1 : 0) + (vFlip ? 2 : 0);
 
 			// Use previously computed hash, if available.
-			if (this.hashCodes[i].IsSet) {
-				return (int)this.hashCodes[i].Value;
+			if (hashCodes[i].IsSet) {
+				return (int)hashCodes[i].Value;
 			}
 
 			// Calculate hash.
 			int hash = -490236692;
 			unchecked {
-				foreach (int px in (hFlip || vFlip ? this.EnumerateTile(hFlip, vFlip) : this.Pixels)) {
+				foreach (int px in (hFlip || vFlip ? EnumerateTile(hFlip, vFlip) : Pixels)) {
 					hash = hash * -1521134295 + px;
 				}
 			}
-			this.hashCodes[i].Value = hash;
-			this.hashCodes[i].IsSet = true;
+			hashCodes[i].Value = hash;
+			hashCodes[i].IsSet = true;
 
-			this.hashCodesCleared = false;
+			hashCodesCleared = false;
 
 			return (int)hash;
 		}
@@ -174,7 +174,7 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <returns>The enumerated tile.</returns>
 		public IEnumerable<int> EnumerateTile()
-			=> this.EnumerateTile(false, false);
+			=> EnumerateTile(false, false);
 		/// <summary>
 		/// Enumerates the tile with the specified flips applied.
 		/// </summary>
@@ -184,13 +184,13 @@ namespace LibPixelPet {
 		public IEnumerable<int> EnumerateTile(bool hFlip, bool vFlip) {
 			int x, y;
 			for (
-				y = (vFlip ? this.Height - 1 : 0);
-				y != (vFlip ? -1 : this.Height);
+				y = (vFlip ? Height - 1 : 0);
+				y != (vFlip ? -1 : Height);
 				y += (vFlip ? -1 : 1)
 			) {
 				for (
-					x = (hFlip ? this.Width - 1 : 0);
-					x != (hFlip ? -1 : this.Width);
+					x = (hFlip ? Width - 1 : 0);
+					x != (hFlip ? -1 : Width);
 					x += (hFlip ? -1 : 1)
 				) {
 					yield return this[x, y];
@@ -207,6 +207,8 @@ namespace LibPixelPet {
 		public int GenerateIndexedTiles(PaletteSet palettes, IList<Tile> indexedTiles) {
 			if (palettes is null)
 				throw new ArgumentNullException(nameof(palettes));
+			if (indexedTiles is null)
+				throw new ArgumentNullException(nameof(indexedTiles));
 			if (indexedTiles.Count < palettes.Count)
 				throw new ArgumentException("Indexed tiles list is not large enough to hold all possible indexed tiles", nameof(indexedTiles));
 
@@ -214,10 +216,8 @@ namespace LibPixelPet {
 			int maxFailPixel = -1;
 			Tile indexedTile = indexedTiles[0];
 			foreach (PaletteEntry pe in palettes) {
-				if (indexedTile is null) {
-					indexedTile = new Tile(this.Width, this.Height, this.OriginX, this.OriginY);
-				}
-				int failPixel = this.TryIndexTile(pe.Palette, ref indexedTile);
+				indexedTile ??= new Tile(Width, Height, OriginX, OriginY);
+				int failPixel = TryIndexTile(pe.Palette, ref indexedTile);
 				if (failPixel < 0) {
 					indexedTile.PaletteNumber = pe.Number;
 					indexedTiles[count] = indexedTile;
@@ -233,19 +233,18 @@ namespace LibPixelPet {
 			}
 
 			if (count == 0) {
-				throw new InvalidOperationException("Could not index tile at " +
-					"(" + this.OriginX + ", " + this.OriginY + ")" +
-					"; color 0x" + this.Pixels[maxFailPixel].ToString("X") + " at " +
-					"(" + (this.OriginX + maxFailPixel % this.Width) + ", " + (this.OriginY + maxFailPixel / this.Width) + ")" +
-					" not found in any palette.");
+				int c  = Pixels[maxFailPixel];
+				int px = OriginX + maxFailPixel % Width;
+				int py = OriginY + maxFailPixel / Width;
+				throw new InvalidOperationException($"Could not index tile at ({OriginX}, {OriginY}); color 0x{c:X} at ({px}, {py}) not found in any palette.");
 			}
 
 			return count;
 		}
 
 		private int TryIndexTile(Palette pal, ref Tile indexedTile) {
-			for (int i = 0; i < this.Count; i++) {
-				int c = pal.IndexOfColor(this.Pixels[i]);
+			for (int i = 0; i < Count; i++) {
+				int c = pal.IndexOfColor(Pixels[i]);
 				if (c < 0) {
 					return i;
 				}
@@ -257,24 +256,25 @@ namespace LibPixelPet {
 
 		public override bool Equals(object obj)
 			=> obj is Tile other
-			&& this.Equals(other, false, false);
+			&& Equals(other, false, false);
 		public bool Equals(in Tile other)
-			=> this.Equals(other, false, false);
+			=> Equals(other, false, false);
 		public bool Equals(in Tile other, in bool hFlip, in bool vFlip)
 			=> ReferenceEquals(this, other) || (
 				// Do not include origin in equality check.
-				this.Width == other.Width &&
-				this.Height == other.Height &&
-				this.GetHashCode(hFlip, vFlip) == other.GetHashCode() &&
-				this.EnumerateTile(hFlip, vFlip).SequenceEqual(other.Pixels)
+				other is not null &&
+				Width == other.Width &&
+				Height == other.Height &&
+				GetHashCode(hFlip, vFlip) == other.GetHashCode() &&
+				EnumerateTile(hFlip, vFlip).SequenceEqual(other.Pixels)
 			);
 
 		public Tile Clone() {
-			Tile clone = new Tile(this.Width, this.Height, this.OriginX, this.OriginY);
-			clone.SetAllPixels(this.Pixels);
-			clone.PaletteNumber = this.PaletteNumber;
+			Tile clone = new(Width, Height, OriginX, OriginY);
+			clone.SetAllPixels(Pixels);
+			clone.PaletteNumber = PaletteNumber;
 			return clone;
 		}
-		object ICloneable.Clone() => this.Clone();
+		object ICloneable.Clone() => Clone();
 	}
 }

@@ -1,19 +1,31 @@
-﻿using LibPixelPet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI {
-	public abstract class CliCommand {
+	public abstract partial class CliCommand {
+
+		[GeneratedRegex("<([^<>]+)>")]
+		private static partial Regex VariableRegex();
+
 		/// <summary>
 		/// Gets or sets the CLI currently running this command.
 		/// </summary>
-		protected Cli CLI { get; private set; }
+		protected CommandRunner CLI { get; private set; }
+		/// <summary>
+		/// Gets the name of the command.
+		/// </summary>
 		public string Name { get; }
 		internal IList<Parameter> Parameters { get; }
+		/// <summary>
+		/// Gets whether the command has consumed all its arguments.
+		/// </summary>
 		public bool ReachedEnd { get; private set; }
-		public bool IsPrepared { get; private set; }
+		/// <summary>
+		/// Gets whether the command is ready to run.
+		/// </summary>
+		public bool IsReadyToRun { get; private set; }
 
 		protected CliCommand(in string name, params Parameter[] parameters) {
 			if (name is null)
@@ -25,39 +37,50 @@ namespace PixelPet.CLI {
 			if (parameters is null)
 				throw new ArgumentNullException(nameof(parameters));
 
-			this.Name = name;
-			this.Parameters = parameters.ToList();
-			this.IsPrepared = false;
+			Name = name;
+			Parameters = parameters.ToList();
+			IsReadyToRun = false;
 		}
 
+		/// <summary>
+		/// Run the command. The command must first be prepared with <see cref="PrepareToRun"/>.
+		/// </summary>
+		/// <param name="workbench"></param>
+		/// <param name="logger"></param>
+		/// <returns></returns>
 		public bool Run(Workbench workbench, ILogger logger) {
-			if (!this.IsPrepared)
-				throw new InvalidOperationException("Command is not prepared to run");
+			if (!IsReadyToRun)
+				throw new InvalidOperationException("Command is not ready to run");
 
-			return this.RunImplementation(workbench, logger);
+			return RunImplementation(workbench, logger);
 		}
 		protected abstract bool RunImplementation(Workbench workbench, ILogger logger);
 
 		protected void ClearParameter() {
-			foreach (Parameter par in this.Parameters) {
+			foreach (Parameter par in Parameters) {
 				par.IsPresent = false;
 
 				foreach (ParameterValue val in par.Values) {
 					val.Clear();
 				}
 			}
-			this.IsPrepared = false;
+			IsReadyToRun = false;
 		}
 
-		public void Prepare(Cli cli, IEnumerator<string> args) {
+		/// <summary>
+		/// Prepare the command to run on the given CLI with the given arguments.
+		/// </summary>
+		/// <param name="cli">CLI that will run the command.</param>
+		/// <param name="args">String enumerator from which arguments can be consumed.</param>
+		public void PrepareToRun(CommandRunner cli, IEnumerator<string> args) {
 			if (cli is null)
 				throw new ArgumentNullException(nameof(cli));
 			if (args is null)
 				throw new ArgumentNullException(nameof(args));
 
-			this.ClearParameter();
+			ClearParameter();
 
-			this.CLI = cli;
+			CLI = cli;
 
 			bool reachedEnd = true;
 			while (args.MoveNext()) {
@@ -67,17 +90,16 @@ namespace PixelPet.CLI {
 					break;
 				}
 			}
-			this.ReachedEnd = reachedEnd;
+			ReachedEnd = reachedEnd;
 
-			IEnumerable<Parameter> missingParameters = this.Parameters
+			IEnumerable<Parameter> missingParams = Parameters
 				.Where(p => p.IsRequired && !p.IsLoaded);
-			if (missingParameters.Any()) {
-				throw new ArgumentException("Missing required parameters: "
-					+ string.Join(", ", missingParameters.Select(a => a.ToString()))
-					+ ".", nameof(args));
+			if (missingParams.Any()) {
+				string missingParamsStr = string.Join(", ", missingParams.Select(a => a.ToString()));
+				throw new ArgumentException($"Missing required parameters: {missingParamsStr}.", nameof(args));
 			}
 
-			this.IsPrepared = true;
+			IsReadyToRun = true;
 		}
 
 		private bool ReadParameter(IEnumerator<string> args) {
@@ -89,7 +111,7 @@ namespace PixelPet.CLI {
 			}
 
 			if (par.IsLoaded) {
-				throw new ArgumentException("Parameter " + par.PrimaryName + " already defined.");
+				throw new ArgumentException($"Parameter {par.PrimaryName} already defined.");
 			}
 
 			par.IsPresent = true;
@@ -99,7 +121,7 @@ namespace PixelPet.CLI {
 			foreach (ParameterValue value in par.Values) {
 				if (!(first && !par.IsNamed)) {
 					if (!args.MoveNext()) {
-						throw new ArgumentException("Unexpected end of input for parameter \"" + par.PrimaryName + "\".");
+						throw new ArgumentException($"Unexpected end of input for parameter {par.PrimaryName}.");
 					}
 				}
 				first = false;
@@ -119,11 +141,11 @@ namespace PixelPet.CLI {
 
 			MatchCollection matches;
 			do {
-				matches = Regex.Matches(value, @"<([^<>]+)>");
+				matches = VariableRegex().Matches(value);
 				// Go right to left so we can do multiple in one pass
 				foreach (Match match in matches.Reverse()) {
 					string varName = match.Groups[1].Value;
-					if (!(this.CLI?.Variables?.TryGetValue(varName, out string varValue) ?? false)) {
+					if (!(CLI?.Variables?.TryGetValue(varName, out string varValue) ?? false)) {
 						throw new ArgumentException($"Unknown variable {varName} in {before}");
 					}
 
@@ -133,12 +155,11 @@ namespace PixelPet.CLI {
 			}
 			while (matches.Count > 0);
 
-			int varStartIdx = value.IndexOf('<');
-			int varEndIdx   = value.IndexOf('>');
+			int varStartIdx = value.IndexOf('<', StringComparison.Ordinal);
 			if (varStartIdx >= 0) {
 				throw new ArgumentException($"Unterminated variable {value[(varStartIdx + 1)..]} in {value}");
 			}
-			if (varEndIdx >= 0) {
+			if (value.Contains('>', StringComparison.Ordinal)) {
 				throw new ArgumentException($"Unexpected > in {value}");
 			}
 
@@ -146,28 +167,28 @@ namespace PixelPet.CLI {
 		}
 
 		private Parameter FindUnpreparedParameter(in string str)
-			=> this.FindNamedParameter(str) ?? this.FindUnnamedParameter(0, true);
+			=> FindNamedParameter(str) ?? FindUnnamedParameter(0, true);
 
 		protected Parameter FindNamedParameter(string str) {
 			if (str is null) {
 				return null;
 			} else if (str.StartsWith("--", StringComparison.Ordinal)) {
-				return this.Parameters.FirstOrDefault(
+				return Parameters.FirstOrDefault(
 					p => string.CompareOrdinal(str, 2, p.LongName, 0, int.MaxValue) == 0
-				) ?? throw new ArgumentException("Unrecognized parameter \"" + str + "\".");
+				) ?? throw new ArgumentException($"Unrecognized parameter {str}.");
 			} else if (str.StartsWith("-", StringComparison.Ordinal)) {
-				return this.Parameters.FirstOrDefault(
+				return Parameters.FirstOrDefault(
 					p => string.CompareOrdinal(str, 1, p.ShortName, 0, int.MaxValue) == 0
-				) ?? throw new ArgumentException("Unrecognized parameter \"" + str + "\".");
+				) ?? throw new ArgumentException($"Unrecognized parameter {str}.");
 			} else {
 				return null;
 			}
 		}
 
 		protected Parameter FindUnnamedParameter(in int skip)
-			=> this.FindUnnamedParameter(skip, false);
+			=> FindUnnamedParameter(skip, false);
 		private Parameter FindUnnamedParameter(in int skip, bool unloaded) {
-			return this.Parameters
+			return Parameters
 				.Where(p => !p.IsNamed && (!unloaded || !p.IsLoaded))
 				.Skip(skip)
 				.FirstOrDefault();
