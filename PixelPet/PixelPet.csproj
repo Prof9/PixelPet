@@ -29,7 +29,7 @@
 		</Exec>
 		<ItemGroup>
 			<AssemblyAttribute Include="PixelPet.AssemblyBuildInfoAttribute">
-				<_Parameter1>$([System.DateTime]::Now.ToString("d MMM yyyy H:mm:ss"))</_Parameter1>
+				<_Parameter1>$([System.DateTime]::UtcNow.ToString("d MMM yyyy H:mm:ss UTC"))</_Parameter1>
 				<_Parameter2>$(SourceRevisionId)</_Parameter2>
 			</AssemblyAttribute>
 		</ItemGroup>
