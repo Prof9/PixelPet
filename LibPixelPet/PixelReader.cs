@@ -46,8 +46,7 @@ namespace LibPixelPet {
 		/// <param name="colFmt">The color format of the stream.</param>
 		/// <param name="leaveOpen">Whether to leave the underlying stream open when this PixelReader is disposed.</param>
 		public PixelReader(Stream stream, ColorFormat colFmt, bool leaveOpen) {
-			if (stream is null)
-				throw new ArgumentNullException(nameof(stream));
+			ArgumentNullException.ThrowIfNull(stream);
 			
 			BaseStream  = stream;
 			ColorFormat = colFmt;
@@ -68,8 +67,7 @@ namespace LibPixelPet {
 		/// <param name="pixelCount">Number of pixels to read.</param>
 		/// <returns>The number of pixels that were read.</returns>
 		public int ReadPixels(IList<int> destination, int offset, int pixelCount) {
-			if (destination is null)
-				throw new ArgumentNullException(nameof(destination));
+			ArgumentNullException.ThrowIfNull(destination);
 			if (offset < 0 || offset > destination.Count)
 				throw new ArgumentOutOfRangeException(nameof(offset));
 			if (pixelCount < 0 || offset + pixelCount > destination.Count)

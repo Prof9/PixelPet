@@ -1,14 +1,14 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializeBitmapCmd : CLICommand {
+	internal sealed class SerializeBitmapCmd : Command {
 		public SerializeBitmapCmd()
 			: base("Serialize-Bitmap",
 				new Parameter("append", "a", false)
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			bool append = FindNamedParameter("--append").IsPresent;
+			bool append = GetNamedParameter("--append").IsPresent;
 
 			if (append) {
 				workbench.Stream.Position = workbench.Stream.Length;

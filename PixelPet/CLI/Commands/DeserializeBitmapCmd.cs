@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeserializeBitmapCmd : CLICommand {
+	internal sealed class DeserializeBitmapCmd : Command {
 		public DeserializeBitmapCmd()
 			: base("Deserialize-Bitmap",
 				new Parameter(true, new ParameterValue("format")),
@@ -11,10 +11,10 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string fmtName = FindUnnamedParameter(0).Values[0].ToString();
-			int w = FindUnnamedParameter(1).Values[0].ToInt32();
-			int h = FindUnnamedParameter(2).Values[0].ToInt32();
-			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
+			string fmtName = GetUnnamedParameter(0).Values[0].ToString();
+			int w = GetUnnamedParameter(1).Values[0].ToInt32();
+			int h = GetUnnamedParameter(2).Values[0].ToInt32();
+			long offset = GetNamedParameter("--offset").Values[0].ToInt64();
 
 			if (ColorFormat.GetFormat(fmtName) is not ColorFormat fmt) {
 				logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);

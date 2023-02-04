@@ -1,9 +1,8 @@
-﻿using LibPixelPet;
-using System;
+﻿using System;
 using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ImportBytesCmd : CLICommand {
+	internal sealed class ImportBytesCmd : Command {
 		public ImportBytesCmd()
 			: base("Import-Bytes",
 				new Parameter(true, new ParameterValue("path")),
@@ -13,10 +12,10 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string path = FindUnnamedParameter(0).Values[0].ToString();
-			bool append = FindNamedParameter("--append").IsPresent;
-			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
-			long length = FindNamedParameter("--length").Values[0].ToInt64();
+			string path = GetUnnamedParameter(0).Values[0].ToString();
+			bool append = GetNamedParameter("--append").IsPresent;
+			long offset = GetNamedParameter("--offset").Values[0].ToInt64();
+			long length = GetNamedParameter("--length").Values[0].ToInt64();
 
 			if (offset < 0) {
 				logger?.Log("Invalid offset.", LogLevel.Error);

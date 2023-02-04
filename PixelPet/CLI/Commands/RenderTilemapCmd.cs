@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class RenderTilemapCmd : CLICommand {
+	internal sealed class RenderTilemapCmd : Command {
 		public RenderTilemapCmd()
 			: base("Render-Tilemap",
 				new Parameter(true, new ParameterValue("tiles-per-row")),
@@ -9,8 +9,8 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			int tpr = FindUnnamedParameter(0).Values[0].ToInt32();
-			int tpc = FindUnnamedParameter(1).Values[0].ToInt32();
+			int tpr = GetUnnamedParameter(0).Values[0].ToInt32();
+			int tpc = GetUnnamedParameter(1).Values[0].ToInt32();
 
 			if (tpr <= 0) {
 				logger?.Log("Invalid tile count per row.", LogLevel.Error);

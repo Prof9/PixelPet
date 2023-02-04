@@ -1,10 +1,9 @@
 ﻿using LibPixelPet;
 using SkiaSharp;
-using System;
 using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ExportBitmapCmd : CLICommand {
+	internal sealed class ExportBitmapCmd : Command {
 		public ExportBitmapCmd()
 			: base ("Export-Bitmap",
 				new Parameter(true, new ParameterValue("path")),
@@ -12,8 +11,8 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string path = FindUnnamedParameter(0).Values[0].ToString();
-			Parameter format = FindNamedParameter("--format");
+			string path = GetUnnamedParameter(0).Values[0].ToString();
+			Parameter format = GetNamedParameter("--format");
 
 			ColorFormat fmt = ColorFormat.ARGB8888;
 			if (format.IsPresent) {
@@ -27,10 +26,9 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			SKBitmap bmp = null;
 			bool setAlpha = workbench.BitmapFormat.AlphaBits == 0;
 			try {
-				bmp = new SKBitmap(workbench.Bitmap.Width, workbench.Bitmap.Height, SKColorType.Bgra8888, SKAlphaType.Unpremul);
+				using SKBitmap? bmp = new(workbench.Bitmap.Width, workbench.Bitmap.Height, SKColorType.Bgra8888, SKAlphaType.Unpremul);
 				SKColor[] pixels = new SKColor[bmp.Width * bmp.Height];
 
 				for (int i = 0; i < workbench.Bitmap.PixelCount; i++) {
@@ -45,7 +43,7 @@ namespace PixelPet.CLI.Commands {
 
 				bmp.Pixels = pixels;
 
-				Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
+				Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)!)!);
 				using FileStream fs = new(path, FileMode.Create, FileAccess.Write);
 				if (!bmp.Encode(fs, SKEncodedImageFormat.Png, 100)) {
 					throw new IOException("Could not encode bitmap");
@@ -55,8 +53,6 @@ namespace PixelPet.CLI.Commands {
 #pragma warning restore CA1031 // Do not catch general exception types
 				logger?.Log($"Could not save bitmap {Path.GetFileName(path)}", LogLevel.Error);
 				return false;
-			} finally {
-				bmp.Dispose();
 			}
 
 			string addedAlphaStr = setAlpha ? " (added alpha)" : "";

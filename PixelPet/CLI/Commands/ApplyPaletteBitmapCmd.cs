@@ -2,18 +2,18 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ApplyPaletteBitmapCmd : CLICommand {
+	internal sealed class ApplyPaletteBitmapCmd : Command {
 		public ApplyPaletteBitmapCmd()
 			: base("Apply-Palette-Bitmap",
 				new Parameter("palette-number", "pn", false, new ParameterValue("number"))
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			Parameter palNumP = FindNamedParameter("--palette-number");
+			Parameter palNumP = GetNamedParameter("--palette-number");
 			int palNum = palNumP.Values[0].ToInt32();
 
 			// Get requested palette
-			Palette pal = null;
+			Palette? pal = null;
 			if (palNumP.IsPresent) {
 				if (!workbench.PaletteSet.TryFindPalette(palNum, out pal)) {
 					logger?.Log($"Palette number {palNum} not loaded.", LogLevel.Error);
@@ -46,8 +46,8 @@ namespace PixelPet.CLI.Commands {
 				}
 			} else if ((int)maxCol >= pal.Count) {
 				// Can't use this palette; too small
-				pal = null;
 				logger?.Log($"Palette {palNum} contains {pal.Count} colors.", LogLevel.Error);
+				pal = null;
 			}
 
 			// Do we have a suitable palette?

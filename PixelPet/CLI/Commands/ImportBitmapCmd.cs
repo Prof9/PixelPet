@@ -3,7 +3,7 @@ using SkiaSharp;
 using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ImportBitmapCmd : CLICommand {
+	internal sealed class ImportBitmapCmd : Command {
 		public ImportBitmapCmd()
 			: base("Import-Bitmap",
 				new Parameter(true, new ParameterValue("path")),
@@ -11,8 +11,8 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string path = FindUnnamedParameter(0).Values[0].ToString();
-			Parameter format = FindNamedParameter("--format");
+			string path = GetUnnamedParameter(0).Values[0].ToString();
+			Parameter format = GetNamedParameter("--format");
 
 			ColorFormat fmt = ColorFormat.ARGB8888;
 			if (format.IsPresent) {

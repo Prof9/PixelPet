@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class RenderTilesetCmd : CLICommand {
+	internal sealed class RenderTilesetCmd : Command {
 		public RenderTilesetCmd()
 			: base("Render-Tileset",
 				new Parameter("tiles-per-row", "tw", false, new ParameterValue("count", "32")),
@@ -9,8 +9,8 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			Parameter format = FindNamedParameter("--format");
-			int maxTilesPerRow = FindNamedParameter("--tiles-per-row").Values[0].ToInt32();
+			Parameter format = GetNamedParameter("--format");
+			int maxTilesPerRow = GetNamedParameter("--tiles-per-row").Values[0].ToInt32();
 
 			ColorFormat fmt = ColorFormat.ARGB8888;
 			if (format.IsPresent) {

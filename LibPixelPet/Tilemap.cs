@@ -62,10 +62,8 @@ namespace LibPixelPet {
 		/// <param name="format">The tilemap format to use.</param>
 		/// <param name="reduce">If true, reduces the tilemap; otherwise, does not reduce.</param>
 		public void AddBitmap(Bitmap bmp, Tileset tileset, TilemapFormat format, bool reduce) {
-			if (bmp is null)
-				throw new ArgumentNullException(nameof(bmp));
-			if (tileset is null)
-				throw new ArgumentNullException(nameof(tileset));
+			ArgumentNullException.ThrowIfNull(bmp);
+			ArgumentNullException.ThrowIfNull(tileset);
 
 			TileCutter cutter = new(tileset.TileWidth, tileset.TileHeight);
 			foreach (Tile tile in cutter.CutTiles(bmp)) {
@@ -85,12 +83,9 @@ namespace LibPixelPet {
 		}
 
 		public void AddBitmapIndexed(Bitmap bmp, Tileset tileset, PaletteSet palettes, TilemapFormat format, bool reduce) {
-			if (bmp is null)
-				throw new ArgumentNullException(nameof(bmp));
-			if (tileset is null)
-				throw new ArgumentNullException(nameof(tileset));
-			if (palettes is null)
-				throw new ArgumentNullException(nameof(palettes));
+			ArgumentNullException.ThrowIfNull(bmp);
+			ArgumentNullException.ThrowIfNull(tileset);
+			ArgumentNullException.ThrowIfNull(palettes);
 
 			TileCutter cutter = new(tileset.TileWidth, tileset.TileHeight);
 			Tile[] indexedTiles = new Tile[palettes.Count];
@@ -152,15 +147,14 @@ namespace LibPixelPet {
 		public Bitmap ToBitmapIndexed(Tileset tileset, PaletteSet palettes, in int tilesPerRow, in int tilesPerColumn)
 			=> ToBitmapInternal(tileset, palettes, tilesPerRow, tilesPerColumn, true);
 
-		private Bitmap ToBitmapInternal(Tileset tileset, PaletteSet palettes, in int tilesPerRow, in int tilesPerColumn, bool indexed) {
-			if (tileset is null)
-				throw new ArgumentNullException(nameof(tileset));
+		private Bitmap ToBitmapInternal(Tileset tileset, PaletteSet? palettes, in int tilesPerRow, in int tilesPerColumn, bool indexed) {
+			ArgumentNullException.ThrowIfNull(tileset);
 			if (tilesPerRow <= 0)
 				throw new ArgumentOutOfRangeException(nameof(tilesPerRow));
 			if (tilesPerColumn <= 0)
 				throw new ArgumentOutOfRangeException(nameof(tilesPerColumn));
-			if (indexed && palettes is null)
-				throw new ArgumentNullException(nameof(palettes));
+			if (indexed)
+				ArgumentNullException.ThrowIfNull(palettes);
 
 			ColorFormat bgra8888 = ColorFormat.ARGB8888;
 
@@ -188,7 +182,7 @@ namespace LibPixelPet {
 					BitmapEncoding.NintendoDSTexture => 0,
 					_ => te.PaletteNumber
 				};
-				Palette pal = palettes?.FindPalette(palNum);
+				Palette? pal = palettes?.FindPalette(palNum);
 				int pi = 0;
 				foreach (int p in tile.EnumerateTile(te.HFlip, te.VFlip)) {
 					int px = pi % tileset.TileWidth + ti * tileset.TileWidth;
@@ -203,7 +197,7 @@ namespace LibPixelPet {
 
 			return bmp;
 
-			void GetColor(TileEntry te, Palette pal, int p, out int c, out ColorFormat fmt) {
+			void GetColor(TileEntry te, Palette? pal, int p, out int c, out ColorFormat fmt) {
 				if (TilemapFormat.BitmapEncoding == BitmapEncoding.NintendoDSTexture) {
 					switch (te.TextureMode) {
 					case 0:
@@ -285,7 +279,7 @@ namespace LibPixelPet {
 				// Form new color
 				return (r3 << bgra8888.RedShift) | (g3 << bgra8888.GreenShift) | (b3 << bgra8888.BlueShift) | (a3 << bgra8888.AlphaShift);
 			}
-			void GetColorFromPalette(Palette pal, int p, out int c, out ColorFormat fmt) {
+			void GetColorFromPalette(Palette? pal, int p, out int c, out ColorFormat fmt) {
 				if (pal is not null && p < pal.Count) {
 					c = pal[p];
 					fmt = pal.Format;

@@ -1,8 +1,7 @@
 ﻿using LibPixelPet;
-using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class PadTilesetCmd : CLICommand {
+	internal sealed class PadTilesetCmd : Command {
 		public PadTilesetCmd()
 			: base("Pad-Tileset",
 				new Parameter(true, new ParameterValue("width")),
@@ -11,9 +10,9 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			int width = FindUnnamedParameter(0).Values[0].ToInt32();
-			int color = FindNamedParameter("--color").Values[0].ToInt32();
-			Parameter ts = FindNamedParameter("--tile-size");
+			int width = GetUnnamedParameter(0).Values[0].ToInt32();
+			int color = GetNamedParameter("--color").Values[0].ToInt32();
+			Parameter ts = GetNamedParameter("--tile-size");
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 

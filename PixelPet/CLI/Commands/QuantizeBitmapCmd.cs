@@ -1,8 +1,7 @@
 ﻿using LibPixelPet;
-using System.Drawing;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class QuantizeBitmapCmd : CLICommand {
+	internal sealed class QuantizeBitmapCmd : Command {
 		public QuantizeBitmapCmd()
 			: base("Quantize-Bitmap",
 				new Parameter(true, new ParameterValue("format")),
@@ -10,8 +9,8 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string fmtName = FindUnnamedParameter(0).Values[0].Value;
-			Parameter palNumP = FindNamedParameter("--palette-number");
+			string fmtName = GetUnnamedParameter(0).Values[0].ToString();
+			Parameter palNumP = GetNamedParameter("--palette-number");
 			int palNum = palNumP.Values[0].ToInt32();
 
 			if (ColorFormat.GetFormat(fmtName) is not ColorFormat fmt) {
@@ -19,7 +18,7 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
-			Palette pal = null;
+			Palette? pal = null;
 			if (palNumP.IsPresent) {
 				// Get requested palette
 				if (!workbench.PaletteSet.TryFindPalette(palNum, out pal)) {

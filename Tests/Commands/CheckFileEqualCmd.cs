@@ -4,7 +4,7 @@ using System;
 using System.IO;
 
 namespace Tests.Commands {
-	internal sealed class CheckFileEqualCmd : CLICommand {
+	internal sealed class CheckFileEqualCmd : Command {
 		public CheckFileEqualCmd()
 			: base("Check-File-Equal",
 				new Parameter(true, new ParameterValue("file1")),
@@ -12,8 +12,8 @@ namespace Tests.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string file1 = FindUnnamedParameter(0).Values[0].ToString();
-			string file2 = FindUnnamedParameter(1).Values[0].ToString();
+			string file1 = GetUnnamedParameter(0).Values[0].ToString();
+			string file2 = GetUnnamedParameter(1).Values[0].ToString();
 
 			using FileStream fs1 = new(file1, FileMode.Open, FileAccess.Read, FileShare.Read);
 			using FileStream fs2 = new(file2, FileMode.Open, FileAccess.Read, FileShare.Read);

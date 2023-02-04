@@ -1,12 +1,12 @@
 ﻿namespace PixelPet.CLI.Commands {
-	internal sealed class ClearTilesetCmd : CLICommand {
+	internal sealed class ClearTilesetCmd : Command {
 		public ClearTilesetCmd()
 			: base("Clear-Tileset",
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "8"), new ParameterValue("height", "8"))
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			Parameter ts = FindNamedParameter("--tile-size");
+			Parameter ts = GetNamedParameter("--tile-size");
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 

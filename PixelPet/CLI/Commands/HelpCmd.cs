@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class HelpCmd : CLICommand {
+	internal sealed class HelpCmd : Command {
 		public HelpCmd()
 			: base ("Help") { }
 
@@ -10,7 +10,7 @@ namespace PixelPet.CLI.Commands {
 			Console.WriteLine();
 			Console.WriteLine("Supported commands:");
 			Console.WriteLine();
-			foreach (CLICommand cmd in CommandRunner.InternalCommands.Union(CLI.RegisteredCommands)) {
+			foreach (Command cmd in CommandRunner.InternalCommands.Union(Runner.RegisteredCommands ?? Array.Empty<Command>())) {
 				Console.WriteLine(cmd.Name);
 				Console.Write("\t");
 				bool first = true;

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed partial class RunScriptCmd : CLICommand {
+	internal sealed partial class RunScriptCmd : Command {
 
 		[GeneratedRegex("\\\".*?\\\"|[^\"\\s]+")]
 		private static partial Regex QuotedArgumentRegex();
@@ -20,8 +19,8 @@ namespace PixelPet.CLI.Commands {
 		}
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string path = FindUnnamedParameter(0).Values[0].ToString();
-			bool recursive = FindNamedParameter("--recursive").IsPresent;
+			string path = GetUnnamedParameter(0).Values[0].ToString();
+			bool recursive = GetNamedParameter("--recursive").IsPresent;
 
 			// Check for recursion.
 			string fullPath = Path.GetFullPath(path);
@@ -50,7 +49,7 @@ namespace PixelPet.CLI.Commands {
 				}
 			}
 
-			CLI.Run(args);
+			Runner.Run(args);
 
 			ScriptPaths.Remove(fullPath);
 			return true;

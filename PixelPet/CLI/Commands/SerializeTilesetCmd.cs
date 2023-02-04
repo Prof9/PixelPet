@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializeTilesetCmd : CLICommand {
+	internal sealed class SerializeTilesetCmd : Command {
 		public SerializeTilesetCmd()
 			: base("Serialize-Tileset",
 				new Parameter("append", "a", false),
@@ -9,8 +9,8 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			bool append = FindNamedParameter("--append").IsPresent;
-			long colorOffset = FindNamedParameter("--color-offset").Values[0].ToInt64();
+			bool append = GetNamedParameter("--append").IsPresent;
+			long colorOffset = GetNamedParameter("--color-offset").Values[0].ToInt64();
 
 			if (append) {
 				workbench.Stream.Position = workbench.Stream.Length;

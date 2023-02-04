@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ReadPalettesCmd : CLICommand {
+	internal sealed class ReadPalettesCmd : Command {
 		public ReadPalettesCmd()
 			: base("Read-Palettes",
 				new Parameter("append", "a", false),
@@ -15,13 +15,13 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			bool append = FindNamedParameter("--append").IsPresent;
-			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
-			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
-			int x = FindNamedParameter("--x").Values[0].ToInt32();
-			int y = FindNamedParameter("--y").Values[0].ToInt32();
-			int w = FindNamedParameter("--width").Values[0].ToInt32();
-			int h = FindNamedParameter("--height").Values[0].ToInt32();
+			bool append = GetNamedParameter("--append").IsPresent;
+			int palNum = GetNamedParameter("--palette-number").Values[0].ToInt32();
+			int palSize = GetNamedParameter("--palette-size").Values[0].ToInt32();
+			int x = GetNamedParameter("--x").Values[0].ToInt32();
+			int y = GetNamedParameter("--y").Values[0].ToInt32();
+			int w = GetNamedParameter("--width").Values[0].ToInt32();
+			int h = GetNamedParameter("--height").Values[0].ToInt32();
 
 			if (palNum < -1) {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
@@ -40,7 +40,7 @@ namespace PixelPet.CLI.Commands {
 			int ti = 0;
 			int addedColors = 0;
 			int addedPalettes = 0;
-			Palette pal = null;
+			Palette? pal = null;
 			Bitmap bmp = workbench.Bitmap.GetCroppedBitmap(x, y, w, h);
 
 			foreach (Tile tile in cutter.CutTiles(bmp)) {

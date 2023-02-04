@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeduplicatePalettesCmd : CLICommand {
+	internal sealed class DeduplicatePalettesCmd : Command {
 		public DeduplicatePalettesCmd()
 			: base("Deduplicate-Palettes",
 				new Parameter("global", "g", false)
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			bool global = FindNamedParameter("--global").IsPresent;
+			bool global = GetNamedParameter("--global").IsPresent;
 
 			int seed = 0;
 			Random rng = new(seed);

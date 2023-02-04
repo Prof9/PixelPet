@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace LibPixelPet {
 	/// <summary>
@@ -8,7 +9,7 @@ namespace LibPixelPet {
 	/// </summary>
 	/// <typeparam name="TKey">The type of the keys.</typeparam>
 	/// <typeparam name="TValue">The type of the values.</typeparam>
-	public class MultiValueDictionary<TKey, TValue> : IDictionary<TKey, IList<TValue>> {
+	public class MultiValueDictionary<TKey, TValue> : IDictionary<TKey, IList<TValue>> where TKey : notnull {
 		/// <summary>
 		/// A read-only list that is always empty, and therefore, Clear() does not need to throw an exception.
 		/// </summary>
@@ -61,7 +62,7 @@ namespace LibPixelPet {
 		/// <returns>The values associated with the key, or an empty set if no values were found.</returns>
 		public IList<TValue> this[TKey key] {
 			get {
-				if (BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
+				if (BaseDictionary.TryGetValue(key, out IList<TValue>? list)) {
 					return list;
 				} else {
 					return MultiValueDictionary<TKey, TValue>.EmptySet;
@@ -77,7 +78,7 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="key">The key to add a value for.</param>
 		public void Add(in TKey key, in TValue value) {
-			if (BaseDictionary.TryGetValue(key, out IList<TValue> list)) {
+			if (BaseDictionary.TryGetValue(key, out IList<TValue>? list)) {
 				list.Add(value);
 			} else {
 				BaseDictionary[key] = new List<TValue>() { value };
@@ -125,7 +126,7 @@ namespace LibPixelPet {
 		public bool Remove(KeyValuePair<TKey, IList<TValue>> item)
 			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).Remove(item);
 
-		public bool TryGetValue(TKey key, out IList<TValue> value)
+		public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out IList<TValue> value)
 			=> ((IDictionary<TKey, IList<TValue>>)BaseDictionary).TryGetValue(key, out value);
 
 		IEnumerator IEnumerable.GetEnumerator()

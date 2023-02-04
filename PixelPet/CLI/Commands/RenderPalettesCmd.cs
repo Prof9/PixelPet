@@ -2,14 +2,14 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class RenderPalettesCmd : CLICommand {
+	internal sealed class RenderPalettesCmd : Command {
 		public RenderPalettesCmd()
 			: base("Render-Palettes",
 				new Parameter("colors-per-row", "cw", false, new ParameterValue("count", "0"))
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			int maxTilesPerRow = FindNamedParameter("--colors-per-row").Values[0].ToInt32();
+			int maxTilesPerRow = GetNamedParameter("--colors-per-row").Values[0].ToInt32();
 			if (maxTilesPerRow < 0) {
 				logger?.Log("Invalid colors per row.", LogLevel.Error);
 				return false;

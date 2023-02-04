@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeserializeTilemapCmd : CLICommand {
+	internal sealed class DeserializeTilemapCmd : Command {
 		public DeserializeTilemapCmd()
 			: base("Deserialize-Tilemap",
 				new Parameter(true, new ParameterValue("tilemap-format")),
@@ -13,11 +13,11 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
-			bool append = FindNamedParameter("--append").IsPresent;
-			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
-			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
-			int tileCount = FindNamedParameter("--tile-count").Values[0].ToInt32();
+			string mapFmtName = GetUnnamedParameter(0).Values[0].ToString();
+			bool append = GetNamedParameter("--append").IsPresent;
+			int baseTile = GetNamedParameter("--base-tile").Values[0].ToInt32();
+			long offset = GetNamedParameter("--offset").Values[0].ToInt64();
+			int tileCount = GetNamedParameter("--tile-count").Values[0].ToInt32();
 
 			if (TilemapFormat.GetFormat(mapFmtName) is not TilemapFormat mapFmt) {
 				logger?.Log($"Unknown tilemap format {mapFmtName}.", LogLevel.Error);

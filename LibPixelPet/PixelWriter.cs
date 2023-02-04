@@ -46,8 +46,7 @@ namespace LibPixelPet {
 		/// <param name="colFmt">The color format for the stream.</param>
 		/// <param name="leaveOpen">Whether to leave the underlying stream open when this PixelWriter is disposed.</param>
 		public PixelWriter(Stream stream, ColorFormat colFmt, bool leaveOpen) {
-			if (stream is null)
-				throw new ArgumentNullException(nameof(stream));
+			ArgumentNullException.ThrowIfNull(stream);
 
 			BaseStream  = stream;
 			ColorFormat = colFmt;
@@ -67,8 +66,7 @@ namespace LibPixelPet {
 		/// <param name="offset">Offset in array to start reading.</param>
 		/// <param name="pixelCount">Number of pixels to write.</param>
 		public void WritePixels(IList<int> source, int offset, int pixelCount) {
-			if (source is null)
-				throw new ArgumentNullException(nameof(source));
+			ArgumentNullException.ThrowIfNull(source);
 			if (offset < 0 || offset > source.Count)
 				throw new ArgumentOutOfRangeException(nameof(offset));
 			if (pixelCount < 0 || offset + pixelCount > source.Count)

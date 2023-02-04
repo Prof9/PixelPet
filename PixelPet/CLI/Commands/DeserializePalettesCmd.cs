@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeserializePalettesCmd : CLICommand {
+	internal sealed class DeserializePalettesCmd : Command {
 		public DeserializePalettesCmd()
 			: base("Deserialize-Palettes",
 				new Parameter(true, new ParameterValue("format")),
@@ -14,12 +14,12 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string fmtName = FindUnnamedParameter(0).Values[0].Value;
-			bool append = FindNamedParameter("--append").IsPresent;
-			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
-			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
-			int palCount = FindNamedParameter("--palette-count").Values[0].ToInt32();
-			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
+			string fmtName = GetUnnamedParameter(0).Values[0].ToString();
+			bool append = GetNamedParameter("--append").IsPresent;
+			int palNum = GetNamedParameter("--palette-number").Values[0].ToInt32();
+			int palSize = GetNamedParameter("--palette-size").Values[0].ToInt32();
+			int palCount = GetNamedParameter("--palette-count").Values[0].ToInt32();
+			long offset = GetNamedParameter("--offset").Values[0].ToInt64();
 
 			if (palNum < -1) {
 				logger?.Log("Invalid palette number.", LogLevel.Error);
@@ -54,7 +54,7 @@ namespace PixelPet.CLI.Commands {
 			int addedColors = 0;
 			int addedPalettes = 0;
 			byte[] buffer = new byte[4];
-			Palette pal = null;
+			Palette? pal = null;
 			bool formatWarning = false;
 			while (palCount > 0 && workbench.Stream.Read(buffer, 0, bpc) == bpc) {
 				// Create new palette if needed.
@@ -94,7 +94,7 @@ namespace PixelPet.CLI.Commands {
 				addedPalettes++;
 			}
 
-			if (FindNamedParameter("--palette-size").IsPresent) {
+			if (GetNamedParameter("--palette-size").IsPresent) {
 				logger?.Log($"Deserialized {addedPalettes} palettes with {palSize} colors each ({addedColors} colors total).");
 			} else {
 				logger?.Log($"Deserialized {addedPalettes} palettes with {addedColors} colors total.");

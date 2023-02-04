@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ExtractPalettesCmd : CLICommand {
+	internal sealed class ExtractPalettesCmd : Command {
 		public ExtractPalettesCmd()
 			: base("Extract-Palettes",
 				new Parameter("append", "a", false),
@@ -19,15 +19,15 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			bool append = FindNamedParameter("--append").IsPresent;
-			int palNum = FindNamedParameter("--palette-number").Values[0].ToInt32();
-			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
-			int palCount = FindNamedParameter("--palette-count").Values[0].ToInt32();
-			int x = FindNamedParameter("--x").Values[0].ToInt32();
-			int y = FindNamedParameter("--y").Values[0].ToInt32();
-			int w = FindNamedParameter("--width").Values[0].ToInt32();
-			int h = FindNamedParameter("--height").Values[0].ToInt32();
-			Parameter ts = FindNamedParameter("--tile-size");
+			bool append = GetNamedParameter("--append").IsPresent;
+			int palNum = GetNamedParameter("--palette-number").Values[0].ToInt32();
+			int palSize = GetNamedParameter("--palette-size").Values[0].ToInt32();
+			int palCount = GetNamedParameter("--palette-count").Values[0].ToInt32();
+			int x = GetNamedParameter("--x").Values[0].ToInt32();
+			int y = GetNamedParameter("--y").Values[0].ToInt32();
+			int w = GetNamedParameter("--width").Values[0].ToInt32();
+			int h = GetNamedParameter("--height").Values[0].ToInt32();
+			Parameter ts = GetNamedParameter("--tile-size");
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 
@@ -65,7 +65,7 @@ namespace PixelPet.CLI.Commands {
 			int ti = 0;
 			int addedPalettes = 0;
 			int addedColors = 0;
-			Palette pal = null;
+			Palette? pal = null;
 			Bitmap bmp = workbench.Bitmap.GetCroppedBitmap(x, y, w, h);
 
 			// Special case to use entire bitmap

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace LibPixelPet {
@@ -51,8 +52,7 @@ namespace LibPixelPet {
 		/// <param name="palette">The palette to add.</param>
 		/// <param name="number">The palette number to use.</param>
 		public void Add(Palette palette, in int number) {
-			if (palette is null)
-				throw new ArgumentNullException(nameof(palette));
+			ArgumentNullException.ThrowIfNull(palette);
 			if (number < 0)
 				throw new ArgumentOutOfRangeException(nameof(number));
 			if (ContainsPalette(number))
@@ -100,8 +100,8 @@ namespace LibPixelPet {
 		/// </summary>
 		/// <param name="number">The number of the palette to find.</param>
 		/// <returns>The palette, or null if no palettet was found.</returns>
-		public Palette FindPalette(in int number) {
-			TryFindPalette(number, out Palette palette);
+		public Palette? FindPalette(in int number) {
+			TryFindPalette(number, out Palette? palette);
 			return palette;
 		}
 		/// <summary>
@@ -117,7 +117,7 @@ namespace LibPixelPet {
 		/// <param name="number">The number of the palette to find.</param>
 		/// <param name="palette">The palette, if it was found.</param>
 		/// <returns>true if a palette was found; otherwise, false.</returns>
-		public bool TryFindPalette(in int number, out Palette palette) {
+		public bool TryFindPalette(in int number, [MaybeNullWhen(false)] out Palette palette) {
 			int i = IndexOfPalette(number);
 			if (i >= 0) {
 				palette = PaletteEntries[i].Palette;

@@ -69,8 +69,7 @@ namespace LibPixelPet {
 		/// <exception cref="ArgumentOutOfRangeException">If the width or height is negative.</exception>
 		/// <exception cref="ArgumentException">If the number of pixels does not match the width and height.</exception>
 		public Bitmap(int[] pixels, int width, int height) {
-			if (pixels is null)
-				throw new ArgumentNullException(nameof(pixels));
+			ArgumentNullException.ThrowIfNull(pixels);
 			if (width < 0)
 				throw new ArgumentOutOfRangeException(nameof(width), width, "The width cannot be negative.");
 			if (height < 0)

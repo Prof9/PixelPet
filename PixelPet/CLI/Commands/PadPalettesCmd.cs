@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class PadPalettesCmd : CLICommand {
+	internal sealed class PadPalettesCmd : Command {
 		public PadPalettesCmd()
 			: base("Pad-Palettes",
 				new Parameter(true, new ParameterValue("width", "0")),
@@ -10,9 +10,9 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			int width = FindUnnamedParameter(0).Values[0].ToInt32();
-			int color = FindNamedParameter("--color").Values[0].ToInt32();
-			int palSize = FindNamedParameter("--palette-size").Values[0].ToInt32();
+			int width = GetUnnamedParameter(0).Values[0].ToInt32();
+			int color = GetNamedParameter("--color").Values[0].ToInt32();
+			int palSize = GetNamedParameter("--palette-size").Values[0].ToInt32();
 
 			if (width < 1) {
 				logger?.Log("Invalid palette width.", LogLevel.Error);

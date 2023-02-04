@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace LibPixelPet {
 	public class Palette : IEnumerable<int>, ICloneable {

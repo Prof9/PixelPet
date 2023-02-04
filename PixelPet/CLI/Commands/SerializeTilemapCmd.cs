@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializeTilemapCmd : CLICommand {
+	internal sealed class SerializeTilemapCmd : Command {
 		public SerializeTilemapCmd()
 			: base("Serialize-Tilemap",
 				new Parameter("append", "a", false),
@@ -10,9 +10,9 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			bool append = FindNamedParameter("--append").IsPresent;
-			int baseTile = FindNamedParameter("--base-tile").Values[0].ToInt32();
-			int firstTile = FindNamedParameter("--first-tile").Values[0].ToInt32();
+			bool append = GetNamedParameter("--append").IsPresent;
+			int baseTile = GetNamedParameter("--base-tile").Values[0].ToInt32();
+			int firstTile = GetNamedParameter("--first-tile").Values[0].ToInt32();
 
 			TilemapFormat fmt = workbench.Tilemap.TilemapFormat;
 

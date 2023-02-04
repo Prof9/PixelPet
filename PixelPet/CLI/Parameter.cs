@@ -5,15 +5,15 @@ using System.Text;
 
 namespace PixelPet.CLI {
 	public class Parameter {
-		public string LongName { get; }
-		public string ShortName { get; }
+		public string? LongName { get; }
+		public string? ShortName { get; }
 		public ReadOnlyCollection<ParameterValue> Values { get; }
 		public bool IsRequired { get; }
 		public bool IsPresent { get; set; }
 
 		public bool IsNamed
 			=> LongName is not null || ShortName is not null;
-		public string PrimaryName
+		public string? PrimaryName
 			=> LongName ?? ShortName;
 		public bool HasAllValues
 			=> Values.All(v => v.HasValue);
@@ -45,9 +45,8 @@ namespace PixelPet.CLI {
 
 		public Parameter(bool required, params ParameterValue[] values)
 			: this(null, null, required, values) { }
-		public Parameter(in string longName, in string shortName, in bool required, params ParameterValue[] values) {
-			if (values is null)
-				throw new ArgumentNullException(nameof(values));
+		public Parameter(in string? longName, in string? shortName, in bool required, params ParameterValue[] values) {
+			ArgumentNullException.ThrowIfNull(values);
 			if (longName is null && shortName is null && values.Length == 0)
 				throw new ArgumentException("Parameter cannot be unnamed and also have no values.");
 			if (longName is null && shortName is null && !required)

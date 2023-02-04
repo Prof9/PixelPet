@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ConvertBitmapCmd : CLICommand {
+	internal sealed class ConvertBitmapCmd : Command {
 		public ConvertBitmapCmd()
 			: base("Convert-Bitmap",
 				new Parameter(true, new ParameterValue("format")),
@@ -9,8 +9,8 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string fmtName = FindUnnamedParameter(0).Values[0].ToString();
-			bool sloppy = FindNamedParameter("--sloppy").IsPresent;
+			string fmtName = GetUnnamedParameter(0).Values[0].ToString();
+			bool sloppy = GetNamedParameter("--sloppy").IsPresent;
 
 			if (ColorFormat.GetFormat(fmtName) is not ColorFormat fmt) {
 				logger?.Log($"Unknown color format {fmtName}.", LogLevel.Error);

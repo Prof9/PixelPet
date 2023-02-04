@@ -16,8 +16,10 @@ namespace PixelPet {
 	}
 
 	internal sealed class Program {
-		public static string Version => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
-		public static AssemblyBuildInfoAttribute BuildInfo => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyBuildInfoAttribute>();
+		private const string Name = "PixelPet";
+		private const string Author = "Prof. 9";
+		public static string? Version => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+		public static AssemblyBuildInfoAttribute? BuildInfo => Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyBuildInfoAttribute>();
 
 		static int Main(string[] args) {
 			Program program = new();
@@ -31,12 +33,20 @@ namespace PixelPet {
 			=> RunCli(args ?? Array.Empty<string>());
 
 		private void RunCli(string[] args) {
-			string consoleTitle = null;
+			string? consoleTitle = null;
 			if (OperatingSystem.IsWindows()) {
 				consoleTitle = Console.Title;
-				Console.Title = "PixelPet";
+				Console.Title = Name;
 			}
-			Console.WriteLine($"PixelPet {Version} by Prof. 9 ({BuildInfo.CommitID} @ {BuildInfo.Timestamp})");
+			Console.Write(Name);
+			if (Version is not null) {
+				Console.Write($" {Version}");
+			}
+			Console.Write($" by {Author}");
+			if (BuildInfo is not null) {
+				Console.Write($" ({BuildInfo.CommitID} @ {BuildInfo.Timestamp})");
+			}
+			Console.WriteLine();
 			Console.WriteLine();
 
 			Workbench workbench = new();

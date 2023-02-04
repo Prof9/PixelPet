@@ -2,14 +2,14 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializePalettesCmd : CLICommand {
+	internal sealed class SerializePalettesCmd : Command {
 		public SerializePalettesCmd()
 			: base("Serialize-Palettes",
 				new Parameter("append", "a", false)
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			bool append = FindNamedParameter("--append").IsPresent;
+			bool append = GetNamedParameter("--append").IsPresent;
 			int width = workbench.PaletteSet.Max(pe => pe.Palette.Count);
 
 			if (append) {

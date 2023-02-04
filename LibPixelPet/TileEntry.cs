@@ -54,7 +54,7 @@ namespace LibPixelPet {
 			}
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> obj is TileEntry entry
 			&& Equals(entry);
 		public bool Equals(TileEntry other)

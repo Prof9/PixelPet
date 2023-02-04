@@ -286,7 +286,7 @@ namespace LibPixelPet {
 			&& padBits  == other.padBits
 			&& invert   == other.invert;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> obj is ColorFormat pf && Equals(pf);
 
 		public override int GetHashCode() {

@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI {
-	public abstract partial class CLICommand {
+	public abstract partial class Command {
 
 		[GeneratedRegex("<([^<>]+)>")]
 		private static partial Regex VariableRegex();
 
+		private CommandRunner? _runner;
+
 		/// <summary>
-		/// Gets or sets the CLI currently running this command.
+		/// Gets the command runner currently running this command.
 		/// </summary>
-		protected CommandRunner CLI { get; private set; }
+		protected CommandRunner Runner => _runner ?? throw new InvalidOperationException("Command runner has not been set.");
 		/// <summary>
 		/// Gets the name of the command.
 		/// </summary>
@@ -27,15 +29,13 @@ namespace PixelPet.CLI {
 		/// </summary>
 		public bool IsReadyToRun { get; private set; }
 
-		protected CLICommand(in string name, params Parameter[] parameters) {
-			if (name is null)
-				throw new ArgumentNullException(nameof(name));
+		protected Command(in string name, params Parameter[] parameters) {
+			ArgumentNullException.ThrowIfNull(name);
 			if (name.Any(c => char.IsWhiteSpace(c)))
 				throw new ArgumentException("Name cannot contain white-space characters.", nameof(name));
 			if (name[0] == '-')
 				throw new ArgumentException("Name cannot start with a dash.");
-			if (parameters is null)
-				throw new ArgumentNullException(nameof(parameters));
+			ArgumentNullException.ThrowIfNull(parameters);
 
 			Name = name;
 			Parameters = parameters.ToList();
@@ -68,19 +68,17 @@ namespace PixelPet.CLI {
 		}
 
 		/// <summary>
-		/// Prepare the command to run on the given CLI with the given arguments.
+		/// Prepare the command to run on the given command runner with the given arguments.
 		/// </summary>
-		/// <param name="cli">CLI that will run the command.</param>
+		/// <param name="runner">Command runner that will run the command.</param>
 		/// <param name="args">String enumerator from which arguments can be consumed.</param>
-		public void PrepareToRun(CommandRunner cli, IEnumerator<string> args) {
-			if (cli is null)
-				throw new ArgumentNullException(nameof(cli));
-			if (args is null)
-				throw new ArgumentNullException(nameof(args));
+		public void PrepareToRun(CommandRunner runner, IEnumerator<string> args) {
+			ArgumentNullException.ThrowIfNull(runner);
+			ArgumentNullException.ThrowIfNull(args);
 
 			ClearParameter();
 
-			CLI = cli;
+			_runner = runner;
 
 			bool reachedEnd = true;
 			while (args.MoveNext()) {
@@ -104,7 +102,7 @@ namespace PixelPet.CLI {
 
 		private bool ReadParameter(IEnumerator<string> args) {
 			// Find parameter to read.
-			Parameter par = FindUnpreparedParameter(args.Current);
+			Parameter? par = FindUnpreparedParameter(args.Current);
 			if (par is null) {
 				// Did not find a suitable parameter.
 				return false;
@@ -146,7 +144,7 @@ namespace PixelPet.CLI {
 				for (int i = matches.Count - 1; i >= 0; i--) {
 					Match match = matches[i];
 					string varName = match.Groups[1].Value;
-					if (!(CLI?.Variables?.TryGetValue(varName, out string varValue) ?? false)) {
+					if (!(Runner?.Variables?.TryGetValue(varName, out string? varValue) ?? false)) {
 						throw new ArgumentException($"Unknown variable {varName} in {before}");
 					}
 
@@ -167,28 +165,29 @@ namespace PixelPet.CLI {
 			return value;
 		}
 
-		private Parameter FindUnpreparedParameter(in string str)
+		private Parameter? FindUnpreparedParameter(in string str)
 			=> FindNamedParameter(str) ?? FindUnnamedParameter(0, true);
 
-		protected Parameter FindNamedParameter(string str) {
-			if (str is null) {
-				return null;
-			} else if (str.StartsWith("--", StringComparison.Ordinal)) {
+		protected Parameter? FindNamedParameter(string name) {
+			ArgumentNullException.ThrowIfNull(name);
+			if (name.StartsWith("--", StringComparison.Ordinal)) {
 				return Parameters.FirstOrDefault(
-					p => string.CompareOrdinal(str, 2, p.LongName, 0, int.MaxValue) == 0
-				) ?? throw new ArgumentException($"Unrecognized parameter {str}.");
-			} else if (str.StartsWith("-", StringComparison.Ordinal)) {
+					p => string.CompareOrdinal(name, 2, p.LongName, 0, int.MaxValue) == 0
+				) ?? throw new ArgumentException($"Unrecognized parameter --{name}");
+			} else if (name.StartsWith("-", StringComparison.Ordinal)) {
 				return Parameters.FirstOrDefault(
-					p => string.CompareOrdinal(str, 1, p.ShortName, 0, int.MaxValue) == 0
-				) ?? throw new ArgumentException($"Unrecognized parameter {str}.");
+					p => string.CompareOrdinal(name, 1, p.ShortName, 0, int.MaxValue) == 0
+				) ?? throw new ArgumentException($"Unrecognized parameter -{name}");
 			} else {
 				return null;
 			}
 		}
 
-		protected Parameter FindUnnamedParameter(in int skip)
-			=> FindUnnamedParameter(skip, false);
-		private Parameter FindUnnamedParameter(in int skip, bool unloaded) {
+		protected Parameter GetNamedParameter(string name)
+			=> FindNamedParameter(name) ?? throw new InvalidOperationException($"Parameter with name {name} not loaded");
+		protected Parameter GetUnnamedParameter(in int skip)
+			=> FindUnnamedParameter(skip, false) ?? throw new InvalidOperationException($"Parameter with index {skip} not loaded");
+		private Parameter? FindUnnamedParameter(in int skip, bool unloaded) {
 			return Parameters
 				.Where(p => !p.IsNamed && (!unloaded || !p.IsLoaded))
 				.Skip(skip)

@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeserializeTilesetCmd : CLICommand {
+	internal sealed class DeserializeTilesetCmd : Command {
 		public DeserializeTilesetCmd()
 			: base("Deserialize-Tileset",
 				new Parameter(true, new ParameterValue("tilemap-format")),
@@ -13,11 +13,11 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string mapFmtName = FindUnnamedParameter(0).Values[0].ToString();
-			bool append = FindNamedParameter("--append").IsPresent;
-			int tc = FindNamedParameter("--tile-count").Values[0].ToInt32();
-			long offset = FindNamedParameter("--offset").Values[0].ToInt64();
-			Parameter ts = FindNamedParameter("--tile-size");
+			string mapFmtName = GetUnnamedParameter(0).Values[0].ToString();
+			bool append = GetNamedParameter("--append").IsPresent;
+			int tc = GetNamedParameter("--tile-count").Values[0].ToInt32();
+			long offset = GetNamedParameter("--offset").Values[0].ToInt64();
+			Parameter ts = GetNamedParameter("--tile-size");
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 

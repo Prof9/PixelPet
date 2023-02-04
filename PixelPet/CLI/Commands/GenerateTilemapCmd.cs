@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class GenerateTilemapCmd : CLICommand {
+	internal sealed class GenerateTilemapCmd : Command {
 		public GenerateTilemapCmd()
 			: base("Generate-Tilemap",
 				new Parameter(true, new ParameterValue("format")),
@@ -16,14 +16,14 @@ namespace PixelPet.CLI.Commands {
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string fmtName = FindUnnamedParameter(0).Values[0].Value;
-			bool append = FindNamedParameter("--append").IsPresent;
-			bool noReduce = FindNamedParameter("--no-reduce").IsPresent;
-			int x = FindNamedParameter("--x").Values[0].ToInt32();
-			int y = FindNamedParameter("--y").Values[0].ToInt32();
-			int w = FindNamedParameter("--width").Values[0].ToInt32();
-			int h = FindNamedParameter("--height").Values[0].ToInt32();
-			Parameter ts = FindNamedParameter("--tile-size");
+			string fmtName = GetUnnamedParameter(0).Values[0].ToString();
+			bool append = GetNamedParameter("--append").IsPresent;
+			bool noReduce = GetNamedParameter("--no-reduce").IsPresent;
+			int x = GetNamedParameter("--x").Values[0].ToInt32();
+			int y = GetNamedParameter("--y").Values[0].ToInt32();
+			int w = GetNamedParameter("--width").Values[0].ToInt32();
+			int h = GetNamedParameter("--height").Values[0].ToInt32();
+			Parameter ts = GetNamedParameter("--tile-size");
 			int tw = ts.Values[0].ToInt32();
 			int th = ts.Values[1].ToInt32();
 

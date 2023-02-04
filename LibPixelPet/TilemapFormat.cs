@@ -227,7 +227,7 @@ namespace LibPixelPet {
 			&&  colorFmt     == other.colorFmt
 			&& bmpEncoding   == other.bmpEncoding;
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 			=> obj is TilemapFormat tf && Equals(tf);
 
 		public override int GetHashCode() {

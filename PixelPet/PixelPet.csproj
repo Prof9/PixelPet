@@ -11,7 +11,7 @@
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-		<Nullable>disable</Nullable>
+		<Nullable>enable</Nullable>
 		<AnalysisLevel>latest-all</AnalysisLevel>
 		<WarningLevel>9999</WarningLevel>
 	</PropertyGroup>

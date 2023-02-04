@@ -92,8 +92,7 @@ namespace LibPixelPet {
 		/// <param name="tile">The tile to add.</param>
 		/// <returns>The created tile entry for the tile.</returns>
 		public TileEntry AddTile(Tile tile) {
-			if (tile is null)
-				throw new ArgumentNullException(nameof(tile));
+			ArgumentNullException.ThrowIfNull(tile);
 
 			int tileNum = Count;
 			Tiles.Add(tile);
@@ -122,8 +121,7 @@ namespace LibPixelPet {
 		/// <param name="entry">The found tile entry, or null if no suitable tile entry was found.</param>
 		/// <returns>true if a tile entry was found; otherwise, false.</returns>
 		public bool TryFindTileEntry(in Tile tile, bool canHFlip, bool canVFlip, out TileEntry entry) {
-			if (tile is null)
-				throw new ArgumentNullException(nameof(tile));
+			ArgumentNullException.ThrowIfNull(tile);
 
 			foreach (TileEntry candidate in TileDictionary[tile.GetHashCode()]) {
 				if ((candidate.HFlip && !canHFlip) || (candidate.VFlip && !canVFlip)) {
@@ -191,8 +189,7 @@ namespace LibPixelPet {
 		public Bitmap ToBitmapIndexed(in int maxTilesPerRow, PaletteSet palettes, ColorFormat targetFmt) {
 			if (maxTilesPerRow < 0)
 				throw new ArgumentOutOfRangeException(nameof(maxTilesPerRow));
-			if (palettes is null)
-				throw new ArgumentNullException(nameof(palettes));
+			ArgumentNullException.ThrowIfNull(palettes);
 
 			int hTileCount = Count;
 			if (maxTilesPerRow > 0 && hTileCount > maxTilesPerRow) {
@@ -207,7 +204,7 @@ namespace LibPixelPet {
 				Tile tile = this[t];
 				int ti = t % hTileCount;
 				int tj = t / hTileCount;
-				Palette pal = palettes.FindPalette(tile.PaletteNumber);
+				Palette? pal = palettes.FindPalette(tile.PaletteNumber);
 				if (pal is null && palettes.Count > 0) {
 					// Don't have the palette used to index this tile anymore.
 					// Just get any palette.

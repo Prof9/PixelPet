@@ -20,9 +20,6 @@ namespace LibPixelPet {
 		/// <param name="number">A string representing the number.</param>
 		/// <returns>NumberInfo containing the sign, radix and substring boundaries. If the radix is -1, the radix could not be determined.</returns>
 		private static NumberInfo GetNumberInfo(in string number) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-
 			NumberInfo info = new(0, number.Length, 10, 1);
 			if (number.Length <= 0) {
 				return info;
@@ -39,8 +36,8 @@ namespace LibPixelPet {
 			char pos0 = char.ToUpperInvariant(number[info.ParseStart]);
 			char? pos1 = info.ParseEnd - info.ParseStart > 1 ? char.ToUpperInvariant(number[info.ParseStart + 1]) : null;
 			char end1 = char.ToUpperInvariant(number[info.ParseEnd - 1]);
-			string start3 = null;
-			string end3 = null;
+			string? start3 = null;
+			string? end3 = null;
 			if (info.ParseEnd - info.ParseStart >= 3) {
 				start3 = number.Substring(info.ParseStart, 3).ToUpperInvariant();
 				end3 = number[(info.ParseEnd - 3)..].ToUpperInvariant();
@@ -137,10 +134,7 @@ namespace LibPixelPet {
 		/// <param name="number">A string containing a number to convert.</param>
 		/// <returns>A 16-bit signed integer equivalent to the number contained in s.</returns>
 		public static short ParseInt16(in string number) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			NumberInfo info = GetNumberInfo(number);
 			return (short)(Convert.ToInt16(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign);
@@ -152,10 +146,7 @@ namespace LibPixelPet {
 		/// <param name="number">A string containing a number to convert.</param>
 		/// <returns>A 32-bit signed integer equivalent to the number contained in s.</returns>
 		public static int ParseInt32(in string number) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			NumberInfo info = GetNumberInfo(number);
 			return Convert.ToInt32(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign;
@@ -167,10 +158,7 @@ namespace LibPixelPet {
 		/// <param name="number">A string containing a number to convert.</param>
 		/// <returns>A 64-bit signed integer equivalent to the number contained in s.</returns>
 		public static long ParseInt64(in string number) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			NumberInfo info = GetNumberInfo(number);
 			return Convert.ToInt64(number.Substring(info.ParseStart, info.ParseLength), info.Radix) * info.Sign;
@@ -182,10 +170,7 @@ namespace LibPixelPet {
 		/// <param name="number">A string containing a number to convert.</param>
 		/// <returns>An unsigned byte equivalent to the number contained in s.</returns>
 		public static byte ParseByte(in string number) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			NumberInfo info = GetNumberInfo(number);
 			if (info.Sign != 1) {
@@ -201,10 +186,7 @@ namespace LibPixelPet {
 		/// <param name="output">When this method returns, contains the 16-bit signed integer value equivalent to the number contained in s, if the conversion succeeded, or zero if the conversion failed.</param>
 		/// <returns>true if the number string was converted successfully; otherwise, false.</returns>
 		public static bool TryParseInt16(in string number, out short output) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			output = 0;
 			NumberInfo info = GetNumberInfo(number);
@@ -232,10 +214,7 @@ namespace LibPixelPet {
 		/// <param name="output">When this method returns, contains the 32-bit signed integer value equivalent to the number contained in s, if the conversion succeeded, or zero if the conversion failed.</param>
 		/// <returns>true if the number string was converted successfully; otherwise, false.</returns>
 		public static bool TryParseInt32(in string number, out int output) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			output = 0;
 			NumberInfo info = GetNumberInfo(number);
@@ -263,10 +242,7 @@ namespace LibPixelPet {
 		/// <param name="output">When this method returns, contains the 64-bit signed integer value equivalent to the number contained in s, if the conversion succeeded, or zero if the conversion failed.</param>
 		/// <returns>true if the number string was converted successfully; otherwise, false.</returns>
 		public static bool TryParseInt64(in string number, out long output) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			output = 0;
 			NumberInfo info = GetNumberInfo(number);
@@ -294,10 +270,7 @@ namespace LibPixelPet {
 		/// <param name="output">When this method returns, contains the unsigned byte value equivalent to the number contained in s, if the conversion succeeded, or zero if the conversion failed.</param>
 		/// <returns>true if the number string was converted successfully; otherwise, false.</returns>
 		public static bool TryParseByte(in string number, out byte output) {
-			if (number is null)
-				throw new ArgumentNullException(nameof(number), "The number string cannot be null.");
-			if (number.Length <= 0)
-				throw new ArgumentOutOfRangeException(nameof(number), number, "The number string cannot be empty.");
+			ArgumentException.ThrowIfNullOrEmpty(number);
 
 			output = 0;
 			NumberInfo info = GetNumberInfo(number);
@@ -324,8 +297,7 @@ namespace LibPixelPet {
 		/// <param name="hex">The hex string to parse.</param>
 		/// <returns></returns>
 		public static IEnumerable<byte> ParseHexString(in string hex) {
-			if (hex is null)
-				throw new ArgumentNullException(nameof(hex), "The hex string cannot be null.");
+			ArgumentNullException.ThrowIfNull(hex);
 
 			string trimmed = HexTrimRegex().Replace(hex, "");
 			if (trimmed.Length % 2 != 0)
@@ -346,8 +318,7 @@ namespace LibPixelPet {
 		/// <param name="output">When this method returns, contains the enumerable of bytes parsed from the hex string.</param>
 		/// <returns>true if the hex string was parsed successfully; otherwise, false.</returns>
 		public static bool TryParseHexString(string hex, out IEnumerable<byte> output) {
-			if (hex is null)
-				throw new ArgumentNullException(nameof(hex), "The hex string cannot be null.");
+			ArgumentNullException.ThrowIfNull(hex);
 
 			try {
 				output = ParseHexString(hex);

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PixelPet.CLI {
 	public class CommandRunner : ILogger {
-		internal static readonly CLICommand[] InternalCommands = new CLICommand[] {
+		internal static readonly Command[] InternalCommands = new Command[] {
 			new HelpCmd(),
 			new SetVariableCmd(),
 			new RunScriptCmd(),
@@ -40,7 +40,7 @@ namespace PixelPet.CLI {
 			new ApplyPaletteBitmapCmd(),
 			new QuantizeBitmapCmd(),
 		};
-		internal IList<CLICommand> RegisteredCommands { get; private set; }
+		internal IList<Command>? RegisteredCommands { get; private set; }
 
 		public LogLevel MaximumLogLevel { get; private set; }
 		public bool Verbose { get; private set; }
@@ -54,8 +54,7 @@ namespace PixelPet.CLI {
 		/// </summary>
 		/// <param name="workbench">The workbench to act on.</param>
 		public CommandRunner(Workbench workbench) {
-			if (workbench is null)
-				throw new ArgumentNullException(nameof(workbench));
+			ArgumentNullException.ThrowIfNull(workbench);
 
 			ConsoleOut = Console.Out;
 			ConsoleError = Console.Error;
@@ -70,11 +69,10 @@ namespace PixelPet.CLI {
 		/// Registers an additional command on the CLI.
 		/// </summary>
 		/// <param name="command">Command to register.</param>
-		public void RegisterCommand(CLICommand command) {
-			if (command is null)
-				throw new ArgumentNullException(nameof(command));
+		public void RegisterCommand(Command command) {
+			ArgumentNullException.ThrowIfNull(command);
 
-			RegisteredCommands ??= new List<CLICommand>();
+			RegisteredCommands ??= new List<Command>();
 			RegisteredCommands.Add(command);
 		}
 
@@ -92,8 +90,7 @@ namespace PixelPet.CLI {
 		public void Run(IEnumerable<string> args) => Run((args ?? Array.Empty<string>()).GetEnumerator());
 
 		internal void Run(IEnumerator<string> args) {
-			if (args is null)
-				throw new ArgumentNullException(nameof(args));
+			ArgumentNullException.ThrowIfNull(args);
 
 #if !DEBUG
 			try {
@@ -126,7 +123,7 @@ namespace PixelPet.CLI {
 		private bool RunCommand(IEnumerator<string> args) {
 			string cmdName = args.Current;
 
-			CLICommand cmd;
+			Command? cmd;
 			cmd = RegisteredCommands?
 				.FirstOrDefault(c => c.Name.Equals(cmdName, StringComparison.OrdinalIgnoreCase));
 			cmd ??= InternalCommands

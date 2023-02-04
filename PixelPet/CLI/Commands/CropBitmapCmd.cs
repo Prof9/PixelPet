@@ -1,5 +1,5 @@
 ﻿namespace PixelPet.CLI.Commands {
-	internal sealed class CropBitmapCmd : CLICommand {
+	internal sealed class CropBitmapCmd : Command {
 		public CropBitmapCmd()
 			: base("Crop-Bitmap",
 				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),
@@ -9,10 +9,10 @@
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			int x = FindNamedParameter("--x").Values[0].ToInt32();
-			int y = FindNamedParameter("--y").Values[0].ToInt32();
-			int w = FindNamedParameter("--width").Values[0].ToInt32();
-			int h = FindNamedParameter("--height").Values[0].ToInt32();
+			int x = GetNamedParameter("--x").Values[0].ToInt32();
+			int y = GetNamedParameter("--y").Values[0].ToInt32();
+			int w = GetNamedParameter("--width").Values[0].ToInt32();
+			int h = GetNamedParameter("--height").Values[0].ToInt32();
 
 			workbench.Bitmap = workbench.Bitmap.GetCroppedBitmap(x, y, w, h);
 

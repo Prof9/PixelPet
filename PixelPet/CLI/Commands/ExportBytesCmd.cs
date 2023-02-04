@@ -1,17 +1,17 @@
 ﻿using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ExportBytesCmd : CLICommand {
+	internal sealed class ExportBytesCmd : Command {
 		public ExportBytesCmd()
 			: base("Export-Bytes",
 				new Parameter(true, new ParameterValue("path"))
 			) { }
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
-			string path = FindUnnamedParameter(0).Values[0].ToString();
+			string path = GetUnnamedParameter(0).Values[0].ToString();
 
 			try {
-				Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
+				Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)!)!);
 				using FileStream fs = new(path, FileMode.Create, FileAccess.Write, FileShare.None);
 				workbench.Stream.WriteTo(fs);
 			} catch (IOException) {
