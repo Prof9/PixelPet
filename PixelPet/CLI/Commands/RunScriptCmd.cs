@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed partial class RunScriptCmd : CliCommand {
+	internal sealed partial class RunScriptCmd : CLICommand {
 
 		[GeneratedRegex("\\\".*?\\\"|[^\"\\s]+")]
 		private static partial Regex QuotedArgumentRegex();

@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed partial class SetVariableCmd : CliCommand {
+	internal sealed partial class SetVariableCmd : CLICommand {
 		[GeneratedRegex("^[\\w]+$")]
 		private static partial Regex VariableNameRegex();
 		[GeneratedRegex("^[^<>]+$")]

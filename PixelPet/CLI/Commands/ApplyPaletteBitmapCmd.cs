@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ApplyPaletteBitmapCmd : CliCommand {
+	internal sealed class ApplyPaletteBitmapCmd : CLICommand {
 		public ApplyPaletteBitmapCmd()
 			: base("Apply-Palette-Bitmap",
 				new Parameter("palette-number", "pn", false, new ParameterValue("number"))

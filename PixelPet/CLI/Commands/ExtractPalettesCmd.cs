@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ExtractPalettesCmd : CliCommand {
+	internal sealed class ExtractPalettesCmd : CLICommand {
 		public ExtractPalettesCmd()
 			: base("Extract-Palettes",
 				new Parameter("append", "a", false),

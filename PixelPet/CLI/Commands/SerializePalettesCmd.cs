@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializePalettesCmd : CliCommand {
+	internal sealed class SerializePalettesCmd : CLICommand {
 		public SerializePalettesCmd()
 			: base("Serialize-Palettes",
 				new Parameter("append", "a", false)

@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializeTilesetCmd : CliCommand {
+	internal sealed class SerializeTilesetCmd : CLICommand {
 		public SerializeTilesetCmd()
 			: base("Serialize-Tileset",
 				new Parameter("append", "a", false),

@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class RenderTilesetCmd : CliCommand {
+	internal sealed class RenderTilesetCmd : CLICommand {
 		public RenderTilesetCmd()
 			: base("Render-Tileset",
 				new Parameter("tiles-per-row", "tw", false, new ParameterValue("count", "32")),

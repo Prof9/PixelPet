@@ -4,7 +4,7 @@ using System;
 using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ExportBitmapCmd : CliCommand {
+	internal sealed class ExportBitmapCmd : CLICommand {
 		public ExportBitmapCmd()
 			: base ("Export-Bitmap",
 				new Parameter(true, new ParameterValue("path")),

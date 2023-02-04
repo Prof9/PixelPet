@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeserializeBitmapCmd : CliCommand {
+	internal sealed class DeserializeBitmapCmd : CLICommand {
 		public DeserializeBitmapCmd()
 			: base("Deserialize-Bitmap",
 				new Parameter(true, new ParameterValue("format")),

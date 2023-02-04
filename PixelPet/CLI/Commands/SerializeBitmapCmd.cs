@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializeBitmapCmd : CliCommand {
+	internal sealed class SerializeBitmapCmd : CLICommand {
 		public SerializeBitmapCmd()
 			: base("Serialize-Bitmap",
 				new Parameter("append", "a", false)

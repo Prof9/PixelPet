@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ReadPalettesCmd : CliCommand {
+	internal sealed class ReadPalettesCmd : CLICommand {
 		public ReadPalettesCmd()
 			: base("Read-Palettes",
 				new Parameter("append", "a", false),

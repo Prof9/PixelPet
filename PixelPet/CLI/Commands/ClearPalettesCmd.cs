@@ -1,5 +1,5 @@
 ﻿namespace PixelPet.CLI.Commands {
-	internal sealed class ClearPalettesCmd : CliCommand {
+	internal sealed class ClearPalettesCmd : CLICommand {
 		public ClearPalettesCmd()
 			: base("Clear-Palettes") { }
 

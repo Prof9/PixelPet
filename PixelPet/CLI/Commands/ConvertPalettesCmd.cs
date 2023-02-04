@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ConvertPalettesCmd : CliCommand {
+	internal sealed class ConvertPalettesCmd : CLICommand {
 		public ConvertPalettesCmd()
 			: base("Convert-Palettes",
 				new Parameter(true, new ParameterValue("format")),

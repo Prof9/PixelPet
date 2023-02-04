@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeduplicatePalettesCmd : CliCommand {
+	internal sealed class DeduplicatePalettesCmd : CLICommand {
 		public DeduplicatePalettesCmd()
 			: base("Deduplicate-Palettes",
 				new Parameter("global", "g", false)

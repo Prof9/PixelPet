@@ -1,5 +1,5 @@
 ﻿namespace PixelPet.CLI.Commands {
-	internal sealed class ClearTilesetCmd : CliCommand {
+	internal sealed class ClearTilesetCmd : CLICommand {
 		public ClearTilesetCmd()
 			: base("Clear-Tileset",
 				new Parameter("tile-size", "s", false, new ParameterValue("width", "8"), new ParameterValue("height", "8"))

@@ -3,7 +3,7 @@ using SkiaSharp;
 using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ImportBitmapCmd : CliCommand {
+	internal sealed class ImportBitmapCmd : CLICommand {
 		public ImportBitmapCmd()
 			: base("Import-Bitmap",
 				new Parameter(true, new ParameterValue("path")),

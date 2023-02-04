@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI {
-	public abstract partial class CliCommand {
+	public abstract partial class CLICommand {
 
 		[GeneratedRegex("<([^<>]+)>")]
 		private static partial Regex VariableRegex();
@@ -27,7 +27,7 @@ namespace PixelPet.CLI {
 		/// </summary>
 		public bool IsReadyToRun { get; private set; }
 
-		protected CliCommand(in string name, params Parameter[] parameters) {
+		protected CLICommand(in string name, params Parameter[] parameters) {
 			if (name is null)
 				throw new ArgumentNullException(nameof(name));
 			if (name.Any(c => char.IsWhiteSpace(c)))
@@ -143,7 +143,8 @@ namespace PixelPet.CLI {
 			do {
 				matches = VariableRegex().Matches(value);
 				// Go right to left so we can do multiple in one pass
-				foreach (Match match in matches.Reverse()) {
+				for (int i = matches.Count - 1; i >= 0; i--) {
+					Match match = matches[i];
 					string varName = match.Groups[1].Value;
 					if (!(CLI?.Variables?.TryGetValue(varName, out string varValue) ?? false)) {
 						throw new ArgumentException($"Unknown variable {varName} in {before}");

@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class SerializeTilemapCmd : CliCommand {
+	internal sealed class SerializeTilemapCmd : CLICommand {
 		public SerializeTilemapCmd()
 			: base("Serialize-Tilemap",
 				new Parameter("append", "a", false),

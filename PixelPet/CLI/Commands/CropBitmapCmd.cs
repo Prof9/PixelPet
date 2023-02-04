@@ -1,5 +1,5 @@
 ﻿namespace PixelPet.CLI.Commands {
-	internal sealed class CropBitmapCmd : CliCommand {
+	internal sealed class CropBitmapCmd : CLICommand {
 		public CropBitmapCmd()
 			: base("Crop-Bitmap",
 				new Parameter("x", "x", false, new ParameterValue("pixels", "0")),

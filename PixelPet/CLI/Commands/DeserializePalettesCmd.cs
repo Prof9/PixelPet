@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeserializePalettesCmd : CliCommand {
+	internal sealed class DeserializePalettesCmd : CLICommand {
 		public DeserializePalettesCmd()
 			: base("Deserialize-Palettes",
 				new Parameter(true, new ParameterValue("format")),

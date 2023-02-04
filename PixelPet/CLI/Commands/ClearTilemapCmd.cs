@@ -1,5 +1,5 @@
 ﻿namespace PixelPet.CLI.Commands {
-	internal sealed class ClearTilemapCmd : CliCommand {
+	internal sealed class ClearTilemapCmd : CLICommand {
 		public ClearTilemapCmd()
 			: base("Clear-Tilemap") { }
 

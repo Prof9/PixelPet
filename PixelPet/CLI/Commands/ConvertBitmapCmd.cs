@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ConvertBitmapCmd : CliCommand {
+	internal sealed class ConvertBitmapCmd : CLICommand {
 		public ConvertBitmapCmd()
 			: base("Convert-Bitmap",
 				new Parameter(true, new ParameterValue("format")),

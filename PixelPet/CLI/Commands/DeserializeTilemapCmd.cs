@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class DeserializeTilemapCmd : CliCommand {
+	internal sealed class DeserializeTilemapCmd : CLICommand {
 		public DeserializeTilemapCmd()
 			: base("Deserialize-Tilemap",
 				new Parameter(true, new ParameterValue("tilemap-format")),

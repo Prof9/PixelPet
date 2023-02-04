@@ -4,7 +4,7 @@ using System;
 using System.IO;
 
 namespace Tests.Commands {
-	internal sealed class CheckFileEqualCmd : CliCommand {
+	internal sealed class CheckFileEqualCmd : CLICommand {
 		public CheckFileEqualCmd()
 			: base("Check-File-Equal",
 				new Parameter(true, new ParameterValue("file1")),

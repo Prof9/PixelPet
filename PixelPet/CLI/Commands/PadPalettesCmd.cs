@@ -1,7 +1,7 @@
 ﻿using LibPixelPet;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class PadPalettesCmd : CliCommand {
+	internal sealed class PadPalettesCmd : CLICommand {
 		public PadPalettesCmd()
 			: base("Pad-Palettes",
 				new Parameter(true, new ParameterValue("width", "0")),

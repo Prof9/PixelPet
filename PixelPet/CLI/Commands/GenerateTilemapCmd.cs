@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class GenerateTilemapCmd : CliCommand {
+	internal sealed class GenerateTilemapCmd : CLICommand {
 		public GenerateTilemapCmd()
 			: base("Generate-Tilemap",
 				new Parameter(true, new ParameterValue("format")),

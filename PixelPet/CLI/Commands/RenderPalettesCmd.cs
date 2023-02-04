@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class RenderPalettesCmd : CliCommand {
+	internal sealed class RenderPalettesCmd : CLICommand {
 		public RenderPalettesCmd()
 			: base("Render-Palettes",
 				new Parameter("colors-per-row", "cw", false, new ParameterValue("count", "0"))

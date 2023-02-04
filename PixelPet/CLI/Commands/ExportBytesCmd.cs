@@ -1,7 +1,7 @@
 ﻿using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ExportBytesCmd : CliCommand {
+	internal sealed class ExportBytesCmd : CLICommand {
 		public ExportBytesCmd()
 			: base("Export-Bytes",
 				new Parameter(true, new ParameterValue("path"))

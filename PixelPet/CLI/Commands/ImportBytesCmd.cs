@@ -3,7 +3,7 @@ using System;
 using System.IO;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class ImportBytesCmd : CliCommand {
+	internal sealed class ImportBytesCmd : CLICommand {
 		public ImportBytesCmd()
 			: base("Import-Bytes",
 				new Parameter(true, new ParameterValue("path")),

@@ -2,7 +2,7 @@
 using System;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class PadTilesetCmd : CliCommand {
+	internal sealed class PadTilesetCmd : CLICommand {
 		public PadTilesetCmd()
 			: base("Pad-Tileset",
 				new Parameter(true, new ParameterValue("width")),

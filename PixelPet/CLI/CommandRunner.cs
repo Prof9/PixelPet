@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PixelPet.CLI {
 	public class CommandRunner : ILogger {
-		internal IList<CliCommand> Commands = new List<CliCommand>() {
+		internal static readonly CLICommand[] InternalCommands = new CLICommand[] {
 			new HelpCmd(),
 			new SetVariableCmd(),
 			new RunScriptCmd(),
@@ -40,6 +40,7 @@ namespace PixelPet.CLI {
 			new ApplyPaletteBitmapCmd(),
 			new QuantizeBitmapCmd(),
 		};
+		internal IList<CLICommand> RegisteredCommands { get; private set; }
 
 		public LogLevel MaximumLogLevel { get; private set; }
 		public bool Verbose { get; private set; }
@@ -69,11 +70,12 @@ namespace PixelPet.CLI {
 		/// Registers an additional command on the CLI.
 		/// </summary>
 		/// <param name="command">Command to register.</param>
-		public void RegisterCommand(CliCommand command) {
+		public void RegisterCommand(CLICommand command) {
 			if (command is null)
 				throw new ArgumentNullException(nameof(command));
 
-			Commands.Add(command);
+			RegisteredCommands ??= new List<CLICommand>();
+			RegisteredCommands.Add(command);
 		}
 
 		/// <summary>
@@ -124,7 +126,10 @@ namespace PixelPet.CLI {
 		private bool RunCommand(IEnumerator<string> args) {
 			string cmdName = args.Current;
 
-			CliCommand cmd = Commands
+			CLICommand cmd;
+			cmd = RegisteredCommands?
+				.FirstOrDefault(c => c.Name.Equals(cmdName, StringComparison.OrdinalIgnoreCase));
+			cmd ??= InternalCommands
 				.FirstOrDefault(c => c.Name.Equals(cmdName, StringComparison.OrdinalIgnoreCase));
 
 			if (cmd is null) {

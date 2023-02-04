@@ -2,7 +2,7 @@
 using System.Drawing;
 
 namespace PixelPet.CLI.Commands {
-	internal sealed class QuantizeBitmapCmd : CliCommand {
+	internal sealed class QuantizeBitmapCmd : CLICommand {
 		public QuantizeBitmapCmd()
 			: base("Quantize-Bitmap",
 				new Parameter(true, new ParameterValue("format")),
