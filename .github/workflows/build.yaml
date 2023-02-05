@@ -40,9 +40,10 @@ jobs:
       - name: Publish (macOS)
         if: startsWith(matrix.os, 'macOS')
         run: dotnet publish PixelPet --configuration Release -p:PublishProfile=FolderProfile --runtime osx-x64 --no-self-contained -o publish
-      - run: cp README.md publish/README.md
-      - run: cp LICENSE.txt publish/LICENSE.txt
-      - run: cp LICENSE-third-party.txt publish/LICENSE-third-party.txt
+      - run: cp "README.md" "publish/README.md"
+      - run: cp "LICENSE.txt" "publish/LICENSE.txt"
+      - run: cp "LICENSE-third-party.txt" "publish/LICENSE-third-party.txt"
+      - run: cp "Version history.txt" "publish/Version history.txt"
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:

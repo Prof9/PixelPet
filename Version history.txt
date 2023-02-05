@@ -1,0 +1,2 @@
+Ver. 1.0.0 - 5 February 2023
+ *  Initial release.
