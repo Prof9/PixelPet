@@ -45,15 +45,16 @@ namespace PixelPet.CLI.Commands {
 				Palette pal = workbench.PaletteSet[p].Palette;
 				for (int i = 0; i < w; i++) {
 					// Draw transparent if we ran out of colors.
+					int color;
 					if (c >= pal.Count) {
-						c = 0;
+						color = 0;
 					} else {
-						c = fmt.Convert(pal[c++], pal.Format);
+						color = fmt.Convert(pal[c++], pal.Format);
 					}
 					// Draw rectangle
 					for (int y = 0; y < th; y++) {
 						for (int x = 0; x < tw; x++) {
-							workbench.Bitmap[i * tw + x, j * th + y] = c;
+							workbench.Bitmap[i * tw + x, j * th + y] = color;
 						}
 					}
 					count++;
