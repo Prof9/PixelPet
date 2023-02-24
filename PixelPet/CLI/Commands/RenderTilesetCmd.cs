@@ -29,6 +29,11 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
+			if (workbench.Tileset.Count <= 0) {
+				logger?.Log("Cannot render empty tileset.", LogLevel.Error);
+				return false;
+			}
+
 			workbench.Bitmap = workbench.Tileset.IsIndexed
 				? workbench.Tileset.ToBitmapIndexed(maxTilesPerRow, workbench.PaletteSet, fmt)
 				: workbench.Tileset.ToBitmap(maxTilesPerRow, fmt);
