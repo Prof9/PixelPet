@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="GetBuildInfo">
 	<PropertyGroup>
 		<Authors>Prof. 9</Authors>
-		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionPrefix>1.0.1</VersionPrefix>
 		<Copyright>Copyright © $(Authors) $([System.DateTime]::Now.Year)</Copyright>
 		<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
@@ -14,6 +14,8 @@
 		<Nullable>enable</Nullable>
 		<AnalysisLevel>latest-all</AnalysisLevel>
 		<WarningLevel>9999</WarningLevel>
+		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
+		<FileVersion>$(VersionPrefix).0</FileVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 		<DebugType>none</DebugType>
