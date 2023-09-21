@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="GetBuildInfo">
+<Project Sdk="Microsoft.NET.Sdk" InitialTargets="GetBuildInfo">
 	<PropertyGroup>
 		<Authors>Prof. 9</Authors>
 		<VersionPrefix>1.0.1</VersionPrefix>
@@ -22,7 +22,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\LibPixelPet\LibPixelPet.csproj" />
-		<PackageReference Include="SkiaSharp" Version="2.88.3" />
+		<PackageReference Include="SkiaSharp" Version="2.88.6" />
 	</ItemGroup>
 	<Target Name="GetBuildInfo">
 		<Exec Command="git describe --abbrev --exclude=* --always --dirty --broken" ConsoleToMSBuild="true" IgnoreExitCode="true">
