@@ -62,6 +62,7 @@ PixelPet currently supports the following color formats. A color format describe
  *  **NDS** / **ABGR5551** - 16-bit color as it is used on the Nintendo DS, where the Red, Green and Blue components are 5 bits, and the Alpha component is 1 bit. `0x8000` is pure black, and `0xFFFF` is pure white.
  *  **24BPP** / **RGB888** - General 24-bit color, where the Red, Green and Blue components are all 8 bits. `0x000000` is pure black, and `0xFFFFFF` is pure white.
  *  **32BPP** / **ARGB8888** - General 32-bit color, where the Red, Green, Blue and Alpha components are all 8 bits. `0xFF000000` is pure black, and `0xFFFFFFFF` is pure white.
+ *  **RGB555** - 15-bit color where the Red, Green and Blue components are all 5 bits. `0x0000` is pure black, and `0x7FFF` is pure white. Here the Blue component occupies the low bits and the Red component occupies the high bits.
 
 ## Tilemap formats
 

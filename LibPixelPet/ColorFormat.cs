@@ -8,6 +8,7 @@ namespace LibPixelPet {
 	}
 
 	public readonly struct ColorFormat : IEquatable<ColorFormat> {
+		public static readonly ColorFormat RGB555        = SequentialARGB(5, 5, 5, 0, 1);
 		public static readonly ColorFormat BGR555        = SequentialABGR(5, 5, 5, 0, 1);
 		public static readonly ColorFormat RGB888        = SequentialARGB(8, 8, 8, 0, 0);
 		public static readonly ColorFormat ABGR1555      = SequentialABGR(5, 5, 5, 1, 0);
@@ -34,6 +35,7 @@ namespace LibPixelPet {
 				"2BPP"                => Grayscale2BPP,
 				"4BPP"                => Grayscale4BPP,
 				"8BPP"                => Grayscale8BPP,
+				"RGB555"              => RGB555,
 				"BGR555"   or "GBA"   => BGR555,
 				"ABGR1555" or "NDS"   => ABGR1555,
 				"RGB888"   or "24BPP" => RGB888,
