@@ -29,7 +29,7 @@ namespace PixelPet.CLI {
 				builder.Append('-' + ShortName + ' ');
 			}
 
-			if (Values.Any()) {
+			if (Values.Count > 0) {
 				builder.Append(IsRequired ? '<' : '[');
 
 				foreach (ParameterValue val in Values) {

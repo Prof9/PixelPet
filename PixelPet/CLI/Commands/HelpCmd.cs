@@ -36,7 +36,7 @@ namespace PixelPet.CLI.Commands {
 						}
 					}
 
-					if (param.IsNamed && param.Values.Any()) {
+					if (param.IsNamed && param.Values.Count > 0) {
 						Console.Write(' ');
 					}
 

@@ -174,7 +174,7 @@ namespace PixelPet.CLI {
 				return Parameters.FirstOrDefault(
 					p => string.CompareOrdinal(name, 2, p.LongName, 0, int.MaxValue) == 0
 				) ?? throw new ArgumentException($"Unrecognized parameter --{name}");
-			} else if (name.StartsWith("-", StringComparison.Ordinal)) {
+			} else if (name.StartsWith('-')) {
 				return Parameters.FirstOrDefault(
 					p => string.CompareOrdinal(name, 1, p.ShortName, 0, int.MaxValue) == 0
 				) ?? throw new ArgumentException($"Unrecognized parameter -{name}");
