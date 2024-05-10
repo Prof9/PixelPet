@@ -38,6 +38,7 @@ namespace PixelPet.CLI.Commands {
 			ColorFormat fmt = ColorFormat.ARGB8888;
 
 			workbench.Bitmap = new Bitmap(w * tw, h * th);
+			workbench.BitmapFormat = fmt;
 
 			int p = 0;
 			int c = 0;
