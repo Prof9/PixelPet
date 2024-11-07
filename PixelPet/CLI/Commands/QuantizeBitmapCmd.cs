@@ -42,6 +42,7 @@ namespace PixelPet.CLI.Commands {
 					if (canUsePal) {
 						pal    = palEntry.Palette;
 						palNum = palEntry.Number;
+						break;
 					}
 				}
 			}
