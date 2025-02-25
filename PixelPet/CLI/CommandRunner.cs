@@ -138,10 +138,14 @@ namespace PixelPet.CLI {
 
 			Log($"Running command: {cmd}...", LogLevel.VerboseInformation);
 
+			// If this command recursively calls other commands then its members may no longer be valid after we run it (#8)
+			// Make a local copy of whichever members we still need
+			bool reachedEnd = cmd.ReachedEnd;
+
 			if (!cmd.Run(Workbench, this)) {
 				return false;
 			}
-			return !cmd.ReachedEnd;
+			return !reachedEnd;
 		}
 
 		public void Log(string logString, LogLevel logLevel) {
