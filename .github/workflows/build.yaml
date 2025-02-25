@@ -18,9 +18,9 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macOS-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 7.0.x
       - name: Install dependencies
@@ -45,12 +45,12 @@ jobs:
       - run: cp "LICENSE-third-party.txt" "publish/LICENSE-third-party.txt"
       - run: cp "Version history.txt" "publish/Version history.txt"
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-${{matrix.os}}
           path: publish/
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tests-${{matrix.os}}
           path: Tests/bin/Release/net7.0/TestsOut/
