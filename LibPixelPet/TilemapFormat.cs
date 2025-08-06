@@ -2,10 +2,11 @@
 
 namespace LibPixelPet {
 	public readonly struct TilemapFormat : IEquatable<TilemapFormat> {
-		public static readonly TilemapFormat GB      = new(8, 8, 0,  8,  0, false,  0, false,  0,  0,  0, 0,  true, false, ColorFormat.GameBoy,       BitmapEncoding.GameBoy);
-		public static readonly TilemapFormat GBA4BPP = new(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale4BPP, BitmapEncoding.GameBoyAdvance);
-		public static readonly TilemapFormat GBA8BPP = new(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale8BPP, BitmapEncoding.GameBoyAdvance);
-		public static readonly TilemapFormat NDSTEX5 = new(4, 4, 0,  0,  0, false,  0, false,  0, 14, 14, 2, false,  true, ColorFormat.Grayscale2BPP, BitmapEncoding.NintendoDSTexture);
+		public static readonly TilemapFormat GB        = new(8, 8, 0,  8,  0, false,  0, false,  0,  0,  0, 0,  true, false, ColorFormat.GameBoy,       BitmapEncoding.GameBoy);
+		public static readonly TilemapFormat GBA4BPP   = new(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale4BPP, BitmapEncoding.GameBoyAdvance);
+		public static readonly TilemapFormat GBA8BPP   = new(8, 8, 0, 10, 10,  true, 11,  true, 12,  4,  0, 0,  true,  true, ColorFormat.Grayscale8BPP, BitmapEncoding.GameBoyAdvance);
+		public static readonly TilemapFormat GBAAffine = new(8, 8, 0,  8,  0, false,  0, false,  0,  0,  0, 0,  true,  true, ColorFormat.Grayscale8BPP, BitmapEncoding.GameBoyAdvance);
+		public static readonly TilemapFormat NDSTEX5   = new(4, 4, 0,  0,  0, false,  0, false,  0, 14, 14, 2, false,  true, ColorFormat.Grayscale2BPP, BitmapEncoding.NintendoDSTexture);
 
 		/// <summary>
 		/// Gets a tilemap format with the specified name, or null if no such tilemap format exists.
@@ -17,6 +18,7 @@ namespace LibPixelPet {
 				"GB"                     => GB,
 				"GBA-4BPP" or "NDS-4BPP" => GBA4BPP,
 				"GBA-8BPP" or "NDS-8BPP" => GBA8BPP,
+				"GBA-AFFINE"             => GBAAffine,
 				"NDS-TEX5"               => NDSTEX5,
 				_                        => null,
 			};

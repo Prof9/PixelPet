@@ -71,6 +71,7 @@ PixelPet currently supports the following tilemap formats. A tilemap format cont
  *  **GB** - 2 bits per pixel tilemap format as it used on the Game Boy, where a pair of 2 bytes collectively holds 8 pixels.
  *  **GBA-4BPP** / **NDS-4BPP** - 4 bits per pixel tilemap format as it is used on the Game Boy Advance and Nintendo DS. This tilemap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `4BPP` grayscale color format instead.
  *  **GBA-8BPP** / **NDS-8BPP** - 8 bits per pixel tilemap format as it is used on the Game Boy Advance and Nintendo DS. This tilemap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `8BPP` grayscale color format instead.
+ *  **GBA-Affine** - 8 bits per pixel tilemap format used on the Game Boy Advance and Nintendo DS for affine backgrounds (8-bit tilemap). This tilemap format uses indexed colors, meaning a palette is required to properly display it. If no suitable palette is loaded, any rendered tiles will be rendered using the general `8BPP` grayscale color format instead.
 
 ## Usage
 
