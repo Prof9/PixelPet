@@ -26,8 +26,12 @@ namespace Tests.Commands {
 			Span<byte> buffer2 = stackalloc byte[8];
 
 			while (fs1.Position < fs1.Length) {
-				fs1.Read(buffer1);
-				fs2.Read(buffer2);
+				int readFrom1 = fs1.Read(buffer1);
+				int readFrom2 = fs2.Read(buffer2);
+				if (readFrom1 != readFrom2) {
+					logger?.Log($"Unexpected end of file", LogLevel.Error);
+					return false;
+				}
 
 				ulong val1 = BitConverter.ToUInt64(buffer1);
 				ulong val2 = BitConverter.ToUInt64(buffer2);

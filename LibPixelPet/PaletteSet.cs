@@ -14,7 +14,7 @@ namespace LibPixelPet {
 		public int Count => PaletteEntries.Count;
 
 		public PaletteSet() {
-			PaletteEntries = new List<PaletteEntry>();
+			PaletteEntries = new();
 		}
 
 		public PaletteEntry this[int index] {

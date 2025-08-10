@@ -1,7 +1,7 @@
 ﻿using System.IO;
 
 namespace Tests {
-	public static class FileOps {
+	internal static class FileOps {
 		/// <summary>
 		/// Copy a directory.
 		/// From: https://docs.microsoft.com/en-us/dotnet/standard/io/how-to-copy-directories

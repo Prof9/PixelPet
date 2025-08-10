@@ -52,7 +52,7 @@ namespace LibPixelPet {
 		/// Creates a new empty multi-valued dictionary.
 		/// </summary>
 		public MultiValueDictionary() {
-			BaseDictionary = new Dictionary<TKey, IList<TValue>>();
+			BaseDictionary = new();
 		}
 
 		/// <summary>

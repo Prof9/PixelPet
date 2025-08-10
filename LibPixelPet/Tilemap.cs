@@ -37,7 +37,7 @@ namespace LibPixelPet {
 		/// <param name="mapFmt">The tilemap format to use.</param>
 		public Tilemap(TilemapFormat mapFmt) {
 			TilemapFormat = mapFmt;
-			TileEntries = new List<TileEntry>();
+			TileEntries = new();
 		}
 
 		/// <summary>

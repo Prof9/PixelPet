@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace LibPixelPet {
 	public static partial class NumberParser {
-		private static readonly IList<char> posSignChars = new char[] { '+' };
-		private static readonly IList<char> negSignChars = new char[] { '−', '-' };
+		private static readonly char[] posSignChars = ['+'];
+		private static readonly char[] negSignChars = ['−', '-'];
 
 		[GeneratedRegex("[\\s-]")]
 		private static partial Regex HexTrimRegex();
 
 		private record struct NumberInfo(int ParseStart, int ParseEnd, int Radix, int Sign) {
-			public int ParseLength => ParseEnd - ParseStart;
+			public readonly int ParseLength => ParseEnd - ParseStart;
 		}
 
 		/// <summary>

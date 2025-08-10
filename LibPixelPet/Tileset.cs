@@ -65,8 +65,8 @@ namespace LibPixelPet {
 			ColorFormat = ColorFormat.ARGB8888;
 			IsIndexed = false;
 
-			Tiles = new List<Tile>();
-			TileDictionary = new MultiValueDictionary<int, TileEntry>();
+			Tiles = new();
+			TileDictionary = new();
 		}
 
 		public Tile this[int index] {

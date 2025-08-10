@@ -17,7 +17,7 @@ namespace PixelPet.CLI.Commands {
 				  new Parameter(true, new ParameterValue("path")),
 				  new Parameter("recursive", "r", false)
 			) {
-			ScriptPaths = new HashSet<string>();
+			ScriptPaths = new();
 		}
 
 		protected override bool RunImplementation(Workbench workbench, ILogger logger) {
@@ -43,7 +43,7 @@ namespace PixelPet.CLI.Commands {
 			}
 
 			// Process and remove comments
-			StringBuilder scriptWithoutComments = new StringBuilder();
+			StringBuilder scriptWithoutComments = new();
 			bool inLineComment = false;
 			bool inBlockComment = false;
 			bool inString = false;

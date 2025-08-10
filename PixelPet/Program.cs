@@ -4,15 +4,10 @@ using System.Reflection;
 
 namespace PixelPet {
 	[AttributeUsage(AttributeTargets.Assembly)]
-	internal sealed class AssemblyBuildInfoAttribute : Attribute
+	internal sealed class AssemblyBuildInfoAttribute(string timestamp, string commitID) : Attribute
 	{
-		public string Timestamp { get; }
-		public string CommitID { get; }
-		public AssemblyBuildInfoAttribute(string timestamp, string commitID)
-		{
-			Timestamp = timestamp;
-			CommitID = commitID;
-		}
+		public string Timestamp { get; } = timestamp;
+		public string CommitID { get; } = commitID;
 	}
 
 	internal sealed class Program {

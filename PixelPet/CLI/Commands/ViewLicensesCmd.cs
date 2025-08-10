@@ -16,7 +16,7 @@ namespace PixelPet.CLI.Commands {
 			// Sort them without file extension
 			IEnumerable<string> licenseFiles = assembly.GetManifestResourceNames()
 				.Where(x => x.StartsWith("PixelPet.Licenses.", StringComparison.OrdinalIgnoreCase))
-				.OrderBy(x => x.Substring(x.LastIndexOf('.')));
+				.OrderBy(x => x[x.LastIndexOf('.')..]);
 
 			// Print each license to console
 			bool first = true;

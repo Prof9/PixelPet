@@ -26,6 +26,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Licenses/" />
+		<None Remove="Licenses/.gitkeep" />
 		<EmbeddedResource Include="../LICENSE.txt" Link="Licenses/LICENSE.txt" />
 		<EmbeddedResource Include="../LICENSE-third-party.txt" Link="Licenses/LICENSE-third-party.txt" />
 	</ItemGroup>
