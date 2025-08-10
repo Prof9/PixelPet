@@ -30,8 +30,7 @@ namespace LibPixelPet {
 			: this(tileNumber, hFlip, vFlip, paletteNumber, 0) { }
 
 		public TileEntry(int tileNumber, bool hFlip, bool vFlip, int paletteNumber, int mode) {
-			if (tileNumber < 0)
-				throw new ArgumentOutOfRangeException(nameof(tileNumber));
+			ArgumentOutOfRangeException.ThrowIfNegative(tileNumber);
 
 			TileNumber = tileNumber;
 			HFlip = hFlip;

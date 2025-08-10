@@ -3,7 +3,7 @@
 		<Authors>Prof. 9</Authors>
 		<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<OutputType>Library</OutputType>
 		<LangVersion>latest</LangVersion>
 		<SignAssembly>true</SignAssembly>

@@ -5,7 +5,7 @@
 		<Copyright>Copyright © $(Authors) $([System.DateTime]::Now.Year)</Copyright>
 		<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<LangVersion>latest</LangVersion>
 		<SignAssembly>true</SignAssembly>

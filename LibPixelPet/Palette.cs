@@ -33,8 +33,7 @@ namespace LibPixelPet {
 		/// <param name="format">The color format.</param>
 		/// <param name="maxSize">The maximum palette size, or -1 if there is no maximum.</param>
 		public Palette(in ColorFormat format, in int maxSize) {
-			if (maxSize < -1)
-				throw new ArgumentOutOfRangeException(nameof(maxSize));
+			ArgumentOutOfRangeException.ThrowIfLessThan(maxSize, -1);
 
 			// Default capacity 16, but no greater than 256.
 			int initialCapacity = maxSize;

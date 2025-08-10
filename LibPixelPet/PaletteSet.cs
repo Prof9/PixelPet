@@ -53,8 +53,7 @@ namespace LibPixelPet {
 		/// <param name="number">The palette number to use.</param>
 		public void Add(Palette palette, in int number) {
 			ArgumentNullException.ThrowIfNull(palette);
-			if (number < 0)
-				throw new ArgumentOutOfRangeException(nameof(number));
+			ArgumentOutOfRangeException.ThrowIfNegative(number);
 			if (ContainsPalette(number))
 				throw new ArgumentException("A palette with this palette number already exists in the palette set.", nameof(number));
 

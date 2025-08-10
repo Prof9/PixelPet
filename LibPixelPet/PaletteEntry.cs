@@ -12,8 +12,7 @@ namespace LibPixelPet {
 		public Palette Palette { get; }
 
 		public PaletteEntry(int number, Palette palette) {
-			if (number < 0)
-				throw new ArgumentOutOfRangeException(nameof(number));
+			ArgumentOutOfRangeException.ThrowIfNegative(number);
 			ArgumentNullException.ThrowIfNull(palette);
 
 			Number = number;

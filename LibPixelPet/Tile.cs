@@ -63,10 +63,8 @@ namespace LibPixelPet {
 		/// <param name="x">The x-position of the origin of the tile.</param>
 		/// <param name="y">The y-position of the origin of the tile.</param>
 		public Tile(in int width, in int height, in int x, in int y) {
-			if (width < 1)
-				throw new ArgumentOutOfRangeException(nameof(width));
-			if (height < 1)
-				throw new ArgumentOutOfRangeException(nameof(height));
+			ArgumentOutOfRangeException.ThrowIfLessThan(width, 1);
+			ArgumentOutOfRangeException.ThrowIfLessThan(height, 1);
 
 			PaletteNumber = 0;
 

@@ -149,10 +149,8 @@ namespace LibPixelPet {
 
 		private Bitmap ToBitmapInternal(Tileset tileset, PaletteSet? palettes, in int tilesPerRow, in int tilesPerColumn, bool indexed) {
 			ArgumentNullException.ThrowIfNull(tileset);
-			if (tilesPerRow <= 0)
-				throw new ArgumentOutOfRangeException(nameof(tilesPerRow));
-			if (tilesPerColumn <= 0)
-				throw new ArgumentOutOfRangeException(nameof(tilesPerColumn));
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(tilesPerRow);
+			ArgumentOutOfRangeException.ThrowIfNegativeOrZero(tilesPerColumn);
 			if (indexed)
 				ArgumentNullException.ThrowIfNull(palettes);
 

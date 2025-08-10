@@ -55,10 +55,8 @@ namespace LibPixelPet {
 		/// <param name="tileWidth">The width of each tile in pixels.</param>
 		/// <param name="tileHeight">The height of each tile in pixels.</param>
 		public Tileset(int tileWidth, int tileHeight) {
-			if (tileWidth < 1)
-				throw new ArgumentOutOfRangeException(nameof(tileWidth));
-			if (tileHeight < 1)
-				throw new ArgumentOutOfRangeException(nameof(tileHeight));
+			ArgumentOutOfRangeException.ThrowIfLessThan(tileWidth, 1);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tileHeight, 1);
 
 			this.tileWidth = tileWidth;
 			this.tileHeight = tileHeight;
@@ -148,8 +146,7 @@ namespace LibPixelPet {
 		/// <param name="targetFmt">The target color format.</param>
 		/// <returns>The created bitmap.</returns>
 		public Bitmap ToBitmap(in int maxTilesPerRow, ColorFormat targetFmt) {
-			if (maxTilesPerRow < 0)
-				throw new ArgumentOutOfRangeException(nameof(maxTilesPerRow));
+			ArgumentOutOfRangeException.ThrowIfNegative(maxTilesPerRow);
 
 			int hTileCount = Count;
 			if (maxTilesPerRow > 0 && hTileCount > maxTilesPerRow) {
@@ -187,8 +184,7 @@ namespace LibPixelPet {
 		/// <param name="targetFmt">The target color format.</param>
 		/// <returns>The created bitmap.</returns>
 		public Bitmap ToBitmapIndexed(in int maxTilesPerRow, PaletteSet palettes, ColorFormat targetFmt) {
-			if (maxTilesPerRow < 0)
-				throw new ArgumentOutOfRangeException(nameof(maxTilesPerRow));
+			ArgumentOutOfRangeException.ThrowIfNegative(maxTilesPerRow);
 			ArgumentNullException.ThrowIfNull(palettes);
 
 			int hTileCount = Count;

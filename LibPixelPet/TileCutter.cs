@@ -45,10 +45,8 @@ namespace LibPixelPet {
 		/// <param name="tileHeight">The height of the produced tiles in pixels.</param>
 		/// <param name="emptyColor">The empty color to use for out-of-bounds pixels.</param>
 		public TileCutter(in int tileWidth, in int tileHeight, in Color emptyColor) {
-			if (tileWidth < 1)
-				throw new ArgumentOutOfRangeException(nameof(tileWidth));
-			if (tileHeight < 1)
-				throw new ArgumentOutOfRangeException(nameof(tileHeight));
+			ArgumentOutOfRangeException.ThrowIfLessThan(tileWidth, 1);
+			ArgumentOutOfRangeException.ThrowIfLessThan(tileHeight, 1);
 
 			TileWidth = tileWidth;
 			TileHeight = tileHeight;
