@@ -110,6 +110,12 @@ Run-Script <path> [--recursive/-r]
 
 Runs the script from the basic text file specified by `<path>`. Said script can also include further `Run-Script` commands to run even more scripts from different files.
 
+Scripts support C-style comments:
+```
+Import-Bytes "input.bin"   // This is a single line comment, which runs until the end of the line.
+Export-Bytes "output.bin"  /* This is a block comment, which can span multiple lines. */
+```
+
 By default it is not allowed to recursively include any scripts that are already on the current stack. For instance, if a script named `script.txt` contains the command `Run-Script script.txt`, then an error is thrown. Moreover, if `script1.txt` calls `script2.txt`, which then calls `script1.txt` again, an error is thrown as well. However, this restriction can be disabled by specifying the `--recursive` or `-r` flag.
 
 **Example usage:**

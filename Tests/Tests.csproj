@@ -12,6 +12,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PixelPet\PixelPet.csproj" />
-		<Content Include="TestsIn\**\*.*" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="TestsIn/**/*.*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	  <RemoveDir Directories="$(OutDir)/TestsIn" />
+	</Target>
 </Project>

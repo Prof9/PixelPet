@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace PixelPet.CLI.Commands {
 	internal sealed partial class RunScriptCmd : Command {
 
-		[GeneratedRegex("\\\".*?\\\"|[^\"\\s]+")]
+		[GeneratedRegex("\\\"(?:[^\"\\\\]|\\\\.)*\\\"|[^\"\\s]+")]
 		private static partial Regex QuotedArgumentRegex();
 
 		private HashSet<string> ScriptPaths { get; }
@@ -40,8 +42,48 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
+			// Process and remove comments
+			StringBuilder scriptWithoutComments = new StringBuilder();
+			bool inLineComment = false;
+			bool inBlockComment = false;
+			bool inString = false;
+			for (int i = 0; i < script.Length; i++) {
+				char nextChar = script[i];
+				ReadOnlySpan<char> next2Chars = script.AsSpan(i, Math.Min(2, script.Length - i));
+				if (nextChar == '\\') {
+					// Escaped char
+					if (!inLineComment && !inBlockComment) {
+						scriptWithoutComments.Append(next2Chars);
+					}
+					i++;
+				} else if (inLineComment) {
+					// End of line comment
+					if (nextChar == '\n') {
+						inLineComment = false;
+					}
+				} else if (inBlockComment) {
+					// End of block comment
+					if (next2Chars.SequenceEqual("*/")) {
+						inBlockComment = false;
+						i++;
+					}
+				} else if (!inString && next2Chars.SequenceEqual("//")) {
+					// Start of line comment
+					inLineComment = true;
+				} else if (!inString && next2Chars.SequenceEqual("/*")) {
+					// Start of block comment
+					inBlockComment = true;
+				} else {
+					// Normal char
+					if (nextChar == '"') {
+						inString = !inString;
+					}
+					scriptWithoutComments.Append(nextChar);
+				}
+			}
+
 			List<string> args = new();
-			foreach (Match match in (IEnumerable<Match>)QuotedArgumentRegex().Matches(script)) {
+			foreach (Match match in (IEnumerable<Match>)QuotedArgumentRegex().Matches(scriptWithoutComments.ToString())) {
 				if (match.Value[0] == '"' && match.Value[^1] == '"') {
 					args.Add(match.Value[1..^1]);
 				} else {

@@ -1,0 +1,21 @@
+// Line comment
+Import-Bytes "input_good.bin" // Line comment after command
+/* Block comment */
+/*
+
+Multi-line comment
+
+*/
+
+// Import-Bytes "input_bad.bin"
+/* Import-Bytes "input_bad.bin" */
+
+/* \*/ Import-Bytes "input_bad.bin" */
+
+Set-Variable abc "// not a comment"
+Set-Variable def "/* not a comment"
+Set-Variable ghi "\"\\\*\/\/\\\""
+
+/* Block comment before */ Export-Bytes "output.bin" /* Block comment after */
+
+Check-File-Equal "input_good.bin" "output.bin"
