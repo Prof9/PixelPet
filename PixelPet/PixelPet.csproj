@@ -21,8 +21,13 @@
 		<DebugType>none</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\LibPixelPet\LibPixelPet.csproj" />
+		<ProjectReference Include="../LibPixelPet/LibPixelPet.csproj" />
 		<PackageReference Include="SkiaSharp" Version="2.88.6" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Licenses/" />
+		<EmbeddedResource Include="../LICENSE.txt" Link="Licenses/LICENSE.txt" />
+		<EmbeddedResource Include="../LICENSE-third-party.txt" Link="Licenses/LICENSE-third-party.txt" />
 	</ItemGroup>
 	<Target Name="GetBuildInfo">
 		<Exec Command="git describe --abbrev --exclude=* --always --dirty --broken" ConsoleToMSBuild="true" IgnoreExitCode="true">

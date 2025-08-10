@@ -8,6 +8,7 @@ namespace PixelPet.CLI {
 	public class CommandRunner : ILogger {
 		internal static readonly Command[] InternalCommands = new Command[] {
 			new HelpCmd(),
+			new ViewLicensesCmd(),
 			new SetVariableCmd(),
 			new RunScriptCmd(),
 			new ImportBitmapCmd(),

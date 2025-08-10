@@ -52,6 +52,13 @@ namespace PixelPet {
 			Workbench workbench = new();
 			CommandRunner cli = new(workbench);
 
+			if (args.Length == 0) {
+				Console.WriteLine("No commands specified.");
+				Console.WriteLine();
+				Console.WriteLine("Run `PixelPet Help` to view available commands.");
+				Console.WriteLine("Run `PixelPet View-Licenses` to view licenses.");
+				Console.WriteLine();
+			}
 			cli.Run(args);
 
 			if ((int)cli.MaximumLogLevel > ErrorLevel) {
