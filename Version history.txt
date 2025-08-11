@@ -1,3 +1,14 @@
+Ver. 1.1.0 - 11 August 2025
+ *  Added GBA-Affine tilemap format.
+ *  Added support for comments in Run-Script script files.
+ *  Added View-Licenses command, which displays the open source licenses for
+    PixelPet embedded in the executable.
+ *  Fixed Quantize-Bitmap causing fatal error if optional --palette-number
+    argument is not present.
+ *  Fixed Run-Script causing fatal error if it is the last command in a script
+    file.
+ *  Updated to .NET 9.0.
+
 Ver. 1.0.2 - 10 May 2024
  *  Fixed Render-Palettes not updating the bitmap format, sometimes causing the
     palette to be rendered as all-black.

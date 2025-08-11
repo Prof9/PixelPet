@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk" InitialTargets="GetBuildInfo">
 	<PropertyGroup>
 		<Authors>Prof. 9</Authors>
-		<VersionPrefix>1.0.2</VersionPrefix>
+		<VersionPrefix>1.1.0</VersionPrefix>
 		<Copyright>Copyright © $(Authors) $([System.DateTime]::Now.Year)</Copyright>
 		<RepositoryUrl>https://github.com/Prof9/PixelPet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
