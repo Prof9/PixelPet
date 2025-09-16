@@ -670,3 +670,16 @@ Deserialize-Palettes GBA --offset 0x700000 --length 0x20
 Quantize-Bitmap GBA-4BPP
 ```
 Imports a ROM `rom.gba` and a bitmap `input.png`, deserializes a 16-color palette from `0x700000`, then quantizes the bitmap to 4BPP using the loaded palette.
+
+### View-Licenses
+```
+View-Licenses
+```
+
+Prints third-party licenses for all components of this software to the console.
+
+**Example usage:**
+```
+View-Licenses
+```
+See above.
