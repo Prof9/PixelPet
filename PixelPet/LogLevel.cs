@@ -2,8 +2,9 @@
 	public enum LogLevel {
 		VerboseInformation = -1,
 		Information = 0,
-		Warning = 1,
-		Error = 2,
-		Exception = 3,
+		Hint = 1,
+		Warning = 2,
+		Error = 3,
+		Exception = 4,
 	}
 }

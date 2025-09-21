@@ -282,7 +282,7 @@ namespace LibPixelPet {
 					c = pal[p];
 					fmt = pal.Format;
 				} else {
-					// TODO: Throw an exception?
+					// No appropriate palette, use the pixel value as the color as-is
 					c = p;
 					fmt = tileset.ColorFormat;
 				}

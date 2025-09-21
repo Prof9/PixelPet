@@ -179,8 +179,14 @@ namespace PixelPet.CLI {
 					Console.ForegroundColor = ConsoleColor.Yellow;
 				}
 				console.Write("WARNING: ");
+			} else if (logLevel == LogLevel.Hint) {
+				console = ConsoleError;
+				if (console == Console.Error) {
+					Console.ForegroundColor = ConsoleColor.Cyan;
+				}
+				console.Write("HINT: ");
 			}
-			Console.ForegroundColor = color;
+				Console.ForegroundColor = color;
 
 			console.WriteLine(logString);
 		}

@@ -1,4 +1,6 @@
 ﻿using LibPixelPet;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PixelPet.CLI.Commands {
 	internal sealed class RenderTilemapCmd : Command {
@@ -21,6 +23,22 @@ namespace PixelPet.CLI.Commands {
 				return false;
 			}
 
+			// Check for missing palettes
+			if (workbench.Tileset.IsIndexed) {
+				List<int> missingPalettes = new();
+				foreach (TileEntry te in workbench.Tilemap) {
+					int palNum = te.PaletteNumber;
+					if (!workbench.PaletteSet.ContainsPalette(palNum) && !missingPalettes.Contains(palNum)) {
+						missingPalettes.Add(palNum);
+					}
+				}
+				if (missingPalettes.Count > 0) {
+					logger?.Log("Tilemap references unloaded palette(s) " + string.Join(", ", missingPalettes) + ". Colors may be rendered as grayscale instead.", LogLevel.Warning);
+					logger?.Log("If this is not intended, specify --palette-number when loading palette(s).", LogLevel.Hint);
+				}
+			}
+
+			// Do the rendering
 			workbench.Bitmap = workbench.Tileset.IsIndexed
 				? workbench.Tilemap.ToBitmapIndexed(workbench.Tileset, workbench.PaletteSet, tpr, tpc)
 				: workbench.Tilemap.ToBitmap(workbench.Tileset, tpr, tpc);
